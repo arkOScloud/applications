@@ -1,0 +1,10 @@
+{% import "widgets.html" as widgets %}
+    {% call widgets.formline(text="ownCloud Username", help="This will be the username of the administrative user for ownCloud.") %}
+        {{ widgets.button(name="oc-username")}}
+    {% endcall %}
+    {% call widgets.formline(text="ownCloud Password") %}
+        {{ widgets.button(name="oc-logpasswd", password=True)}}
+    {% endcall %}
+    {% call widgets.formline(text="ownCloud Data Directory", help="If you want the data to be stored in the default location, please leave this blank.") %}
+        {{ widgets.selectinput(name="oc-ddir")}}
+    {% endcall %}

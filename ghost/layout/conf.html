@@ -1,0 +1,17 @@
+{% import "widgets.html" as widgets %}
+    <p>All of these options are OPTIONAL, if you do not choose them, then they will be automatically generated or ignored on install.</p>
+    {% call widgets.formline(text="Mail Transport", help="Optional: See http://docs.ghost.org/mail/ for more detail.") %}
+        {{ widgets.input(name="ghost-transport", id="ghost-transport")}}
+    {% endcall %}
+    {% call widgets.formline(text="Mail Service", help="Optional: See http://docs.ghost.org/mail/ for more detail.") %}
+        {{ widgets.input(name="ghost-service", id="ghost-service")}}
+    {% endcall %}
+    {% call widgets.formline(text="Mail User", help="Optional: See http://docs.ghost.org/mail/ for more detail.") %}
+        {{ widgets.input(name="ghost-mail-user", id="ghost-mail-user")}}
+    {% endcall %}
+    {% call widgets.formline(text="Mail Password", help="Optional: See http://docs.ghost.org/mail/ for more detail.") %}
+        {{ widgets.input(name="ghost-mail-pass", id="ghost-mail-pass", password=True)}}
+    {% endcall %}
+    {% call widgets.formline(text="From Address", help="Optional: See http://docs.ghost.org/mail/ for more detail.") %}
+        {{ widgets.input(name="ghost-from-address", id="ghost-from-address")}}
+    {% endcall %}
