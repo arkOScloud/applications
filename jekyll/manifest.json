@@ -1,7 +1,7 @@
 {
     "pid": "jekyll",
     "name": "Jekyll",
-    "type": "webapp",
+    "type": "website",
     "icon": "gen-earth",
     "description": {
         "short": "Run a statically-generated website or blog",
@@ -23,45 +23,32 @@
     "services": [],
     "modules": ["main"],
     "platforms": ["any"],
-    "dependencies": {
-        "any": [
-            {
-                "type": "app",
-                "name": "nginx",
-                "package": "nginx",
-                "binary": "nginx"
-            },
-            {
-                "type": "app",
-                "name": "ruby",
-                "package": "ruby",
-                "binary": "ruby"
-            },
-            {
-                "type": "app",
-                "name": "make",
-                "package": "make",
-                "binary": "make"
-            },
-            {
-                "type": "app",
-                "name": "gcc",
-                "package": "gcc",
-                "binary": "gcc"
-            },
-            {
-                "type": "app",
-                "name": "nodejs",
-                "package": "nodejs",
-                "binary": "nodejs"
-            },
-            {
-                "type": "plugin",
-                "name": "Ruby",
-                "package": "ruby"
-            }
-        ]
-    },
+    "dependencies": [
+        {
+            "type": "system",
+            "name": "ruby",
+            "package": "ruby",
+            "binary": "ruby"
+        },
+        {
+            "type": "system",
+            "name": "make",
+            "package": "make",
+            "binary": "make"
+        },
+        {
+            "type": "system",
+            "name": "gcc",
+            "package": "gcc",
+            "binary": "gcc"
+        },
+        {
+            "type": "system",
+            "name": "nodejs",
+            "package": "nodejs",
+            "binary": "npm"
+        }
+    ],
     "generation": 1,
     "website_plugin": "Jekyll",
     "website_updates": true,

@@ -1,7 +1,7 @@
 {
     "pid": "dokuwiki",
     "name": "DokuWiki",
-    "type": "webapp",
+    "type": "website",
     "icon": "gen-book",
     "description": {
         "short": "Collaborative Documentation",
@@ -29,40 +29,32 @@
     ],
     "modules": ["main"],
     "platforms": ["any"],
-    "dependencies": {
-        "any": [
-            {
-                "type": "app",
-                "name": "nginx",
-                "package": "nginx",
-                "binary": "nginx"
-            },
-            {
-                "type": "app",
-                "name": "php",
-                "package": "php",
-                "binary": null
-            },
-            {
-                "type": "app",
-                "name": "PHP FastCGI",
-                "package": "php-fpm",
-                "binary": "php-fpm"
-            },
-            {
-                "type": "app",
-                "name": "PHP GD Image Processing",
-                "package": "php-gd",
-                "binary": null
-            },
-            {
-                "type": "app",
-                "name": "PHP xCache",
-                "package": "php-xcache",
-                "binary": null
-            }
-        ]
-    },
+    "dependencies": [
+        {
+            "type": "system",
+            "name": "php",
+            "package": "php",
+            "binary": null
+        },
+        {
+            "type": "system",
+            "name": "PHP FastCGI",
+            "package": "php-fpm",
+            "binary": "php-fpm"
+        },
+        {
+            "type": "system",
+            "name": "PHP GD Image Processing",
+            "package": "php-gd",
+            "binary": null
+        },
+        {
+            "type": "system",
+            "name": "PHP xCache",
+            "package": "php-xcache",
+            "binary": null
+        }
+    ],
     "generation": 1,
     "website_plugin": "DokuWiki",
     "website_updates": true,

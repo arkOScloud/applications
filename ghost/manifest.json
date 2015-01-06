@@ -1,7 +1,7 @@
 {
     "pid": "ghost",
     "name": "Ghost",
-    "type": "webapp",
+    "type": "website",
     "icon": "gen-earth",
     "description": {
         "short": "Host a blog with Ghost",
@@ -23,21 +23,14 @@
     "services": [],
     "modules": ["main"],
     "platforms": ["any"],
-    "dependencies": {
-        "any": [
-            {
-                "type": "app",
-                "name": "nginx",
-                "package": "nginx",
-                "binary": "nginx"
-            },
-            {
-                "type": "plugin",
-                "name": "NodeJS",
-                "package": "nodejs"
-            }
-        ]
-    },
+    "dependencies": [
+        {
+            "type": "system",
+            "name": "nodejs",
+            "package": "nodejs",
+            "binary": "npm"
+        }
+    ],
     "generation": 1,
     "website_plugin": "Ghost",
     "website_updates": true,

@@ -1,7 +1,7 @@
 {
     "pid": "haste",
     "name": "Haste",
-    "type": "webapp",
+    "type": "website",
     "icon": "gen-file-xml",
     "description": {
         "short": "Open source pastebin",
@@ -23,27 +23,7 @@
     "services": [],
     "modules": ["main"],
     "platforms": ["any"],
-    "dependencies": {
-        "any": [
-            {
-                "type": "app",
-                "name": "nginx",
-                "package": "nginx",
-                "binary": "nginx"
-            },
-            {
-                "type": "app",
-                "name": "Git",
-                "package": "git",
-                "binary": "git"
-            },
-            {
-                "type": "plugin",
-                "name": "NodeJS",
-                "package": "nodejs"
-            }
-        ]
-    },
+    "dependencies": [],
     "generation": 1,
     "website_plugin": "Haste",
     "website_updates": false,

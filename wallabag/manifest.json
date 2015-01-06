@@ -1,7 +1,7 @@
 {
     "pid": "wallabag",
     "name": "Wallabag",
-    "type": "webapp",
+    "type": "website",
     "icon": "fa fa-rss",
     "description": {
         "short": "Self-hosted app for saving web pages and RSS feeds",
@@ -34,62 +34,49 @@
     ],
     "modules": ["main"],
     "platforms": ["any"],
-    "dependencies": {
-        "any": [
-            {
-                "type": "app",
-                "name": "MariaDB",
-                "package": "mariadb",
-                "binary": "mysqld"
-            },
-            {
-                "type": "app",
-                "name": "nginx",
-                "package": "nginx",
-                "binary": "nginx"
-            },
-            {
-                "type": "app",
-                "name": "php",
-                "package": "php",
-                "binary": null
-            },
-            {
-                "type": "app",
-                "name": "PHP FastCGI",
-                "package": "php-fpm",
-                "binary": "php-fpm"
-            },
-            {
-                "type": "app",
-                "name": "PHP xCache",
-                "package": "php-xcache",
-                "binary": null
-            },
-            {
-                "type": "app",
-                "name": "PHP Tidy",
-                "package": "php-tidy",
-                "binary": null
-            },
-            {
-                "type": "app",
-                "name": "PHP SQLite3",
-                "package": "php-sqlite",
-                "binary": null
-            },
-            {
-                "type": "plugin",
-                "name": "MariaDB",
-                "package": "db-mariadb"
-            },
-            {
-                "type": "plugin",
-                "name": "PHP",
-                "package": "php"
-            }
-        ]
-    },
+    "dependencies": [
+        {
+            "type": "system",
+            "name": "MariaDB",
+            "package": "mariadb",
+            "binary": "mysqld"
+        },
+        {
+            "type": "system",
+            "name": "php",
+            "package": "php",
+            "binary": null
+        },
+        {
+            "type": "system",
+            "name": "PHP FastCGI",
+            "package": "php-fpm",
+            "binary": "php-fpm"
+        },
+        {
+            "type": "system",
+            "name": "PHP xCache",
+            "package": "php-xcache",
+            "binary": null
+        },
+        {
+            "type": "system",
+            "name": "PHP Tidy",
+            "package": "php-tidy",
+            "binary": null
+        },
+        {
+            "type": "system",
+            "name": "PHP SQLite3",
+            "package": "php-sqlite",
+            "binary": null
+        },
+        {
+            "type": "app",
+            "name": "MariaDB",
+            "package": "db-mariadb"
+        }
+    ],
     "generation": 1,
     "website_plugin": "Wallabag",
     "website_updates": true,

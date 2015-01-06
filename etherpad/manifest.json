@@ -1,7 +1,7 @@
 {
     "pid": "etherpad",
     "name": "Etherpad",
-    "type": "webapp",
+    "type": "website",
     "icon": "gen-paragraph-left",
     "description": {
         "short": "Collaborative Text Editing",
@@ -29,44 +29,31 @@
     ],
     "modules": ["main"],
     "platforms": ["any"],
-    "dependencies": {
-        "any": [
-            {
-                "type": "app",
-                "name": "nginx",
-                "package": "nginx",
-                "binary": "nginx"
-            },
-            {
-                "type": "plugin",
-                "name": "NodeJS",
-                "package": "nodejs"
-            },
-            {
-                "type": "app",
-                "name": "MariaDB",
-                "package": "mariadb",
-                "binary": "mysqld"
-            },
-            {
-                "type": "app",
-                "name": "Git",
-                "package": "git",
-                "binary": "git"
-            },
-            {
-                "type": "plugin",
-                "name": "MariaDB",
-                "package": "db-mariadb"
-            },
-            {
-                "type": "app",
-                "name": "make",
-                "package": "make",
-                "binary": "make"
-            }
-        ]
-    },
+    "dependencies": [
+        {
+            "type": "system",
+            "name": "nginx",
+            "package": "nginx",
+            "binary": "nginx"
+        },
+        {
+            "type": "system",
+            "name": "MariaDB",
+            "package": "mariadb",
+            "binary": "mysqld"
+        },
+        {
+            "type": "system",
+            "name": "make",
+            "package": "make",
+            "binary": "make"
+        },
+        {
+            "type": "app",
+            "name": "MariaDB",
+            "package": "db-mariadb"
+        }
+    ],
     "generation": 1,
     "website_plugin": "Etherpad",
     "website_updates": true,

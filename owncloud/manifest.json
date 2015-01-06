@@ -1,7 +1,7 @@
 {
     "pid": "owncloud",
     "name": "ownCloud",
-    "type": "webapp",
+    "type": "website",
     "icon": "gen-cloud",
     "description": {
         "short": "Host calendar, files, contacts, and sync across devices",
@@ -38,62 +38,49 @@
     ],
     "modules": ["main"],
     "platforms": ["any"],
-    "dependencies": {
-        "any": [
-            {
-                "type": "app",
-                "name": "MariaDB",
-                "package": "mariadb",
-                "binary": "mysqld"
-            },
-            {
-                "type": "app",
-                "name": "nginx",
-                "package": "nginx",
-                "binary": "nginx"
-            },
-            {
-                "type": "app",
-                "name": "php",
-                "package": "php",
-                "binary": null
-            },
-            {
-                "type": "app",
-                "name": "PHP FastCGI",
-                "package": "php-fpm",
-                "binary": "php-fpm"
-            },
-            {
-                "type": "app",
-                "name": "PHP GD Image Processing",
-                "package": "php-gd",
-                "binary": null
-            },
-            {
-                "type": "app",
-                "name": "PHP Internationalization",
-                "package": "php-intl",
-                "binary": null
-            },
-            {
-                "type": "app",
-                "name": "PHP xCache",
-                "package": "php-xcache",
-                "binary": null
-            },
-            {
-                "type": "plugin",
-                "name": "MariaDB",
-                "package": "db-mariadb"
-            },
-            {
-                "type": "plugin",
-                "name": "PHP",
-                "package": "php"
-            }
-        ]
-    },
+    "dependencies": [
+        {
+            "type": "system",
+            "name": "MariaDB",
+            "package": "mariadb",
+            "binary": "mysqld"
+        },
+        {
+            "type": "system",
+            "name": "php",
+            "package": "php",
+            "binary": null
+        },
+        {
+            "type": "system",
+            "name": "PHP FastCGI",
+            "package": "php-fpm",
+            "binary": "php-fpm"
+        },
+        {
+            "type": "system",
+            "name": "PHP GD Image Processing",
+            "package": "php-gd",
+            "binary": null
+        },
+        {
+            "type": "system",
+            "name": "PHP Internationalization",
+            "package": "php-intl",
+            "binary": null
+        },
+        {
+            "type": "system",
+            "name": "PHP xCache",
+            "package": "php-xcache",
+            "binary": null
+        },
+        {
+            "type": "app",
+            "name": "MariaDB",
+            "package": "db-mariadb"
+        }
+    ],
     "generation": 1,
     "website_plugin": "ownCloud",
     "website_updates": false,

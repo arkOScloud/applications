@@ -1,7 +1,7 @@
 {
     "pid": "lychee",
     "name": "Lychee",
-    "type": "webapp",
+    "type": "website",
     "icon": "fa fa-photo",
     "description": {
         "short": "Photo management system",
@@ -34,38 +34,25 @@
     ],
     "modules": ["main"],
     "platforms": ["any"],
-    "dependencies": {
-        "any": [
-            {
-                "type": "app",
-                "name": "nginx",
-                "package": "nginx",
-                "binary": "nginx"
-            },
-            {
-                "type": "app",
-                "name": "PHP xCache",
-                "package": "php-xcache",
-                "binary": null
-            },
-            {
-                "type": "app",
-                "name": "PHP GD Image Processing",
-                "package": "php-gd",
-                "binary": null
-            },
-            {
-                "type": "plugin",
-                "name": "MariaDB",
-                "package": "db-mariadb"
-            },
-            {
-                "type": "plugin",
-                "name": "PHP",
-                "package": "php"
-            }
-        ]
-    },
+    "dependencies": [
+        {
+            "type": "system",
+            "name": "PHP xCache",
+            "package": "php-xcache",
+            "binary": null
+        },
+        {
+            "type": "system",
+            "name": "PHP GD Image Processing",
+            "package": "php-gd",
+            "binary": null
+        },
+        {
+            "type": "app",
+            "name": "MariaDB",
+            "package": "db-mariadb"
+        }
+    ],
     "generation": 1,
     "website_plugin": "Lychee",
     "website_updates": false,
