@@ -1,0 +1,54 @@
+{
+    "id": "db-mariadb",
+    "name": "MariaDB",
+    "type": "database",
+    "icon": "gen-database",
+    "description": {
+        "short": "Manage MariaDB/MySQL databases",
+        "long": ""
+    },
+    "categories": [
+        {
+            "primary": "Databases",
+            "secondary": []
+        }
+    ],
+    "version": "2.7",
+    "author": "arkOS",
+    "homepage": "https://arkos.io",
+    "app_author": "MariaDB Foundation",
+    "app_homepage": "https://mariadb.org/",
+    "logo": false,
+    "screenshots": [],
+    "services": [
+        {
+            "name": "MariaDB",
+            "binary": "mysqld",
+            "ports": [["tcp", 3306]]
+        }
+    ],
+    "modules": {
+        "database": {
+            "db": "MariaDB",
+            "user": "MariaDBUser",
+            "manager": "MariaDBMgr"
+        }
+    },
+    "dependencies": [
+        {
+            "type": "system",
+            "name": "MariaDB",
+            "package": "mariadb",
+            "binary": "mysqld",
+            "daemon": "mysqld"
+        },
+        {
+            "type": "python",
+            "name": "MySQL-Python",
+            "package": "mysql-python",
+            "binary": "_mysql"
+        }
+    ],
+    "generation": 1,
+    "database_multiuser": true
+}
