@@ -1,5 +1,5 @@
 {
-    "pid": "haste",
+    "id": "haste",
     "name": "Haste",
     "type": "website",
     "icon": "gen-file-xml",
@@ -21,11 +21,11 @@
     "logo": false,
     "screenshots": [],
     "services": [],
-    "modules": ["main"],
-    "platforms": ["any"],
+    "modules": {
+        "website": "Haste"
+    },
     "dependencies": [],
     "generation": 1,
-    "website_plugin": "Haste",
     "website_updates": false,
     "download_url": "https://github.com/seejohnrun/haste-server.git",
     "database_engines": [],

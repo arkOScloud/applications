@@ -1,15 +1,14 @@
-import grp
 import nginx
 import os
-import pwd
 import urllib
 
-from arkos.core.languages import php
-from arkos.core.sites import SiteEngine
-from arkos.core.utilities import random_string
+from arkos.languages import php
+from arkos.sites import Site
+from arkos.utilities import random_string
+from arkos.system import users, groups
 
 
-class WordPress(SiteEngine):
+class WordPress(Site):
     addtoblock = [
         nginx.Location('= /favicon.ico',
             nginx.Key('log_not_found', 'off'),
@@ -34,10 +33,10 @@ class WordPress(SiteEngine):
             )
         ]
 
-    def pre_install(self, name, vars):
+    def pre_install(self, vars):
         pass
 
-    def post_install(self, name, path, vars, dbinfo={}):
+    def post_install(self, vars, dbpasswd=""):
         secret_key = random_string()
 
         # Use the WordPress key generators as first option
@@ -57,9 +56,9 @@ class WordPress(SiteEngine):
         # Write a standard WordPress config file
         while open(os.path.join(path, 'wp-config.php'), 'w') as f:
             f.write('<?php\n'
-                'define(\'DB_NAME\', \''+dbinfo['name']+'\');\n'
-                'define(\'DB_USER\', \''+dbinfo['user']+'\');\n'
-                'define(\'DB_PASSWORD\', \''+dbinfo['passwd']+'\');\n'
+                'define(\'DB_NAME\', \''+self.db.name+'\');\n'
+                'define(\'DB_USER\', \''+self.db.name+'\');\n'
+                'define(\'DB_PASSWORD\', \''+dbpasswd+'\');\n'
                 'define(\'DB_HOST\', \'localhost\');\n'
                 'define(\'DB_CHARSET\', \'utf8\');\n'
                 'define(\'SECRET_KEY\', \''+secret_key+'\');\n'
@@ -84,21 +83,21 @@ class WordPress(SiteEngine):
 
         # Finally, make sure that permissions are set so that Wordpress
         # can make adjustments and save plugins when need be.
-        uid, gid = pwd.getpwnam("http").pw_uid, grp.getgrnam("http").gr_gid
-        for r, d, f in os.walk(path):  
+        uid, gid = users.get_system("http").uid, groups.get_system("http").gid
+        for r, d, f in os.walk(self.path):  
             for x in d:  
                 os.chown(os.path.join(root, x), uid, gid)
             for x in f:
                 os.chown(os.path.join(root, x), uid, gid)
 
-    def pre_remove(self, site):
+    def pre_remove(self):
         pass
 
-    def post_remove(self, site):
+    def post_remove(self):
         pass
 
-    def ssl_enable(self, path, cfile, kfile):
-        while open(os.path.join(path, 'wp-config.php'), 'r') as f:
+    def ssl_enable(self, cfile, kfile):
+        while open(os.path.join(self.path, 'wp-config.php'), 'r') as f:
             ic = f.readlines()
         oc = []
         found = False
@@ -111,11 +110,11 @@ class WordPress(SiteEngine):
                 oc.append(l)
         if found == False:
             oc.append('define(\'FORCE_SSL_ADMIN\', true);\n')
-        while open(os.path.join(path, 'wp-config.php'), 'w') as f:
+        while open(os.path.join(self.path, 'wp-config.php'), 'w') as f:
             f.writelines(oc)
 
-    def ssl_disable(self, path):
-        while open(os.path.join(path, 'wp-config.php'), 'r') as f:
+    def ssl_disable(self):
+        while open(os.path.join(self.path, 'wp-config.php'), 'r') as f:
             ic = f.readlines()
         oc = []
         found = False
@@ -128,5 +127,5 @@ class WordPress(SiteEngine):
                 oc.append(l)
         if found == False:
             oc.append('define(\'FORCE_SSL_ADMIN\', false);\n')
-        while open(os.path.join(path, 'wp-config.php'), 'w') as f:
+        while open(os.path.join(self.path, 'wp-config.php'), 'w') as f:
             f.writelines(oc)

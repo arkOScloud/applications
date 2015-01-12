@@ -1,5 +1,5 @@
 {
-    "pid": "etherpad",
+    "id": "etherpad",
     "name": "Etherpad",
     "type": "website",
     "icon": "gen-paragraph-left",
@@ -27,21 +27,10 @@
             "ports": []
         }
     ],
-    "modules": ["main"],
-    "platforms": ["any"],
+    "modules": {
+        "website": "Etherpad"
+    },
     "dependencies": [
-        {
-            "type": "system",
-            "name": "nginx",
-            "package": "nginx",
-            "binary": "nginx"
-        },
-        {
-            "type": "system",
-            "name": "MariaDB",
-            "package": "mariadb",
-            "binary": "mysqld"
-        },
         {
             "type": "system",
             "name": "make",
@@ -55,7 +44,6 @@
         }
     ],
     "generation": 1,
-    "website_plugin": "Etherpad",
     "website_updates": true,
     "download_url": "https://github.com/ether/etherpad-lite.git",
     "database_engines": ["MariaDB"],

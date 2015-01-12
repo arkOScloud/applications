@@ -1,5 +1,5 @@
 {
-    "pid": "jekyll",
+    "id": "jekyll",
     "name": "Jekyll",
     "type": "website",
     "icon": "gen-earth",
@@ -21,8 +21,9 @@
     "logo": true,
     "screenshots": [],
     "services": [],
-    "modules": ["main"],
-    "platforms": ["any"],
+    "modules": {
+        "website": "Jekyll"
+    },
     "dependencies": [
         {
             "type": "system",
@@ -50,7 +51,6 @@
         }
     ],
     "generation": 1,
-    "website_plugin": "Jekyll",
     "website_updates": true,
     "download_url": "https://pkg.arkos.io/resources/jekyll-sample.tar.gz",
     "database_engines": [],

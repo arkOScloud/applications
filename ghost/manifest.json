@@ -1,5 +1,5 @@
 {
-    "pid": "ghost",
+    "id": "ghost",
     "name": "Ghost",
     "type": "website",
     "icon": "gen-earth",
@@ -21,8 +21,9 @@
     "logo": true,
     "screenshots": ["screen-1.jpg", "screen-2.jpg", "screen-3.jpg"],
     "services": [],
-    "modules": ["main"],
-    "platforms": ["any"],
+    "modules": {
+        "website": "Ghost"
+    },
     "dependencies": [
         {
             "type": "system",
@@ -32,7 +33,6 @@
         }
     ],
     "generation": 1,
-    "website_plugin": "Ghost",
     "website_updates": true,
     "download_url": "https://github.com/TryGhost/Ghost/releases/download/0.5.2/Ghost-0.5.2.zip",
     "database_engines": [],

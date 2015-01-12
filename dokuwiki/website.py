@@ -1,12 +1,12 @@
 import nginx
 import os
 
-from arkos.core.languages import php
-from arkos.core.sites import SiteEngine
-from arkos.core.utilities import shell
+from arkos.languages import php
+from arkos.websites import Site
+from arkos.utilities import shell
 
 
-class DokuWiki(SiteEngine):
+class DokuWiki(Site):
     addtoblock = [
         nginx.Location('/',
             nginx.Key('try_files', '$uri $uri/ @dokuwiki'),

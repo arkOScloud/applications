@@ -1,5 +1,5 @@
 {
-    "pid": "dokuwiki",
+    "id": "dokuwiki",
     "name": "DokuWiki",
     "type": "website",
     "icon": "gen-book",
@@ -19,7 +19,7 @@
     "app_author": "AOE – the open web company",
     "app_homepage": "https://www.dokuwiki.org/",
     "logo": true,
-    "screenshots": [],
+    "screenshots": [], 
     "services": [
         {
             "name": "PHP FastCGI",
@@ -27,8 +27,9 @@
             "ports": []
         }
     ],
-    "modules": ["main"],
-    "platforms": ["any"],
+    "modules": {
+        "website": "DokuWiki"
+    },
     "dependencies": [
         {
             "type": "system",
@@ -40,7 +41,8 @@
             "type": "system",
             "name": "PHP FastCGI",
             "package": "php-fpm",
-            "binary": "php-fpm"
+            "binary": "php-fpm",
+            "daemon": "php-fpm"
         },
         {
             "type": "system",
@@ -56,7 +58,6 @@
         }
     ],
     "generation": 1,
-    "website_plugin": "DokuWiki",
     "website_updates": true,
     "download_url": "http://download.dokuwiki.org/src/dokuwiki/dokuwiki-stable.tgz",
     "database_engines": [],

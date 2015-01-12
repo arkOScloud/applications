@@ -3,12 +3,13 @@ import nginx
 import os
 import shutil
 
-from arkos.core.languages import php
-from arkos.core.sites import SiteEngine
-from arkos.core.utilities import shell, random_string
+from arkos.languages import php
+from arkos.sites import Site
+from arkos.utilities import shell, random_string
+from arkos.system import users, groups
 
 
-class ownCloud(SiteEngine):
+class ownCloud(Site):
     addtoblock = [
         nginx.Key('error_page', '403 = /core/templates/403.php'),
         nginx.Key('error_page', '404 = /core/templates/404.php'),
@@ -47,36 +48,36 @@ class ownCloud(SiteEngine):
             )
         ]
 
-    def pre_install(self, name, vars):
-        if vars.getvalue('oc-username', '') == '':
+    def pre_install(self, vars):
+        if not vars.get('oc-username'):
             raise Exception('Must choose an ownCloud username')
-        elif vars.getvalue('oc-logpasswd', '') == '':
+        elif not vars.get('oc-logpasswd'):
             raise Exception('Must choose an ownCloud password')
-        elif '"' in vars.getvalue('oc-logpasswd', '') or "'" in vars.getvalue('oc-logpasswd', ''):
+        elif '"' in vars.get('oc-logpasswd') or "'" in vars.get('oc-logpasswd'):
             raise Exception('Your ownCloud password must not include quotes')
 
-    def post_install(self, name, path, vars, dbinfo={}):
+    def post_install(self, vars, dbpasswd=""):
         datadir = ''
         secret_key = random_string()
-        username = vars.getvalue('oc-username')
-        logpasswd = vars.getvalue('oc-logpasswd')
+        username = vars.get('oc-username')
+        logpasswd = vars.get('oc-logpasswd')
 
         # Set ownership as necessary
-        if not os.path.exists(os.path.join(path, 'data')):
-            os.makedirs(os.path.join(path, 'data'))
-        uid, gid = self.System.Users.get("http")["uid"], self.System.Users.get_group("http")["gid"]
-        for r, d, f in os.walk(path):
+        if not os.path.exists(os.path.join(self.path, 'data')):
+            os.makedirs(os.path.join(self.path, 'data'))
+        uid, gid = users.get_system("http").uid, groups.get_system("http").gid
+        for r, d, f in os.walk(self.path):
             for x in d:
                 os.chown(os.path.join(root, x), uid, gid)
             for x in f:
                 os.chown(os.path.join(root, x), uid, gid)
 
         # If there is a custom path for the data directory, do the magic
-        if vars.getvalue('oc-ddir', '') != '':
-            datadir = vars.getvalue('oc-ddir')
-            if not os.path.exists(os.path.join(datadir if datadir else path, 'data')):
-                os.makedirs(os.path.join(datadir if datadir else path, 'data'))
-            for r, d, f in os.walk(os.path.join(datadir if datadir else path, 'data')):
+        datadir = vars.get('oc-ddir')
+        if datadir:
+            if not os.path.exists(os.path.join(datadir, 'data')):
+                os.makedirs(os.path.join(datadir, 'data'))
+            for r, d, f in os.walk(os.path.join(datadir, 'data')):
                 for x in d:
                     os.chown(os.path.join(root, x), uid, gid)
                 for x in f:
@@ -84,23 +85,23 @@ class ownCloud(SiteEngine):
             php.open_basedir('add', datadir)
 
         # Create ownCloud automatic configuration file
-        with open(os.path.join(path, 'config', 'autoconfig.php'), 'w') as f:
+        with open(os.path.join(self.path, 'config', 'autoconfig.php'), 'w') as f:
             f.write(
                 '<?php\n'
                 '   $AUTOCONFIG = array(\n'
                 '   "adminlogin" => "'+username+'",\n'
                 '   "adminpass" => "'+logpasswd+'",\n'
                 '   "dbtype" => "mysql",\n'
-                '   "dbname" => "'+dbinfo['name']+'",\n'
-                '   "dbuser" => "'+dbinfo['user']+'",\n'
-                '   "dbpass" => "'+dbinfo['passwd']+'",\n'
+                '   "dbname" => "'+self.db.name+'",\n'
+                '   "dbuser" => "'+self.db.name+'",\n'
+                '   "dbpass" => "'+dbpasswd+'",\n'
                 '   "dbhost" => "localhost",\n'
                 '   "dbtableprefix" => "",\n'
-                '   "directory" => "'+os.path.join(datadir if datadir else path, 'data')+'",\n'
+                '   "directory" => "'+os.path.join(datadir if datadir else self.path, 'data')+'",\n'
                 '   );\n'
                 '?>\n'
                 )
-        os.chown(os.path.join(path, 'config', 'autoconfig.php'), uid, gid)
+        os.chown(os.path.join(self.path, 'config', 'autoconfig.php'), uid, gid)
 
         # Make sure that the correct PHP settings are enabled
         php.enable_mod('mysql', 'pdo_mysql', 'zip', 'gd',
@@ -115,16 +116,16 @@ class ownCloud(SiteEngine):
                 'xcache.admin.user = "admin"\n',
                 'xcache.admin.pass = "'+secret_key[8:24]+'"\n'])
 
-    def pre_remove(self, site):
+    def pre_remove(self):
         datadir = ''
-        if os.path.exists(os.path.join(site.path, 'config', 'config.php')):
-            with open(os.path.join(site.path, 'config', 'config.php'), 'r') as f:
+        if os.path.exists(os.path.join(self.path, 'config', 'config.php')):
+            with open(os.path.join(self.path, 'config', 'config.php'), 'r') as f:
                 for line in f.readlines():
                     if 'datadirectory' in line:
                         data = line.split("'")[1::2]
                         datadir = data[1]
-        elif os.path.exists(os.path.join(site.path, 'config', 'autoconfig.php')):
-            with open(os.path.join(site.path, 'config', 'autoconfig.php'), 'r') as f:
+        elif os.path.exists(os.path.join(self.path, 'config', 'autoconfig.php')):
+            with open(os.path.join(self.path, 'config', 'autoconfig.php'), 'r') as f:
                 for line in f.readlines():
                     if 'directory' in line:
                         data = line.split('"')[1::2]
@@ -133,15 +134,15 @@ class ownCloud(SiteEngine):
             shutil.rmtree(datadir)
             php.open_basedir('del', datadir)
 
-    def post_remove(self, site):
+    def post_remove(self):
         pass
 
-    def ssl_enable(self, path, cfile, kfile):
+    def ssl_enable(self, cfile, kfile):
         # First, force SSL in ownCloud's config file
-        if os.path.exists(os.path.join(path, 'config', 'config.php')):
-            px = os.path.join(path, 'config', 'config.php')
+        if os.path.exists(os.path.join(self.path, 'config', 'config.php')):
+            px = os.path.join(self.path, 'config', 'config.php')
         else:
-            px = os.path.join(path, 'config', 'autoconfig.php')
+            px = os.path.join(self.path, 'config', 'autoconfig.php')
         with open(px, 'r') as f:
             ic = f.readlines()
         oc = []
@@ -183,11 +184,11 @@ class ownCloud(SiteEngine):
             f.writelines(oc)
         shell('update-ca-certificates')
 
-    def ssl_disable(self, path):
-        if os.path.exists(os.path.join(path, 'config', 'config.php')):
-            px = os.path.join(path, 'config', 'config.php')
+    def ssl_disable(self):
+        if os.path.exists(os.path.join(self.path, 'config', 'config.php')):
+            px = os.path.join(self.path, 'config', 'config.php')
         else:
-            px = os.path.join(path, 'config', 'autoconfig.php')
+            px = os.path.join(self.path, 'config', 'autoconfig.php')
         with open(px, 'r') as f:
             ic = f.readlines()
         oc = []

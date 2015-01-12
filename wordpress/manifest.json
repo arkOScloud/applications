@@ -1,5 +1,5 @@
 {
-    "pid": "wordpress",
+    "id": "wordpress",
     "name": "WordPress",
     "type": "website",
     "icon": "fa fa-wordpress",
@@ -32,26 +32,15 @@
             "ports": []
         }
     ],
-    "modules": ["main"],
-    "platforms": ["any"],
+    "modules": {
+        "website": "WordPress"
+    },
     "dependencies": [
-        {
-            "type": "system",
-            "name": "MariaDB",
-            "package": "mariadb",
-            "binary": "mysqld"
-        },
         {
             "type": "system",
             "name": "php",
             "package": "php",
             "binary": null
-        },
-        {
-            "type": "system",
-            "name": "PHP FastCGI",
-            "package": "php-fpm",
-            "binary": "php-fpm"
         },
         {
             "type": "system",
@@ -66,7 +55,6 @@
         }
     ],
     "generation": 1,
-    "website_plugin": "WordPress",
     "website_updates": false,
     "download_url": "https://wordpress.org/wordpress-4.0.tar.gz",
     "database_engines": ["MariaDB"],

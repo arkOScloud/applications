@@ -1,5 +1,5 @@
 {
-    "pid": "lychee",
+    "id": "lychee",
     "name": "Lychee",
     "type": "website",
     "icon": "fa fa-photo",
@@ -32,8 +32,9 @@
             "ports": []
         }
     ],
-    "modules": ["main"],
-    "platforms": ["any"],
+    "modules": {
+        "website": "Lychee"
+    },
     "dependencies": [
         {
             "type": "system",
@@ -54,7 +55,6 @@
         }
     ],
     "generation": 1,
-    "website_plugin": "Lychee",
     "website_updates": false,
     "download_url": "https://github.com/electerious/Lychee/archive/v2.6.3.tar.gz",
     "database_engines": ["MariaDB"],

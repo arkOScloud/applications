@@ -1,5 +1,5 @@
 {
-    "pid": "owncloud",
+    "id": "owncloud",
     "name": "ownCloud",
     "type": "website",
     "icon": "gen-cloud",
@@ -36,27 +36,10 @@
             "ports": []
         }
     ],
-    "modules": ["main"],
-    "platforms": ["any"],
+    "modules": {
+        "website": "ownCloud"
+    },
     "dependencies": [
-        {
-            "type": "system",
-            "name": "MariaDB",
-            "package": "mariadb",
-            "binary": "mysqld"
-        },
-        {
-            "type": "system",
-            "name": "php",
-            "package": "php",
-            "binary": null
-        },
-        {
-            "type": "system",
-            "name": "PHP FastCGI",
-            "package": "php-fpm",
-            "binary": "php-fpm"
-        },
         {
             "type": "system",
             "name": "PHP GD Image Processing",
@@ -82,7 +65,6 @@
         }
     ],
     "generation": 1,
-    "website_plugin": "ownCloud",
     "website_updates": false,
     "download_url": "https://download.owncloud.org/community/owncloud-7.0.4.tar.bz2",
     "database_engines": ["MariaDB"],
