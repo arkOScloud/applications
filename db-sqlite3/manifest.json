@@ -1,5 +1,5 @@
 {
-    "id": "db-sqlite3"
+    "id": "db-sqlite3",
     "name": "SQLite3",
     "type": "database",
     "icon": "gen-database",
@@ -24,7 +24,7 @@
     "modules": {
         "database": {
             "db": "SQLite3",
-            "user": undefined,
+            "user": "",
             "manager": "SQLite3Mgr"
         }
     },

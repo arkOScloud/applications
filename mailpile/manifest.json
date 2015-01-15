@@ -29,25 +29,25 @@
             "type": "system",
             "name": "Python PGPDump",
             "package": "python2-pgpdump",
-            "binary": undefined
+            "binary": null
         },
         {
             "type": "system",
             "name": "Python LXML",
             "package": "python2-lxml",
-            "binary": undefined
+            "binary": null
         },
         {
             "type": "system",
             "name": "Python PIL",
             "package": "python2-pillow",
-            "binary": undefined
+            "binary": null
         },
         {
             "type": "system",
             "name": "Spambayes",
             "package": "spambayes",
-            "binary": undefined
+            "binary": null
         }
     ],
     "generation": 1,

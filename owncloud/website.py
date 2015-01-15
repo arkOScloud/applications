@@ -4,7 +4,7 @@ import os
 import shutil
 
 from arkos.languages import php
-from arkos.sites import Site
+from arkos.websites import Site
 from arkos.utilities import shell, random_string
 from arkos.system import users, groups
 
@@ -68,20 +68,13 @@ class ownCloud(Site):
         uid, gid = users.get_system("http").uid, groups.get_system("http").gid
         for r, d, f in os.walk(self.path):
             for x in d:
-                os.chown(os.path.join(root, x), uid, gid)
+                os.chown(os.path.join(r, x), uid, gid)
             for x in f:
-                os.chown(os.path.join(root, x), uid, gid)
-
-        # If there is a custom path for the data directory, do the magic
-        datadir = vars.get('oc-ddir')
+                os.chown(os.path.join(r, x), uid, gid)
+        
+        # If there is a custom path for the data directory, add to open_basedir
+        datadir = vars.get('datadir')
         if datadir:
-            if not os.path.exists(os.path.join(datadir, 'data')):
-                os.makedirs(os.path.join(datadir, 'data'))
-            for r, d, f in os.walk(os.path.join(datadir, 'data')):
-                for x in d:
-                    os.chown(os.path.join(root, x), uid, gid)
-                for x in f:
-                    os.chown(os.path.join(root, x), uid, gid)
             php.open_basedir('add', datadir)
 
         # Create ownCloud automatic configuration file
@@ -97,7 +90,7 @@ class ownCloud(Site):
                 '   "dbpass" => "'+dbpasswd+'",\n'
                 '   "dbhost" => "localhost",\n'
                 '   "dbtableprefix" => "",\n'
-                '   "directory" => "'+os.path.join(datadir if datadir else self.path, 'data')+'",\n'
+                '   "directory" => "'+datadir if datadir else os.path.join(self.path, 'data')+'",\n'
                 '   );\n'
                 '?>\n'
                 )

@@ -2,7 +2,7 @@ import nginx
 import os
 
 from arkos.languages import php
-from arkos.sites import Site
+from arkos.websites import Site
 from arkos.system import users, groups
 
 

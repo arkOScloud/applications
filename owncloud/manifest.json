@@ -66,6 +66,8 @@
     ],
     "generation": 1,
     "website_updates": false,
+    "website_datapaths": true,
+    "website_default_data_subdir": "data",
     "download_url": "https://download.owncloud.org/community/owncloud-7.0.4.tar.bz2",
     "database_engines": ["MariaDB"],
     "uses_php": true,

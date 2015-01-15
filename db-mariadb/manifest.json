@@ -46,7 +46,7 @@
             "type": "python",
             "name": "MySQL-Python",
             "package": "mysql-python",
-            "binary": "_mysql"
+            "module": "_mysql"
         }
     ],
     "generation": 1,

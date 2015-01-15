@@ -167,5 +167,5 @@ class MariaDBMgr(DatabaseManager):
         output = r.fetch_row(0)
         for usr in output:
             if not usr[0] in userlist and not usr[0] in excludes:
-                userlist.append(MariaDBUser(usr[0], self)
+                userlist.append(MariaDBUser(usr[0], self))
         return userlist

@@ -4,7 +4,7 @@ import os
 import shutil
 
 from arkos.languages import php
-from arkos.sites import Site
+from arkos.websites import Site
 from arkos.utilities import shell, random_string
 from arkos.system import users, groups
 

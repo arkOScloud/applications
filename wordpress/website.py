@@ -3,7 +3,7 @@ import os
 import urllib
 
 from arkos.languages import php
-from arkos.sites import Site
+from arkos.websites import Site
 from arkos.utilities import random_string
 from arkos.system import users, groups
 
@@ -54,7 +54,7 @@ class WordPress(Site):
                 )
 
         # Write a standard WordPress config file
-        while open(os.path.join(path, 'wp-config.php'), 'w') as f:
+        with open(os.path.join(path, 'wp-config.php'), 'w') as f:
             f.write('<?php\n'
                 'define(\'DB_NAME\', \''+self.db.name+'\');\n'
                 'define(\'DB_USER\', \''+self.db.name+'\');\n'
@@ -97,7 +97,7 @@ class WordPress(Site):
         pass
 
     def ssl_enable(self, cfile, kfile):
-        while open(os.path.join(self.path, 'wp-config.php'), 'r') as f:
+        with open(os.path.join(self.path, 'wp-config.php'), 'r') as f:
             ic = f.readlines()
         oc = []
         found = False
@@ -110,11 +110,11 @@ class WordPress(Site):
                 oc.append(l)
         if found == False:
             oc.append('define(\'FORCE_SSL_ADMIN\', true);\n')
-        while open(os.path.join(self.path, 'wp-config.php'), 'w') as f:
+        with open(os.path.join(self.path, 'wp-config.php'), 'w') as f:
             f.writelines(oc)
 
     def ssl_disable(self):
-        while open(os.path.join(self.path, 'wp-config.php'), 'r') as f:
+        with open(os.path.join(self.path, 'wp-config.php'), 'r') as f:
             ic = f.readlines()
         oc = []
         found = False
@@ -127,5 +127,5 @@ class WordPress(Site):
                 oc.append(l)
         if found == False:
             oc.append('define(\'FORCE_SSL_ADMIN\', false);\n')
-        while open(os.path.join(self.path, 'wp-config.php'), 'w') as f:
+        with open(os.path.join(self.path, 'wp-config.php'), 'w') as f:
             f.writelines(oc)
