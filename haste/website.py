@@ -24,6 +24,7 @@ class Haste(Site):
     def post_install(self, vars, dbpasswd=""):
         with open(os.path.join(self.path, 'config.js'), 'r') as f:
             d = json.loads(f.read())
+        d["port"] = self.backend_port
         if d["storage"]["type"] == "redis":
             d["storage"]["type"] = "file"
             d["storage"]["path"] = "./data"
@@ -35,8 +36,9 @@ class Haste(Site):
                 del d["storage"]["db"]
             if d["storage"].has_key("expire"):
                 del d["storage"]["expire"]
-            with open(os.path.join(self.path, 'config.js'), 'w') as f:
-                f.write(json.dumps(d))
+        with open(os.path.join(self.path, 'config.js'), 'w') as f:
+            f.write(json.dumps(d, sort_keys=True, 
+                indent=4, separators=(',', ': ')))
 
         nodejs.install_from_package(self.path)
         users.SystemUser("haste").add()
@@ -50,14 +52,7 @@ class Haste(Site):
             for x in f:
                 os.chown(os.path.join(root, x), uid, -1)
         
-        with open(os.path.join(self.path, "config.js"), "r") as f:
-            data = f.read()
-        data = data.replace('"port": 7777,', '"port": %s,' % self.backend_port)
-        with open(os.path.join(self.path, "config.js"), "w") as f:
-            f.write(data)
-        
         cfg = {
-                'stype': 'program',
                 'directory': self.path,
                 'user': 'haste',
                 'command': 'node %s'%os.path.join(self.path, 'server.js'),

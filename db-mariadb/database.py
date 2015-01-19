@@ -93,7 +93,7 @@ class MariaDBUser(DatabaseUser):
     def remove(self):
         conns.MariaDB.query('DROP USER \'%s\'@\'localhost\'' % self.name)
 
-    def chperm(self, action, db):
+    def chperm(self, action):
         if action == 'check':
             conns.MariaDB.query('SHOW GRANTS FOR \'%s\'@\'localhost\''
                 % self.name)
