@@ -21,13 +21,7 @@
     "logo": false,
     "screenshots": [],
     "services": [],
-    "modules": {
-        "database": {
-            "db": "SQLite3",
-            "user": "",
-            "manager": "SQLite3Mgr"
-        }
-    },
+    "modules": ["database"],
     "dependencies": [],
     "generation": 1,
     "database_multiuser": false

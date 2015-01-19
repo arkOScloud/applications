@@ -54,7 +54,7 @@ class WordPress(Site):
                 )
 
         # Write a standard WordPress config file
-        with open(os.path.join(path, 'wp-config.php'), 'w') as f:
+        with open(os.path.join(self.path, 'wp-config.php'), 'w') as f:
             f.write('<?php\n'
                 'define(\'DB_NAME\', \''+self.db.name+'\');\n'
                 'define(\'DB_USER\', \''+self.db.name+'\');\n'

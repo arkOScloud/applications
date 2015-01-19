@@ -32,9 +32,7 @@
             "ports": []
         }
     ],
-    "modules": {
-        "website": "Lychee"
-    },
+    "modules": ["website"],
     "dependencies": [
         {
             "type": "system",

@@ -21,9 +21,7 @@
     "logo": true,
     "screenshots": ["screen-1.jpg", "screen-2.jpg", "screen-3.jpg"],
     "services": [],
-    "modules": {
-        "website": "Ghost"
-    },
+    "modules": ["website", "backup"],
     "dependencies": [
         {
             "type": "system",

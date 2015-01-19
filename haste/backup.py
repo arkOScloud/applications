@@ -10,7 +10,7 @@ class HasteBackup(BackupController):
         return ["/etc/supervisor.d/%s.ini" % site.name]
     
     def get_data(self, site):
-        pass
+        return []
     
     def pre_backup(self, site):
         pass
@@ -21,7 +21,7 @@ class HasteBackup(BackupController):
     def pre_restore(self, site):
         pass
     
-    def post_restore(self, site):
+    def post_restore(self, site, dbpasswd):
         nodejs.install_from_package(site.path)
         users.SystemUser("haste").add()
         uid = users.get_system("haste").uid

@@ -32,9 +32,7 @@
             "ports": []
         }
     ],
-    "modules": {
-        "website": "Wallabag"
-    },
+    "modules": ["website", "backup"],
     "dependencies": [
         {
             "type": "system",

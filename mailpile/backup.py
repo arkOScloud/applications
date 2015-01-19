@@ -17,10 +17,10 @@ class MailpileBackup(BackupController):
     def post_backup(self, site):
         pass
     
-    def pre_restore(self, site):
+    def pre_restore(self):
         pass
     
-    def post_restore(self, site):
+    def post_restore(self, site, dbpasswd):
         users.SystemUser("mailpile").add()
         for r, d, f in os.walk(site.path):
             for x in d:

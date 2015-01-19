@@ -27,9 +27,7 @@
             "ports": []
         }
     ],
-    "modules": {
-        "website": "Etherpad"
-    },
+    "modules": ["website", "backup"],
     "dependencies": [
         {
             "type": "system",

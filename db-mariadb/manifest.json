@@ -27,13 +27,7 @@
             "ports": [["tcp", 3306]]
         }
     ],
-    "modules": {
-        "database": {
-            "db": "MariaDB",
-            "user": "MariaDBUser",
-            "manager": "MariaDBMgr"
-        }
-    },
+    "modules": ["database"],
     "dependencies": [
         {
             "type": "system",

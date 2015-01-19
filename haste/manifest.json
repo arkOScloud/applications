@@ -21,9 +21,7 @@
     "logo": false,
     "screenshots": [],
     "services": [],
-    "modules": {
-        "website": "Haste"
-    },
+    "modules": ["website", "backup"],
     "dependencies": [],
     "generation": 1,
     "website_updates": false,

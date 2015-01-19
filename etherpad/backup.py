@@ -1,3 +1,4 @@
+import json
 import os
 
 from arkos.system import services, users
@@ -9,7 +10,7 @@ class EtherpadBackup(BackupController):
         return ["/etc/supervisor.d/%s.ini" % site.name]
     
     def get_data(self, site):
-        pass
+        return []
     
     def pre_backup(self, site):
         pass
@@ -20,7 +21,12 @@ class EtherpadBackup(BackupController):
     def pre_restore(self, site):
         pass
     
-    def post_restore(self, site):
+    def post_restore(self, site, dbpasswd):
+        with open(os.path.join(site.path, "settings.json"), "r") as f:
+            data = json.loads(f.read())
+        data["dbSettings"]["password"] = dbpasswd
+        with open(os.path.join(self.path, 'settings.json'), 'w') as f:
+            json.dumps(cfg, f, indent=4)
         users.SystemUser("etherpad").add()
         # node-gyp needs the HOME variable to be set
         with open(os.path.join(site.path, 'bin/installDeps.sh')) as f:

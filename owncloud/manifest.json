@@ -36,9 +36,7 @@
             "ports": []
         }
     ],
-    "modules": {
-        "website": "ownCloud"
-    },
+    "modules": ["website", "backup"],
     "dependencies": [
         {
             "type": "system",

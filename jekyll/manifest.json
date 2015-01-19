@@ -21,9 +21,7 @@
     "logo": true,
     "screenshots": [],
     "services": [],
-    "modules": {
-        "website": "Jekyll"
-    },
+    "modules": ["website"],
     "dependencies": [
         {
             "type": "system",

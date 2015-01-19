@@ -65,8 +65,16 @@ class SQLite3Mgr(DatabaseManager):
             if thing.endswith('.db'):
                 dblist.append(SQLite3(thing.split('.db')[0], self))
         return dblist
+    
+    def add_db(self, name):
+        db = SQLite3(name)
+        db.add()
+        return db
 
     def get_users(self):
+        pass
+    
+    def add_user(self, passwd):
         pass
     
     def chkpath(self):

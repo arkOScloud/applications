@@ -27,9 +27,7 @@
             "ports": []
         }
     ],
-    "modules": {
-        "website": "DokuWiki"
-    },
+    "modules": ["website"],
     "dependencies": [
         {
             "type": "system",

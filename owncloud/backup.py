@@ -5,7 +5,7 @@ from arkos.backup import BackupController
 
 class ownCloudBackup(BackupController):
     def get_config(self, site):
-        pass
+        return []
     
     def get_data(self, site):
         datadir = None
@@ -27,5 +27,11 @@ class ownCloudBackup(BackupController):
     def pre_restore(self, site):
         pass
     
-    def post_restore(self, site):
-        pass
+    def post_restore(self, site, dbpasswd):
+        with open(os.path.join(site.path, 'config', 'config.php'), 'r') as f:
+            data = f.readlines()
+        for x in enumerate(data):
+            if "dbpass" in x[1]:
+                data[0] = '   "dbpass" => "'+dbpasswd+'",'
+        with open(os.path.join(site.path, 'config', 'config.php'), 'w') as f:
+            f.writelines(data)

@@ -93,7 +93,7 @@ class MariaDBUser(DatabaseUser):
     def remove(self):
         conns.MariaDB.query('DROP USER \'%s\'@\'localhost\'' % self.name)
 
-    def chperm(self, action):
+    def chperm(self, action, db=None):
         if action == 'check':
             conns.MariaDB.query('SHOW GRANTS FOR \'%s\'@\'localhost\''
                 % self.name)
@@ -158,6 +158,11 @@ class MariaDBMgr(DatabaseManager):
             if not db[0] in excludes and db[0].split():
                 dblist.append(MariaDB(db[0], self))
         return dblist
+    
+    def add_db(self, name):
+        db = MariaDB(name)
+        db.add()
+        return db
 
     def get_users(self):
         userlist = []
@@ -169,3 +174,7 @@ class MariaDBMgr(DatabaseManager):
             if not usr[0] in userlist and not usr[0] in excludes:
                 userlist.append(MariaDBUser(usr[0], self))
         return userlist
+    
+    def add_user(self, name, passwd):
+        user = MariaDBUser(name)
+        user.add(passwd)

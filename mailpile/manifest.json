@@ -21,9 +21,7 @@
     "logo": true,
     "screenshots": ["screen-1.jpg", "screen-2.jpg"],
     "services": [],
-    "modules": {
-        "website": "Mailpile"
-    },
+    "modules": ["website", "backup"],
     "dependencies": [
         {
             "type": "system",
