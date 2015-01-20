@@ -5,17 +5,24 @@ import _mysql_exceptions
 from arkos import conns
 from arkos.utilities import str_fsize
 from arkos.databases import Database, DatabaseUser, DatabaseManager
+from arkos.utilities.errors import ConnectionError
 
 
 class MariaDB(Database):
     def add(self):
+        if not hasattr(conns, "MariaDB") or not conns.MariaDB:
+            self.manager.connect()
         if self.manager.validate(self.name):
             conns.MariaDB.query('CREATE DATABASE %s' % self.name)
 
     def remove(self):
+        if not hasattr(conns, "MariaDB") or not conns.MariaDB:
+            self.manager.connect()
         conns.MariaDB.query('DROP DATABASE %s' % self.name)
 
     def execute(self, cmd, commit=False, strf=True):
+        if not hasattr(conns, "MariaDB") or not conns.MariaDB:
+            self.manager.connect()
         conns.MariaDB.query('USE %s' % self.name)
         cur = conns.MariaDB.cursor()
         parse, s = [], ""
@@ -48,6 +55,8 @@ class MariaDB(Database):
         return str_fsize(int(s[0][0]) if s[0][0] else 0)
 
     def dump(self):
+        if not hasattr(conns, "MariaDB") or not conns.MariaDB:
+            self.manager.connect()
         conns.MariaDB.query("USE %s" % self.name)
         cur = conns.MariaDB.cursor()
         tables, data = [], ""
@@ -86,14 +95,20 @@ class MariaDB(Database):
 
 class MariaDBUser(DatabaseUser):
     def add(self, passwd):
+        if not hasattr(conns, "MariaDB") or not conns.MariaDB:
+            self.manager.connect()
         if self.manager.validate(user=self.name, passwd=passwd):
             conns.MariaDB.query('CREATE USER \'%s\'@\'localhost\' IDENTIFIED BY \'%s\''
                 % (self.name,passwd))
     
     def remove(self):
+        if not hasattr(conns, "MariaDB") or not conns.MariaDB:
+            self.manager.connect()
         conns.MariaDB.query('DROP USER \'%s\'@\'localhost\'' % self.name)
 
     def chperm(self, action, db=None):
+        if not hasattr(conns, "MariaDB") or not conns.MariaDB:
+            self.manager.connect()
         if action == 'check':
             conns.MariaDB.query('SHOW GRANTS FOR \'%s\'@\'localhost\''
                 % self.name)
@@ -121,10 +136,13 @@ class MariaDBUser(DatabaseUser):
 
 class MariaDBMgr(DatabaseManager):
     def connect(self, user='root', passwd='', db=None):
-        if passwd:
-            conns.MariaDB = MySQLdb.connect('localhost', user, passwd, db)
-        else:
-            conns.MariaDB = MySQLdb.connect('localhost', user, read_default_file="/root/.my.cnf")
+        try:
+            if passwd:
+                conns.MariaDB = MySQLdb.connect('localhost', user, passwd, db)
+            else:
+                conns.MariaDB = MySQLdb.connect('localhost', user, read_default_file="/root/.my.cnf")
+        except:
+            raise ConnectionError("MariaDB")
 
     def validate(self, name='', user='', passwd=''):
         if name and re.search('\.|-|`|\\\\|\/|^test$|[ ]', name):
@@ -148,6 +166,8 @@ class MariaDBMgr(DatabaseManager):
         return True
 
     def get_dbs(self):
+        if not hasattr(conns, "MariaDB") or not conns.MariaDB:
+            self.connect()
         dblist = []
         excludes = ['Database', 'information_schema', 
             'mysql', 'performance_schema']
@@ -165,6 +185,8 @@ class MariaDBMgr(DatabaseManager):
         return db
 
     def get_users(self):
+        if not hasattr(conns, "MariaDB") or not conns.MariaDB:
+            self.connect()
         userlist = []
         excludes = ['root', ' ', '']
         conns.MariaDB.query('SELECT user FROM mysql.user')
