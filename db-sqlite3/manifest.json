@@ -2,7 +2,7 @@
     "id": "db-sqlite3",
     "name": "SQLite3",
     "type": "database",
-    "icon": "gen-database",
+    "icon": "fa fa-database",
     "description": {
         "short": "Manage SQLite3 databases",
         "long": ""
