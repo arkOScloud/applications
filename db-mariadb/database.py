@@ -9,13 +9,13 @@ from arkos.utilities.errors import ConnectionError
 
 
 class MariaDB(Database):
-    def add(self):
+    def add_db(self):
         if not hasattr(conns, "MariaDB") or not conns.MariaDB:
             self.manager.connect()
         if self.manager.validate(self.name):
             conns.MariaDB.query('CREATE DATABASE %s' % self.name)
 
-    def remove(self):
+    def remove_db(self):
         if not hasattr(conns, "MariaDB") or not conns.MariaDB:
             self.manager.connect()
         conns.MariaDB.query('DROP DATABASE %s' % self.name)
@@ -94,14 +94,14 @@ class MariaDB(Database):
 
 
 class MariaDBUser(DatabaseUser):
-    def add(self, passwd):
+    def add_user(self, passwd):
         if not hasattr(conns, "MariaDB") or not conns.MariaDB:
             self.manager.connect()
         if self.manager.validate(user=self.name, passwd=passwd):
             conns.MariaDB.query('CREATE USER \'%s\'@\'localhost\' IDENTIFIED BY \'%s\''
                 % (self.name,passwd))
     
-    def remove(self):
+    def remove_user(self):
         if not hasattr(conns, "MariaDB") or not conns.MariaDB:
             self.manager.connect()
         conns.MariaDB.query('DROP USER \'%s\'@\'localhost\'' % self.name)
@@ -176,11 +176,11 @@ class MariaDBMgr(DatabaseManager):
         dbs = r.fetch_row(0)
         for db in dbs:
             if not db[0] in excludes and db[0].split():
-                dblist.append(MariaDB(db[0], self))
+                dblist.append(MariaDB(name=db[0], manager=self))
         return dblist
     
     def add_db(self, name):
-        db = MariaDB(name)
+        db = MariaDB(name=name, manager=self)
         db.add()
         return db
 
@@ -194,9 +194,10 @@ class MariaDBMgr(DatabaseManager):
         output = r.fetch_row(0)
         for usr in output:
             if not usr[0] in userlist and not usr[0] in excludes:
-                userlist.append(MariaDBUser(usr[0], self))
+                userlist.append(MariaDBUser(name=usr[0], manager=self))
         return userlist
     
     def add_user(self, name, passwd):
-        user = MariaDBUser(name)
+        user = MariaDBUser(name=name, manager=self)
         user.add(passwd)
+        return user

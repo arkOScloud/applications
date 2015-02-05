@@ -9,7 +9,7 @@ from arkos.databases import Database, DatabaseManager
 
 
 class SQLite3(Database):
-    def add(self):
+    def add_db(self):
         if re.search('\.|-|`|\\\\|\/|[ ]', self.name):
             raise Exception('Name must not contain spaces, dots, dashes or other special characters')
         self.manager.chkpath()
@@ -18,7 +18,7 @@ class SQLite3(Database):
         if status["code"] >= 1:
             raise Exception(status["stderr"])
 
-    def remove(self):
+    def remove_db(self):
         shell('rm /var/lib/sqlite3/%s.db' % self.name)
 
     def execute(self, cmd, strf=False):
@@ -63,16 +63,13 @@ class SQLite3Mgr(DatabaseManager):
         dblist = []
         for thing in os.listdir('/var/lib/sqlite3'):
             if thing.endswith('.db'):
-                dblist.append(SQLite3(thing.split('.db')[0], self))
+                dblist.append(SQLite3(name=thing.split('.db')[0], manager=self))
         return dblist
     
     def add_db(self, name):
-        db = SQLite3(name)
+        db = SQLite3(name=name, manager=self)
         db.add()
         return db
-
-    def get_users(self):
-        pass
     
     def add_user(self, passwd):
         pass
