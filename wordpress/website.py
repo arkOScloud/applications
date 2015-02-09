@@ -56,8 +56,8 @@ class WordPress(Site):
         # Write a standard WordPress config file
         with open(os.path.join(self.path, 'wp-config.php'), 'w') as f:
             f.write('<?php\n'
-                'define(\'DB_NAME\', \''+self.db.name+'\');\n'
-                'define(\'DB_USER\', \''+self.db.name+'\');\n'
+                'define(\'DB_NAME\', \''+self.db.id+'\');\n'
+                'define(\'DB_USER\', \''+self.db.id+'\');\n'
                 'define(\'DB_PASSWORD\', \''+dbpasswd+'\');\n'
                 'define(\'DB_HOST\', \'localhost\');\n'
                 'define(\'DB_CHARSET\', \'utf8\');\n'
@@ -86,9 +86,9 @@ class WordPress(Site):
         uid, gid = users.get_system("http").uid, groups.get_system("http").gid
         for r, d, f in os.walk(self.path):  
             for x in d:  
-                os.chown(os.path.join(root, x), uid, gid)
+                os.chown(os.path.join(r, x), uid, gid)
             for x in f:
-                os.chown(os.path.join(root, x), uid, gid)
+                os.chown(os.path.join(r, x), uid, gid)
 
     def pre_remove(self):
         pass
