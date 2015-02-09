@@ -12,18 +12,18 @@ class MariaDB(Database):
     def add_db(self):
         if not hasattr(conns, "MariaDB") or not conns.MariaDB:
             self.manager.connect()
-        if self.manager.validate(self.name):
-            conns.MariaDB.query('CREATE DATABASE %s' % self.name)
+        if self.manager.validate(self.id):
+            conns.MariaDB.query('CREATE DATABASE %s' % self.id)
 
     def remove_db(self):
         if not hasattr(conns, "MariaDB") or not conns.MariaDB:
             self.manager.connect()
-        conns.MariaDB.query('DROP DATABASE %s' % self.name)
+        conns.MariaDB.query('DROP DATABASE %s' % self.id)
 
     def execute(self, cmd, commit=False, strf=True):
         if not hasattr(conns, "MariaDB") or not conns.MariaDB:
             self.manager.connect()
-        conns.MariaDB.query('USE %s' % self.name)
+        conns.MariaDB.query('USE %s' % self.id)
         cur = conns.MariaDB.cursor()
         parse, s = [], ""
         for l in cmd.split('\n'):
@@ -51,13 +51,13 @@ class MariaDB(Database):
             return parse
 
     def get_size(self):
-        s = self.execute("SELECT sum(data_length+index_length) FROM information_schema.TABLES WHERE table_schema LIKE '%s';" % self.name, strf=False)
+        s = self.execute("SELECT sum(data_length+index_length) FROM information_schema.TABLES WHERE table_schema LIKE '%s';" % self.id, strf=False)
         return str_fsize(int(s[0][0]) if s[0][0] else 0)
 
     def dump(self):
         if not hasattr(conns, "MariaDB") or not conns.MariaDB:
             self.manager.connect()
-        conns.MariaDB.query("USE %s" % self.name)
+        conns.MariaDB.query("USE %s" % self.id)
         cur = conns.MariaDB.cursor()
         tables, data = [], ""
         cur.execute("SHOW TABLES")
@@ -97,21 +97,21 @@ class MariaDBUser(DatabaseUser):
     def add_user(self, passwd):
         if not hasattr(conns, "MariaDB") or not conns.MariaDB:
             self.manager.connect()
-        if self.manager.validate(user=self.name, passwd=passwd):
+        if self.manager.validate(user=self.id, passwd=passwd):
             conns.MariaDB.query('CREATE USER \'%s\'@\'localhost\' IDENTIFIED BY \'%s\''
-                % (self.name,passwd))
+                % (self.id,passwd))
     
     def remove_user(self):
         if not hasattr(conns, "MariaDB") or not conns.MariaDB:
             self.manager.connect()
-        conns.MariaDB.query('DROP USER \'%s\'@\'localhost\'' % self.name)
+        conns.MariaDB.query('DROP USER \'%s\'@\'localhost\'' % self.id)
 
     def chperm(self, action, db=None):
         if not hasattr(conns, "MariaDB") or not conns.MariaDB:
             self.manager.connect()
         if action == 'check':
             conns.MariaDB.query('SHOW GRANTS FOR \'%s\'@\'localhost\''
-                % self.name)
+                % self.id)
             r = conns.MariaDB.store_result()
             out = r.fetch_row(0)
             parse = []
@@ -128,10 +128,10 @@ class MariaDBUser(DatabaseUser):
             return status
         elif action == 'grant':
             conns.MariaDB.query('GRANT ALL ON %s.* TO \'%s\'@\'localhost\'' 
-                % (db.name, self.name))
+                % (db.id, self.id))
         elif action == 'revoke':
             conns.MariaDB.query('REVOKE ALL ON %s.* FROM \'%s\'@\'localhost\'' 
-                % (db.name, self.name))
+                % (db.id, self.id))
 
 
 class MariaDBMgr(DatabaseManager):
@@ -144,10 +144,10 @@ class MariaDBMgr(DatabaseManager):
         except:
             raise ConnectionError("MariaDB")
 
-    def validate(self, name='', user='', passwd=''):
-        if name and re.search('\.|-|`|\\\\|\/|^test$|[ ]', name):
+    def validate(self, id='', user='', passwd=''):
+        if id and re.search('\.|-|`|\\\\|\/|^test$|[ ]', id):
             raise Exception('Database name must not contain spaces, dots, dashes or other special characters')
-        elif name and len(name) > 16:
+        elif id and len(id) > 16:
             raise Exception('Database name must be shorter than 16 characters')
         if user and re.search('\.|-|`|\\\\|\/|^test$|[ ]', user):
             raise Exception('Database username must not contain spaces, dots, dashes or other special characters')
@@ -155,13 +155,13 @@ class MariaDBMgr(DatabaseManager):
             raise Exception('Database username must be shorter than 16 characters')
         if passwd and len(passwd) < 8:
             raise Exception('Database password must be longer than 8 characters')
-        if name:
+        if id:
             for x in self.get_dbs():
-                if x.name == name:
-                    raise Exception('You already have a database named %s - please remove that one or choose a new name!' % name)
+                if x.id == id:
+                    raise Exception('You already have a database named %s - please remove that one or choose a new name!' % id)
         if user:
             for x in self.get_users():
-                if x.name == user:
+                if x.id == user:
                     raise Exception('You already have a database user named %s - please remove that one or choose a new name!' % user)
         return True
 
@@ -176,11 +176,11 @@ class MariaDBMgr(DatabaseManager):
         dbs = r.fetch_row(0)
         for db in dbs:
             if not db[0] in excludes and db[0].split():
-                dblist.append(MariaDB(name=db[0], manager=self))
+                dblist.append(MariaDB(id=db[0], manager=self))
         return dblist
     
-    def add_db(self, name):
-        db = MariaDB(name=name, manager=self)
+    def add_db(self, id):
+        db = MariaDB(id=id, manager=self)
         db.add()
         return db
 
@@ -194,10 +194,10 @@ class MariaDBMgr(DatabaseManager):
         output = r.fetch_row(0)
         for usr in output:
             if not usr[0] in userlist and not usr[0] in excludes:
-                userlist.append(MariaDBUser(name=usr[0], manager=self))
+                userlist.append(MariaDBUser(id=usr[0], manager=self))
         return userlist
     
-    def add_user(self, name, passwd):
-        user = MariaDBUser(name=name, manager=self)
+    def add_user(self, id, passwd):
+        user = MariaDBUser(id=id, manager=self)
         user.add(passwd)
         return user
