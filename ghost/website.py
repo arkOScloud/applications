@@ -142,5 +142,5 @@ class Ghost(Site):
                 os.chown(os.path.join(r, x), uid, -1)
             for x in f:
                 os.chown(os.path.join(r, x), uid, -1)
-        nodejs.install_from_package(self.path, 'production', {'sqlite': '/usr/bin', 'python': '/usr/bin/python2'})
+        nodejs.install_from_package(self.path, 'production', {'sqlite': '/usr/bin/sqlite3', 'python': '/usr/bin/python2'})
         services.get(self.id).restart()
