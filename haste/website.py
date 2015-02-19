@@ -46,11 +46,13 @@ class Haste(Site):
         # Finally, make sure that permissions are set so that Haste
         # can save its files properly.
         uid = users.get_system("haste").uid
+        if not os.path.exists(os.path.join(self.path, 'data')):
+            os.mkdir(os.path.join(self.path, 'data'))
         for r, d, f in os.walk(self.path):
             for x in d:
-                os.chown(os.path.join(root, x), uid, -1)
+                os.chown(os.path.join(r, x), uid, -1)
             for x in f:
-                os.chown(os.path.join(root, x), uid, -1)
+                os.chown(os.path.join(r, x), uid, -1)
         
         cfg = {
                 'directory': self.path,
@@ -59,21 +61,20 @@ class Haste(Site):
                 'autostart': 'true',
                 'autorestart': 'true',
                 'environment': 'NODE_ENV="production"',
-                'stdout_logfile': '/var/log/%s.log' % self.name,
-                'stderr_logfile': '/var/log/%s.log' % self.name
+                'stdout_logfile': '/var/log/haste.log',
+                'stderr_logfile': '/var/log/haste.log'
             }
-        s = services.Service(self.name, cfg=cfg)
+        s = services.Service(self.id, "supervisor", cfg=cfg)
         s.add()
-        s.enable()
 
     def pre_remove(self):
         pass
 
     def post_remove(self):
-        services.get(self.name).remove()
+        services.get(self.id).remove()
 
     def ssl_enable(self, cfile, kfile):
-        n = nginx.loadf('/etc/nginx/sites-available/%s'%self.name)
+        n = nginx.loadf('/etc/nginx/sites-available/%s'%self.id)
         for x in n.servers:
             if x.filter('Location', '/'):
                 x.remove(x.filter('Location', '/')[0])
@@ -82,15 +83,15 @@ class Haste(Site):
                     nginx.Key('proxy_set_header', 'X-Forwarded-Proto $scheme'),
                 )
                 x.add(self.addtoblock[0])
-                nginx.dumpf(n, '/etc/nginx/sites-available/%s'%self.name)
+                nginx.dumpf(n, '/etc/nginx/sites-available/%s'%self.id)
 
     def ssl_disable(self):
-        n = nginx.loadf('/etc/nginx/sites-available/%s'%self.name)
+        n = nginx.loadf('/etc/nginx/sites-available/%s'%self.id)
         for x in n.servers:
             if x.filter('Location', '/'):
                 x.remove(x.filter('Location', '/')[0])
                 x.add(self.addtoblock[0])
-                nginx.dumpf(n, '/etc/nginx/sites-available/%s'%self.name)
+                nginx.dumpf(n, '/etc/nginx/sites-available/%s'%self.id)
 
     def update(self, pkg, ver):
         # TODO: pull from Git at appropriate intervals
