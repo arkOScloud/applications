@@ -22,9 +22,10 @@ class Ghost(Site):
             ]
 
     def post_install(self, vars, dbpasswd=""):
-        d = json.loads(open(os.path.join(self.path, 'package.json'), 'r').read())
+        with open(os.path.join(self.path, 'package.json'), 'r') as f:
+            d = json.loads(f.read())
         del d['dependencies']['bcryptjs']
-        d['dependencies']['bcrypt'] = '0.8'
+        d['dependencies']['bcrypt'] = '0.8.1'
         with open(os.path.join(self.path, 'package.json'), 'w') as f:
             f.write(json.dumps(d))
         with open(os.path.join(self.path, 'core/server/models/user.js'), 'r') as f:
@@ -33,7 +34,7 @@ class Ghost(Site):
         with open(os.path.join(self.path, 'core/server/models/user.js'), 'w') as f:
             f.write(d)
 
-        nodejs.install_from_package(self.path, 'production', {'sqlite': '/usr/bin', 'python': '/usr/bin/python2'})
+        nodejs.install_from_package(self.path, 'production', {'sqlite': '/usr/bin/sqlite3', 'python': '/usr/bin/python2'})
         users.SystemUser("ghost").add()
 
         # Get Mail settings
@@ -75,9 +76,9 @@ class Ghost(Site):
         uid = users.get_system("ghost").uid
         for r, d, f in os.walk(self.path):
             for x in d:
-                os.chown(os.path.join(root, x), uid, -1)
+                os.chown(os.path.join(r, x), uid, -1)
             for x in f:
-                os.chown(os.path.join(root, x), uid, -1)
+                os.chown(os.path.join(r, x), uid, -1)
         
         cfg = {
                 'directory': self.path,
@@ -89,17 +90,17 @@ class Ghost(Site):
                 'stdout_logfile': '/var/log/ghost.log',
                 'stderr_logfile': '/var/log/ghost.log'
             }
-        s = services.Service(self.name, "supervisor", cfg=cfg)
+        s = services.Service(self.id, "supervisor", cfg=cfg)
         s.add()
 
     def pre_remove(self):
         pass
 
     def post_remove(self):
-        services.get(self.name).remove()
+        services.get(self.id).remove()
 
     def ssl_enable(self, cfile, kfile):
-        n = nginx.loadf('/etc/nginx/sites-available/%s'%self.name)
+        n = nginx.loadf('/etc/nginx/sites-available/%s'%self.id)
         for x in n.servers:
             if x.filter('Location', '/'):
                 x.remove(x.filter('Location', '/')[0])
@@ -108,29 +109,29 @@ class Ghost(Site):
                     nginx.Key('proxy_set_header', 'X-Forwarded-Proto $scheme'),
                 )
                 x.add(self.addtoblock[0])
-                nginx.dumpf(n, '/etc/nginx/sites-available/%s'%self.name)
+                nginx.dumpf(n, '/etc/nginx/sites-available/%s'%self.id)
         with open(os.path.join(self.path, 'config.js'), 'r') as f:
             data = f.read()
         data = data.replace('production: {\n        url: \'http://', 
             'production: {\n        url: \'https://')
         with open(os.path.join(self.path, 'config.js'), 'w') as f:
             f.write(data)
-        services.get(self.name).restart()
+        services.get(self.id).restart()
 
     def ssl_disable(self):
-        n = nginx.loadf('/etc/nginx/sites-available/%s'%self.name)
+        n = nginx.loadf('/etc/nginx/sites-available/%s'%self.id)
         for x in n.servers:
             if x.filter('Location', '/'):
                 x.remove(x.filter('Location', '/')[0])
                 x.add(self.addtoblock[0])
-                nginx.dumpf(n, '/etc/nginx/sites-available/%s'%self.name)
+                nginx.dumpf(n, '/etc/nginx/sites-available/%s'%self.id)
         with open(os.path.join(self.path, 'config.js'), 'r') as f:
             data = f.read()
         data = data.replace('production: {\n        url: \'https://', 
             'production: {\n        url: \'http://')
         with open(os.path.join(self.path, 'config.js'), 'w') as f:
             f.write(data)
-        services.get(self.name).restart()
+        services.get(self.id).restart()
 
     def update(self, pkg, ver):
         # General update procedure
@@ -138,8 +139,8 @@ class Ghost(Site):
         uid = users.get_system("ghost").uid
         for r, d, f in os.walk(self.path):
             for x in d:
-                os.chown(os.path.join(root, x), uid, -1)
+                os.chown(os.path.join(r, x), uid, -1)
             for x in f:
-                os.chown(os.path.join(root, x), uid, -1)
+                os.chown(os.path.join(r, x), uid, -1)
         nodejs.install_from_package(self.path, 'production', {'sqlite': '/usr/bin', 'python': '/usr/bin/python2'})
-        services.get(self.name).restart()
+        services.get(self.id).restart()
