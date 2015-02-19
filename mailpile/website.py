@@ -2,7 +2,8 @@ import nginx
 import os
 
 from arkos.websites import Site
-from arkos.system import users
+from arkos.system import users, services
+from arkos.tracked_services import get_open_port
 
 
 class Mailpile(Site):
@@ -19,29 +20,24 @@ class Mailpile(Site):
 
     def post_install(self, vars, dbpasswd=""):
         users.SystemUser("mailpile").add()
-        for r, d, f in os.walk(self.path):
-            for x in d:
-                os.chmod(os.path.join(root, x), 0755)
-            for x in f:
-                os.chmod(os.path.join(root, x), 0644)
 
         cfg = {
-                'directory': self.path,
-                'user': 'mailpile',
-                'command': 'mp --www= --wait',
-                'autostart': 'true',
-                'autorestart': 'false',
-                'stdout_logfile': '/var/log/mailpile.log',
-                'stderr_logfile': '/var/log/mailpile.log'
-            }
-        s = services.Service(self.name, "supervisor", cfg=cfg)
+            'directory': self.path,
+            'user': 'mailpile',
+            'command': '%s --www=0.0.0.0:%s --wait' % (os.path.join(self.path, 'mp'), self.backend_port),
+            'autostart': 'true',
+            'autorestart': 'false',
+            'stdout_logfile': '/var/log/mailpile.log',
+            'stderr_logfile': '/var/log/mailpile.log'
+        }
+        s = services.Service(self.id, "supervisor", cfg=cfg)
         s.add()
     
     def pre_remove(self):
         pass
 
     def post_remove(self):
-        services.get(self.name).remove()
+        services.get(self.id).remove()
     
     def ssl_enable(self, cfile, kfile):
         pass
