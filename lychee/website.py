@@ -34,9 +34,9 @@ class Lychee(Site):
                 '<?php\n'
                 '   if(!defined(\'LYCHEE\')) exit(\'Error: Direct access is allowed!\');\n'
                 '   $dbHost = \'localhost\';\n'
-                '   $dbUser = \'' + self.db.name + '\';\n'
+                '   $dbUser = \'' + self.db.id + '\';\n'
                 '   $dbPassword = \'' + dbpasswd + '\';\n'
-                '   $dbName = \'' + self.db.name + '\';\n'
+                '   $dbName = \'' + self.db.id + '\';\n'
                 '   $dbTablePrefix = \'\';\n'
                 '?>\n'
             )
@@ -52,11 +52,9 @@ class Lychee(Site):
         uid, gid = users.get_system("http").uid, groups.get_system("http").gid
         for r, d, f in os.walk(self.path):
             for x in d:
-                os.chown(os.path.join(root, x), uid, gid)
+                os.chown(os.path.join(r, x), uid, gid)
             for x in f:
-                os.chown(os.path.join(root, x), uid, gid)
-
-        return "Lychee has been installed. Login with a blank username and password the first time to set your credentials."
+                os.chown(os.path.join(r, x), uid, gid)
 
     def pre_remove(self):
         pass

@@ -13,7 +13,7 @@
             "secondary": ["Websites", "CMS"]
         }
     ],
-    "version": "2.6.3-2",
+    "version": "2.7.1-1",
     "author": "knitatoms",
     "homepage": "https://knitatoms.net",
     "app_author": "electerious",
@@ -54,7 +54,7 @@
     ],
     "generation": 1,
     "website_updates": false,
-    "download_url": "https://github.com/electerious/Lychee/archive/v2.6.3.tar.gz",
+    "download_url": "https://github.com/electerious/Lychee/archive/v2.7.1.tar.gz",
     "database_engines": ["MariaDB"],
     "uses_php": true,
     "uses_ssl": true
