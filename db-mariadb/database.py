@@ -28,7 +28,7 @@ class MariaDB(Database):
                 continue
             elif not re.search('[^-;]+;', l):
                 s = s + l
-            elif re.search('^\s*USE', l):
+            elif re.search('^\s*USE\s*', l, re.IGNORECASE):
                 raise Exception('Cannot switch databases during execution')
             else:
                 s = s + l
