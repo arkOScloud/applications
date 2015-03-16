@@ -55,7 +55,7 @@
     "generation": 1,
     "website_updates": false,
     "download_url": "https://github.com/electerious/Lychee/archive/v2.7.1.tar.gz",
-    "database_engines": ["MariaDB"],
+    "database_engines": ["db-mariadb"],
     "uses_php": true,
     "uses_ssl": true
 }

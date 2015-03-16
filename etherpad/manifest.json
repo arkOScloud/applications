@@ -44,7 +44,7 @@
     "generation": 1,
     "website_updates": true,
     "download_url": "https://github.com/ether/etherpad-lite.git",
-    "database_engines": ["MariaDB"],
+    "database_engines": ["db-mariadb"],
     "uses_php": false,
     "uses_ssl": true
 }

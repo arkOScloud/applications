@@ -16,7 +16,7 @@ class WordPressBackup(BackupController):
     def post_backup(self, site):
         pass
     
-    def pre_restore(self, site):
+    def pre_restore(self):
         pass
     
     def post_restore(self, site, dbpasswd):

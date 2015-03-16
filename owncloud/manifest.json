@@ -67,7 +67,7 @@
     "download_url": "https://download.owncloud.org/community/owncloud-8.0.2.tar.bz2",
     "website_datapaths": true,
     "website_default_data_subdir": "data",
-    "database_engines": ["MariaDB"],
+    "database_engines": ["db-mariadb"],
     "uses_php": true,
     "uses_ssl": true
 }
