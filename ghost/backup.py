@@ -18,12 +18,12 @@ class GhostBackup(BackupController):
     def post_backup(self, site):
         pass
     
-    def pre_restore(self, site):
+    def pre_restore(self):
         pass
     
     def post_restore(self, site, dbpasswd):
         nodejs.install_from_package(site.path, 'production', 
-            {'sqlite': '/usr/bin', 'python': '/usr/bin/python2'})
+            {'sqlite': '/usr/bin/sqlite3', 'python': '/usr/bin/python2'})
         users.SystemUser("ghost").add()
         uid = users.get_system("ghost").uid
         for r, d, f in os.walk(site.path):
@@ -31,4 +31,18 @@ class GhostBackup(BackupController):
                 os.chown(os.path.join(r, x), uid, -1)
             for x in f:
                 os.chown(os.path.join(r, x), uid, -1)
-        services.get(site.id).enable()
+        s = services.get(site.id)
+        if s:
+            s.remove()
+        cfg = {
+                'directory': site.path,
+                'user': 'ghost',
+                'command': 'node %s'%os.path.join(site.path, 'index.js'),
+                'autostart': 'true',
+                'autorestart': 'true',
+                'environment': 'NODE_ENV="production"',
+                'stdout_logfile': '/var/log/ghost.log',
+                'stderr_logfile': '/var/log/ghost.log'
+            }
+        s = services.Service(site.id, "supervisor", cfg=cfg)
+        s.add()

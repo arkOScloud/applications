@@ -24,8 +24,8 @@ class WordPressBackup(BackupController):
             ic = f.readlines()
         oc = []
         for l in ic:
-            if 'define (\'DB_PASSWORD\'' in l:
-                l = 'define (\'DB_PASSWORD\', \''+dbpasswd+'\');'
+            if 'define(\'DB_PASSWORD\'' in l:
+                l = 'define(\'DB_PASSWORD\', \''+dbpasswd+'\');\n'
                 oc.append(l)
             else:
                 oc.append(l)

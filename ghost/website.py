@@ -33,6 +33,8 @@ class Ghost(Site):
         d = d.replace('bcryptjs', 'bcrypt')
         with open(os.path.join(self.path, 'core/server/models/user.js'), 'w') as f:
             f.write(d)
+        if os.path.exists(os.path.join(self.path, 'npm-shrinkwrap.json')):
+            os.unlink(os.path.join(self.path, 'npm-shrinkwrap.json'))
 
         nodejs.install_from_package(self.path, 'production', {'sqlite': '/usr/bin/sqlite3', 'python': '/usr/bin/python2'})
         users.SystemUser("ghost").add()
