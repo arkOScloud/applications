@@ -4,7 +4,7 @@ import stat
 import sqlite3
 
 from arkos.system import groups
-from arkos.utilities import str_fsize, shell
+from arkos.utilities import shell
 from arkos.databases import Database, DatabaseManager
 
 
@@ -40,7 +40,7 @@ class SQLite3(Database):
             return status
 
     def get_size(self):
-        return str_fsize(os.path.getsize(os.path.join('/var/lib/sqlite3', self.id+'.db')))
+        return os.path.getsize(os.path.join('/var/lib/sqlite3', self.id+'.db'))
 
     def dump(self):
         self.manager.chkpath()

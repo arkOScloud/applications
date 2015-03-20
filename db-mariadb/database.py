@@ -3,7 +3,6 @@ import MySQLdb
 import _mysql_exceptions
 
 from arkos import conns
-from arkos.utilities import str_fsize
 from arkos.databases import Database, DatabaseUser, DatabaseManager
 from arkos.utilities.errors import ConnectionError
 
@@ -49,7 +48,7 @@ class MariaDB(Database):
 
     def get_size(self):
         s = self.execute("SELECT sum(data_length+index_length) FROM information_schema.TABLES WHERE table_schema LIKE '%s';" % self.id, strf=False)
-        return str_fsize(int(s[0][0]) if s[0][0] else 0)
+        return int(s[0][0]) if s[0][0] else 0
 
     def dump(self):
         self.manager.connect()
