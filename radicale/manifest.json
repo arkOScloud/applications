@@ -1,0 +1,53 @@
+{
+    "id": "radicale",
+    "name": "Calendar/Contacts",
+    "type": "app",
+    "icon": "fa fa-calendar",
+    "description": {
+        "short": "Host your own calendar and contacts (CalDAV/CardDAV) sync server",
+        "long": ""
+    },
+    "categories": [
+        {
+            "primary": "File Storage",
+            "secondary": ["Calendar", "Contacts"]
+        }
+    ],
+    "version": "0.5",
+    "author": "arkOS",
+    "homepage": "https://arkos.io",
+    "app_author": "Radicale",
+    "app_homepage": "https://www.radicale.org/",
+    "logo": false,
+    "screenshots": [],
+    "services": [
+        {
+            "name": "Calendar/Contacts Server",
+            "type": "supervisor",
+            "binary": "radicale",
+            "ports": []
+        }
+    ],
+    "modules": ["backend", "kraken"],
+    "dependencies": [
+        {
+            "type": "system",
+            "name": "uWSGI",
+            "package": "uwsgi",
+            "binary": "uwsgi"
+        },
+        {
+            "type": "system",
+            "name": "uWSGI Python2 Plugin",
+            "package": "uwsgi-plugin-python2",
+            "binary": null
+        },
+        {
+            "type": "python",
+            "name": "Radicale",
+            "package": "radicale",
+            "module": "radicale"
+        }
+    ],
+    "generation": 1
+}

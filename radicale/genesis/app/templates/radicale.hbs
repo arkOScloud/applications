@@ -1,0 +1,57 @@
+{{#if model.status.installed}}
+<div class="btn-group pull-right">
+    <a href="#" class="btn btn-default" {{action 'showModal' 'radicale/new-cldr' model}}><i class="fa fa-calendar"></i> New Calendar</a>
+    <a href="#" class="btn btn-default" {{action 'showModal' 'radicale/new-book' model}}><i class="fa fa-book"></i> New Address Book</a>
+</div>
+<h1 class="page-header">Calendar/Contacts Server</h1>
+<div {{bind-attr class=":well model.status.running:text-success:text-danger"}}>
+	<strong><i class="fa fa-fw fa-calendar"></i> {{#if model.status.running}}Your Calendar/Contacts server is running and available.{{else}}Your Calendar/Contacts server is installed but not running. Please start it via Tools > Services.{{/if}}</strong>
+</div>
+<div class="ui-items-4">
+    {{#each cal in model.calendars}}
+      <div class="ui-item">
+        <div class="ui-item-icon">
+            <i class="fa fa-calendar fa-fw fa-5x"></i>
+        </div>
+        <div class="ui-item-content">
+          <h2>{{cal.name}}</h2>
+          <p class="lead">For {{cal.user}}</p>
+          <div class="ui-item-buttons">
+            <a href="#" class="ui-item-button" {{action 'showModal' 'radicale/url' cal model}}><i class="fa fa-code fa-fw fa-lg"></i><br />URL</a>
+            <a href="#" class="ui-item-button text-danger" {{action 'showConfirm' 'delete' 'Are you sure you want to delete this calendar?' cal}}><i class="fa fa-minus-circle fa-fw fa-lg"></i><br />Delete</a>
+          </div>
+        </div>
+      </div>
+    {{/each}}
+    {{#each book in model.addressBooks}}
+      <div class="ui-item">
+        <div class="ui-item-icon">
+            <i class="fa fa-book fa-fw fa-5x"></i>
+        </div>
+        <div class="ui-item-content">
+          <h2>{{book.name}}</h2>
+          <p class="lead">For {{book.user}}</p>
+          <div class="ui-item-buttons">
+            <a href="#" class="ui-item-button" {{action 'showModal' 'radicale/url' cal model}}><i class="fa fa-code fa-fw fa-lg"></i><br />URL</a>
+            <a href="#" class="ui-item-button text-danger" {{action 'showConfirm' 'delete' 'Are you sure you want to delete this address book?' book}}><i class="fa fa-minus-circle fa-fw fa-lg"></i><br />Delete</a>
+          </div>
+        </div>
+      </div>
+    {{/each}}
+</div>
+{{else}}
+<h1 class="page-header">Calendar/Contacts Setup</h1>
+<div id="main">
+    <div class="form-group">
+        <label for="setupAddr">Address</label>
+        {{view "select" class="form-control required" value=setupAddr content=model.domains optionLabelPath="content.id" optionValuePath="content.id"}}
+        <p class="help-block">This should be the web address you want this calendar server to be visible on. For example, 'www.example.com'. It must be a DNS-resolvable name pointing at this server.</p>
+    </div>
+    <div class="form-group">
+        <label for="setupPort">Port</label>
+        {{input type="text" class="form-control required" value=setupPort}}
+        <p class="help-block">If you don't know what to put here, leave it at default (port 80).</p>
+    </div>
+</div>
+<a href="#" class="btn btn-primary" {{action 'setup'}}><i class="fa fa-check"></i> Finish</a>
+{{/if}}
