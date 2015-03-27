@@ -96,7 +96,7 @@ class WordPress(Site):
     def post_remove(self):
         pass
 
-    def ssl_enable(self, cfile, kfile):
+    def enable_ssl(self, cfile, kfile):
         with open(os.path.join(self.path, 'wp-config.php'), 'r') as f:
             ic = f.readlines()
         oc = []
@@ -113,7 +113,7 @@ class WordPress(Site):
         with open(os.path.join(self.path, 'wp-config.php'), 'w') as f:
             f.writelines(oc)
 
-    def ssl_disable(self):
+    def disable_ssl(self):
         with open(os.path.join(self.path, 'wp-config.php'), 'r') as f:
             ic = f.readlines()
         oc = []

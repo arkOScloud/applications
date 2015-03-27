@@ -129,7 +129,7 @@ class Etherpad(Site):
     def post_remove(self):
         services.get(self.name).remove()
 
-    def ssl_enable(self, cfile, kfile):
+    def enable_ssl(self, cfile, kfile):
         n = nginx.loadf('/etc/nginx/sites-available/%s' % self.name)
         for x in n.servers:
             if x.filter('Location', '/'):
@@ -143,7 +143,7 @@ class Etherpad(Site):
                 x.add(self.addtoblock[0])
                 nginx.dumpf(n, '/etc/nginx/sites-available/%s' % self.name)
 
-    def ssl_disable(self):
+    def disable_ssl(self):
         n = nginx.loadf('/etc/nginx/sites-available/%s' % self.name)
         for x in n.servers:
             if x.filter('Location', '/'):

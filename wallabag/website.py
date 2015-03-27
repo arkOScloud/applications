@@ -137,10 +137,10 @@ class Wallabag(Site):
     def post_remove(self):
         pass
 
-    def ssl_enable(self, cfile, kfile):
+    def enable_ssl(self, cfile, kfile):
         pass
 
-    def ssl_disable(self):
+    def disable_ssl(self):
         pass
 
     def update(self, pkg, ver):

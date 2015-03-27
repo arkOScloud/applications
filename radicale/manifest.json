@@ -49,5 +49,6 @@
             "module": "radicale"
         }
     ],
-    "generation": 1
+    "generation": 1,
+    "uses_ssl": false
 }

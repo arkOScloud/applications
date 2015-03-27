@@ -130,7 +130,7 @@ class ownCloud(Site):
     def post_remove(self):
         pass
 
-    def ssl_enable(self, cfile, kfile):
+    def enable_ssl(self, cfile, kfile):
         # First, force SSL in ownCloud's config file
         if os.path.exists(os.path.join(self.path, 'config', 'config.php')):
             px = os.path.join(self.path, 'config', 'config.php')
@@ -177,7 +177,7 @@ class ownCloud(Site):
             f.writelines(oc)
         shell('update-ca-certificates')
 
-    def ssl_disable(self):
+    def disable_ssl(self):
         if os.path.exists(os.path.join(self.path, 'config', 'config.php')):
             px = os.path.join(self.path, 'config', 'config.php')
         else:
