@@ -57,6 +57,12 @@
             "binary": null
         },
         {
+            "type": "system",
+            "name": "PHP LDAP",
+            "package": "php-ldap",
+            "binary": null
+        },
+        {
             "type": "app",
             "name": "MariaDB",
             "package": "db-mariadb"

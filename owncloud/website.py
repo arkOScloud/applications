@@ -1,6 +1,7 @@
 import errno
 import nginx
 import os
+import re
 import shutil
 
 from arkos.languages import php
@@ -49,18 +50,11 @@ class ownCloud(Site):
         ]
 
     def pre_install(self, vars):
-        if not vars.get('oc-username'):
-            raise Exception('Must choose an ownCloud username')
-        elif not vars.get('oc-logpasswd'):
-            raise Exception('Must choose an ownCloud password')
-        elif '"' in vars.get('oc-logpasswd') or "'" in vars.get('oc-logpasswd'):
-            raise Exception('Your ownCloud password must not include quotes')
+        pass
 
     def post_install(self, vars, dbpasswd=""):
         datadir = ''
         secret_key = random_string()
-        username = vars.get('oc-username')
-        logpasswd = vars.get('oc-logpasswd')
 
         # Set ownership as necessary
         if not os.path.exists(os.path.join(self.path, 'data')):
@@ -76,29 +70,31 @@ class ownCloud(Site):
         datadir = vars.get('datadir')
         if datadir:
             php.open_basedir('add', datadir)
+        else:
+            datadir = os.path.join(self.path, 'data')
 
         # Create ownCloud automatic configuration file
         with open(os.path.join(self.path, 'config', 'autoconfig.php'), 'w') as f:
             f.write(
                 '<?php\n'
                 '   $AUTOCONFIG = array(\n'
-                '   "adminlogin" => "'+username+'",\n'
-                '   "adminpass" => "'+logpasswd+'",\n'
+                '   "adminlogin" => "admin",\n'
+                '   "adminpass" => "'+dbpasswd+'",\n'
                 '   "dbtype" => "mysql",\n'
-                '   "dbname" => "'+self.db.name+'",\n'
-                '   "dbuser" => "'+self.db.name+'",\n'
+                '   "dbname" => "'+self.db.id+'",\n'
+                '   "dbuser" => "'+self.db.id+'",\n'
                 '   "dbpass" => "'+dbpasswd+'",\n'
                 '   "dbhost" => "localhost",\n'
                 '   "dbtableprefix" => "",\n'
-                '   "directory" => "'+datadir if datadir else os.path.join(self.path, 'data')+'",\n'
+                '   "directory" => "'+datadir+'",\n'
                 '   );\n'
                 '?>\n'
                 )
         os.chown(os.path.join(self.path, 'config', 'autoconfig.php'), uid, gid)
 
         # Make sure that the correct PHP settings are enabled
-        php.enable_mod('mysql', 'pdo_mysql', 'zip', 'gd',
-            'iconv', 'openssl', 'xcache')
+        php.enable_mod('mysql', 'pdo_mysql', 'zip', 'gd', 'ldap',
+            'iconv', 'openssl', 'xcache', 'posix')
         
         # Make sure xcache has the correct settings, otherwise ownCloud breaks
         with open('/etc/php/conf.d/xcache.ini', 'w') as f:
@@ -108,6 +104,53 @@ class ownCloud(Site):
                 'xcache.admin.enable_auth = Off\n',
                 'xcache.admin.user = "admin"\n',
                 'xcache.admin.pass = "'+secret_key[8:24]+'"\n'])
+        
+        php.change_setting("always_populate_raw_post_data", "-1")
+        mydir = os.getcwd()
+        os.chdir(self.path)
+        s = shell("sudo -u http php index.php")
+        if s["code"] != 0:
+            raise Exception("ownCloud database population failed")
+        s = shell("sudo -u http php occ app:enable user_ldap")
+        if s["code"] != 0:
+            raise Exception("ownCloud LDAP configuration failed")
+        os.chdir(mydir)
+        
+        ldap_sql = ("REPLACE INTO appconfig (appid, configkey, configvalue) VALUES"
+            "('user_ldap', 'ldap_uuid_attribute', 'auto'),"
+            "('user_ldap', 'ldap_host', 'localhost'),"
+            "('user_ldap', 'ldap_port', '389'),"
+            "('user_ldap', 'ldap_base', 'dc=arkos-servers,dc=org'),"
+            "('user_ldap', 'ldap_base_users', 'dc=arkos-servers,dc=org'),"
+            "('user_ldap', 'ldap_base_groups', 'dc=arkos-servers,dc=org'),"
+            "('user_ldap', 'ldap_tls', '0'),"
+            "('user_ldap', 'ldap_display_name', 'cn'),"
+            "('user_ldap', 'ldap_userlist_filter', 'objectClass=mailAccount'),"
+            "('user_ldap', 'ldap_group_filter', 'objectClass=posixGroup'),"
+            "('user_ldap', 'ldap_group_display_name', 'cn'),"
+            "('user_ldap', 'ldap_group_member_assoc_attribute', 'uniqueMember'),"
+            "('user_ldap', 'ldap_login_filter', '(&(|(objectclass=posixAccount))(|(uid=%uid)))'),"
+            "('user_ldap', 'ldap_quota_attr', 'mailQuota'),"
+            "('user_ldap', 'ldap_quota_def', ''),"
+            "('user_ldap', 'ldap_email_attr', 'mail'),"
+            "('user_ldap', 'ldap_cache_ttl', '600'),"
+            "('user_ldap', 'ldap_configuration_active', '1'),"
+            "('user_ldap', 'home_folder_naming_rule', ''),"
+            "('user_ldap', 'ldap_backup_host', ''),"
+            "('user_ldap', 'ldap_dn', ''),"
+            "('user_ldap', 'ldap_agent_password', ''),"
+            "('user_ldap', 'ldap_backup_port', ''),"
+            "('user_ldap', 'ldap_nocase', ''),"
+            "('user_ldap', 'ldap_turn_off_cert_check', ''),"
+            "('user_ldap', 'ldap_override_main_server', ''),"
+            "('user_ldap', 'ldap_attributes_for_user_search', ''),"
+            "('user_ldap', 'ldap_attributes_for_group_search', ''),"
+            "('user_ldap', 'ldap_expert_username_attr', 'uid'),"
+            "('user_ldap', 'ldap_expert_uuid_attr', '');"
+        )
+        self.db.execute(ldap_sql, commit=True)
+        # TODO set authed user name
+        self.db.execute("INSERT INTO group_user VALUES ('admin','testuser');", commit=True)
 
     def pre_remove(self):
         datadir = ''
@@ -199,3 +242,21 @@ class ownCloud(Site):
                     oc.insert(x[0] + 1, '"forcessl" => false,\n')
         with open(px, 'w') as f:
             f.writelines(oc)
+    
+    def site_edited(self):
+        # Remove the existing trusted_sites array then add a new one based on the new addr
+        if not os.path.exists(os.path.join(self.path, 'config', 'config.php')):
+            path = os.path.join(self.path, 'config', 'config.php')
+        with open(path, "r") as f:
+            data = f.read()
+        while re.search("\n(\s*('|\")trusted_domains.*?\).*?\n)", data, re.DOTALL):
+            data = data.replace(re.search("\n(\s*('|\")trusted_domains.*?\).*?\n)", data, re.DOTALL).group(1), "")
+        data = data.split("\n")
+        with open(path, "w") as f:
+            for x in data:
+                if not x.endswith("\n"): 
+                    x += "\n"
+                if x.startswith(");"):
+                    f.write("  'trusted_domains' => array('localhost','%s'),\n"%self.addr)
+                f.write(x)
+        

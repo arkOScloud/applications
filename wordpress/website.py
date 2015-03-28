@@ -129,3 +129,13 @@ class WordPress(Site):
             oc.append('define(\'FORCE_SSL_ADMIN\', false);\n')
         with open(os.path.join(self.path, 'wp-config.php'), 'w') as f:
             f.writelines(oc)
+    
+    def site_edited(self):
+        if not self.db:
+            return
+        url = "http"
+        url += ("s://" if self.cert else "://")
+        url += self.addr
+        url += ((":"+str(self.port)) if self.port not in [80, 443] else "")
+        self.db.execute("UPDATE wp_options SET option_value = '%s' WHERE option_name = 'siteurl';" % url, commit=True)
+        self.db.execute("UPDATE wp_options SET option_value = '%s' WHERE option_name = 'home';" % url, commit=True)

@@ -1,7 +1,0 @@
-{% import "widgets.html" as widgets %}
-    {% call widgets.formline(text="ownCloud Username", help="This will be the username of the administrative user for ownCloud.") %}
-        {{ widgets.button(name="oc-username")}}
-    {% endcall %}
-    {% call widgets.formline(text="ownCloud Password") %}
-        {{ widgets.button(name="oc-logpasswd", password=True)}}
-    {% endcall %}
