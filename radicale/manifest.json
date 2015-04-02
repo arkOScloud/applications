@@ -28,7 +28,7 @@
             "ports": []
         }
     ],
-    "modules": ["backend", "kraken"],
+    "modules": ["backend", "api"],
     "dependencies": [
         {
             "type": "system",

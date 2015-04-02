@@ -5,6 +5,7 @@ from flask.views import MethodView
 
 from kraken import auth
 
+
 backend = Blueprint("radicale", __name__)
 
 
