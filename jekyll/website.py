@@ -3,7 +3,7 @@ import os
 
 from arkos.languages import ruby
 from arkos.websites import Site
-from arkos.utilities import shell, random_string
+from arkos.utilities import shell
 from arkos.system import users, groups
 
 
@@ -33,7 +33,7 @@ class Jekyll(Site):
                 os.chown(os.path.join(r, x), uid, gid)
 
         # Return an explicatory message.
-        return 'Jekyll has been setup, with a sample site at '+self.path+'. Modify these files as you like. To learn how to use Jekyll, visit http://jekyllrb.com/docs/usage. After making changes, click the Configure button next to the site, then "Regenerate Site" to bring your changes live.'
+        return 'Jekyll has been setup, with a sample site at '+self.path+'. Modify these files as you like. To learn how to use Jekyll, visit http://jekyllrb.com/docs/usage. After making changes, click the Edit button for the site, then "Regenerate Site" to bring your changes live.'
 
     def pre_remove(self):
         pass
@@ -50,18 +50,18 @@ class Jekyll(Site):
     def update(self, pkg, ver):
         ruby.update_gem('jekyll', 'rdiscount')
 
-    def regenerate_site(self):
-        path = os.path.join(self.path)
+    def regenerate(self):
+        path = self.path
         if not path.endswith("_site"):
-            path = os.path.join(path, "_site")
-        s = shell('jekyll build --source '+self.path.rstrip('_site')+' --destination '+path, stderr=True)
+            path = os.path.join(self.path, "_site")
+        s = shell('jekyll build --source '+self.path.split('/_site')[0]+' --destination '+path)
         if s["code"] != 0:
             raise Exception('Jekyll failed to build: %s'%str(s["stderr"]))
         uid, gid = users.get_system("http").uid, groups.get_system("http").gid
         for r, d, f in os.walk(self.path):
             for x in d:
-                os.chmod(os.path.join(root, x), 0755)
-                os.chown(os.path.join(root, x), uid, gid)
+                os.chmod(os.path.join(r, x), 0755)
+                os.chown(os.path.join(r, x), uid, gid)
             for x in f:
-                os.chmod(os.path.join(root, x), 0644)
-                os.chown(os.path.join(root, x), uid, gid)
+                os.chmod(os.path.join(r, x), 0644)
+                os.chown(os.path.join(r, x), uid, gid)

@@ -50,6 +50,7 @@
     ],
     "generation": 1,
     "website_updates": true,
+    "website_extra_actions": true,
     "download_url": "https://pkg.arkos.io/resources/jekyll-sample.tar.gz",
     "database_engines": [],
     "uses_php": false,
