@@ -48,7 +48,7 @@ class Wallabag(Site):
 
     def post_install(self, vars, dbpasswd=""):
         secret_key = random_string()
-        dbengine = 'mysql' if self.db.meta.name == 'MariaDB' else 'sqlite'
+        dbengine = 'mysql' if self.meta.selected_dbengine == 'db-mariadb' else 'sqlite'
 
         username = vars.get("wb-username")
         passwd = vars.get("wb-passwd") + username + secret_key
@@ -68,13 +68,13 @@ class Wallabag(Site):
                 l = '@define (\'STORAGE\', \''+dbengine+'\');\n'
                 oc.append(l)
             elif 'define (\'STORAGE_SQLITE\'' in l and dbengine == 'sqlite':
-                l = '@define (\'STORAGE_SQLITE\', \'/var/lib/sqlite3/'+self.db.name+'.db\');\n'
+                l = '@define (\'STORAGE_SQLITE\', \'/var/lib/sqlite3/'+self.db.id+'.db\');\n'
                 oc.append(l)
             elif 'define (\'STORAGE_DB\'' in l and dbengine == 'mysql':
-                l = '@define (\'STORAGE_DB\', \''+self.db.name+'\');\n'
+                l = '@define (\'STORAGE_DB\', \''+self.db.id+'\');\n'
                 oc.append(l)
             elif 'define (\'STORAGE_USER\'' in l and dbengine == 'mysql':
-                l = '@define (\'STORAGE_USER\', \''+self.db.name+'\');\n'
+                l = '@define (\'STORAGE_USER\', \''+self.db.id+'\');\n'
                 oc.append(l)
             elif 'define (\'STORAGE_PASSWORD\'' in l and dbengine == 'mysql':
                 l = '@define (\'STORAGE_PASSWORD\', \''+dbpasswd+'\');\n'
@@ -101,7 +101,7 @@ class Wallabag(Site):
             self.db.execute(
                 "INSERT INTO users (username, password, name, email) VALUES ('%s', '%s', '%s', '');" % (username, passwd, username),
                 commit=True)
-            lid = int(self.db.connection.insert_id())
+            lid = int(self.db.manager.connection.insert_id())
             self.db.execute(
                 "INSERT INTO users_config (user_id, name, value) VALUES (%s, 'pager', '10');" % lid,
                 commit=True)
@@ -109,10 +109,10 @@ class Wallabag(Site):
                 "INSERT INTO users_config (user_id, name, value) VALUES (%s, 'language', 'en_EN.UTF8');" % lid,
                 commit=True)
         else:
-            self.db.chkpath()
-            shutil.copy(os.path.join(self.path, 'install/poche.sqlite'), '/var/lib/sqlite3/%s.db' % self.db.name)
+            shutil.copy(os.path.join(self.path, 'install/poche.sqlite'), '/var/lib/sqlite3/%s.db' % self.db.id)
             php.open_basedir('add', '/var/lib/sqlite3')
-            os.chown("/var/lib/sqlite3/%s.db" % self.db.name, -1, gid)
+            os.chown("/var/lib/sqlite3/%s.db" % self.db.id, -1, gid)
+            os.chmod("/var/lib/sqlite3/%s.db", 0664)
             self.db.execute(
                 "INSERT INTO users (username, password, name, email) VALUES ('%s', '%s', '%s', '');" % (username, passwd, username))
             self.db.execute(
@@ -126,10 +126,10 @@ class Wallabag(Site):
         for r, d, f in os.walk(self.path):
             for x in d:
                 if d in ["assets", "cache", "db"]:
-                    os.chmod(os.path.join(root, d), 0755)
-                os.chown(os.path.join(root, x), uid, gid)
+                    os.chmod(os.path.join(r, d), 0755)
+                os.chown(os.path.join(r, x), uid, gid)
             for x in f:
-                os.chown(os.path.join(root, x), uid, gid)
+                os.chown(os.path.join(r, x), uid, gid)
 
     def pre_remove(self):
         pass

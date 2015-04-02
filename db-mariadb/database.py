@@ -140,6 +140,7 @@ class MariaDBMgr(DatabaseManager):
             else:
                 conns.MariaDB = MySQLdb.connect('localhost', user, read_default_file="/root/.my.cnf")
             self.state = True
+            self.connection = conns.MariaDB
         except:
             self.state = False
             raise ConnectionError("MariaDB")
