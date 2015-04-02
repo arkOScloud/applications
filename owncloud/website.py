@@ -53,25 +53,14 @@ class ownCloud(Site):
         pass
 
     def post_install(self, vars, dbpasswd=""):
-        datadir = ''
         secret_key = random_string()
-
-        # Set ownership as necessary
-        if not os.path.exists(os.path.join(self.path, 'data')):
-            os.makedirs(os.path.join(self.path, 'data'))
-        uid, gid = users.get_system("http").uid, groups.get_system("http").gid
-        for r, d, f in os.walk(self.path):
-            for x in d:
-                os.chown(os.path.join(r, x), uid, gid)
-            for x in f:
-                os.chown(os.path.join(r, x), uid, gid)
         
         # If there is a custom path for the data directory, add to open_basedir
-        datadir = vars.get('datadir')
-        if datadir:
-            php.open_basedir('add', datadir)
-        else:
-            datadir = os.path.join(self.path, 'data')
+        uid, gid = users.get_system("http").uid, groups.get_system("http").gid
+        if not self.data_path.startswith(self.path):
+            os.makedirs(os.path.join(self.path, "data"))
+            os.chown(os.path.join(self.path, "data"), uid, gid)
+            php.open_basedir('add', self.data_path)
 
         # Create ownCloud automatic configuration file
         with open(os.path.join(self.path, 'config', 'autoconfig.php'), 'w') as f:
@@ -86,7 +75,7 @@ class ownCloud(Site):
                 '   "dbpass" => "'+dbpasswd+'",\n'
                 '   "dbhost" => "localhost",\n'
                 '   "dbtableprefix" => "",\n'
-                '   "directory" => "'+datadir+'",\n'
+                '   "directory" => "'+self.data_path+'",\n'
                 '   );\n'
                 '?>\n'
                 )
