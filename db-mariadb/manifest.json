@@ -44,5 +44,6 @@
         }
     ],
     "generation": 1,
-    "database_multiuser": true
+    "database_multiuser": true,
+    "database_service": "mysqld"
 }

@@ -1,0 +1,5 @@
+<div class="form-group">
+    <label for="oc-admin">ownCloud Admin User</label>
+    {{ view "select" class="form-control required" value=newSite.extraData.oc-admin content=model.users optionLabelPath="content.name" optionValuePath="content.name" }}
+    <p class="help-block">This user will be given administrative privileges for ownCloud.</p>
+</div>

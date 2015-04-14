@@ -57,9 +57,19 @@ class ownCloud(Site):
         
         # If there is a custom path for the data directory, add to open_basedir
         uid, gid = users.get_system("http").uid, groups.get_system("http").gid
-        if not self.data_path.startswith(self.path):
-            os.makedirs(os.path.join(self.path, "data"))
-            os.chown(os.path.join(self.path, "data"), uid, gid)
+        os.makedirs(os.path.join(self.path, "data"))
+        os.chown(os.path.join(self.path, "data"), uid, gid)
+        if self.data_path == self.path:
+            self.data_path = os.path.join(self.path, "data")
+        else:
+            try:
+                os.makedirs(os.path.join(self.data_path))
+            except OSError, e:
+                if e[0] == 17:
+                    pass
+                else:
+                    raise
+            os.chown(os.path.join(self.data_path), uid, gid)
             php.open_basedir('add', self.data_path)
 
         # Create ownCloud automatic configuration file
@@ -98,7 +108,7 @@ class ownCloud(Site):
         mydir = os.getcwd()
         os.chdir(self.path)
         s = shell("sudo -u http php index.php")
-        if s["code"] != 0:
+        if "<strong>Error</strong>" in s["stdout"]:
             raise Exception("ownCloud database population failed")
         s = shell("sudo -u http php occ app:enable user_ldap")
         if s["code"] != 0:
@@ -138,8 +148,7 @@ class ownCloud(Site):
             "('user_ldap', 'ldap_expert_uuid_attr', '');"
         )
         self.db.execute(ldap_sql, commit=True)
-        # TODO set authed user name
-        self.db.execute("INSERT INTO group_user VALUES ('admin','testuser');", commit=True)
+        self.db.execute("INSERT INTO group_user VALUES ('admin','%s');" % vars.get("oc-admin", "admin"), commit=True)
 
     def pre_remove(self):
         datadir = ''
