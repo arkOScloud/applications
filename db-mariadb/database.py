@@ -1,9 +1,13 @@
+import json
+import os
+import sys
 import re
 import MySQLdb
 import _mysql_exceptions
 
 from arkos import conns
 from arkos.databases import Database, DatabaseUser, DatabaseManager
+from arkos.utilities import random_string
 from arkos.utilities.errors import ConnectionError
 
 
@@ -135,15 +139,38 @@ class MariaDBMgr(DatabaseManager):
         except:
             pass
         try:
-            if passwd:
-                conns.MariaDB = MySQLdb.connect('localhost', user, passwd, db)
-            else:
-                conns.MariaDB = MySQLdb.connect('localhost', user, read_default_file="/root/.my.cnf")
+            if not passwd:
+                if os.path.isfile(os.path.join(sys.path[0], 'secrets.json')):
+                    secrets = os.path.join(sys.path[0], 'secrets.json')
+                else:
+                    secrets = "/etc/arkos/secrets.json"
+                with open(secrets, "r") as f:
+                    passwd = json.loads(f.read())
+                passwd = passwd.get("mysql")
+                if not passwd:
+                    passwd = self.change_admin_passwd()
+            conns.MariaDB = MySQLdb.connect('localhost', user, passwd, db or "")
             self.state = True
             self.connection = conns.MariaDB
         except:
             self.state = False
             raise ConnectionError("MariaDB")
+    
+    def change_admin_passwd(self):
+        new_passwd = random_string()
+        if os.path.isfile(os.path.join(sys.path[0], 'secrets.json')):
+            secrets = os.path.join(sys.path[0], 'secrets.json')
+        else:
+            secrets = "/etc/arkos/secrets.json"
+        with open(secrets, "r") as f:
+            data = json.loads(f.read())
+        data["mysql"] = new_passwd
+        with open(secrets, "w") as f:
+            f.write(json.dumps(data))
+        c = MySQLdb.connect('localhost', 'root', '', 'mysql')
+        c.query('UPDATE user SET password=PASSWORD("'+new_passwd+'") WHERE User=\'root\'')
+        c.query('FLUSH PRIVILEGES')
+        return new_passwd
 
     def validate(self, id='', user='', passwd=''):
         if id and re.search('\.|-|`|\\\\|\/|^test$|[ ]', id):
