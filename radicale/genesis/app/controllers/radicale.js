@@ -12,7 +12,7 @@ export default Ember.ObjectController.extend({
       showFade();
       showLoader();
       $.ajax({
-        url: ENV.APP.krakenHost+'/calendars_contacts/setup',
+        url: ENV.APP.krakenHost+'/apps/radicale/setup',
         type: "POST",
         data: JSON.stringify({config: config}),
         contentType: 'application/json',

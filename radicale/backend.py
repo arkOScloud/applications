@@ -189,25 +189,33 @@ def add(id, user, type):
         f.write("")
     os.chown(os.path.join('/home/radicale/.config/radicale/collections', user, id+type), uid, gid)
 
-def get_cal(id=None, user=None):
+def get_cal(id=None, name=None, user=None):
     cals = []
     for x in glob.glob('/home/radicale/.config/radicale/collections/*/*.ics'):
-        cal = Calendar(id=os.path.basename(x).split(".ics")[0], user=x.split("/")[-2])
-        if id and id == cal.id:
+        n = os.path.basename(x).split(".ics")[0]
+        u = x.split("/")[-2]
+        cal = Calendar(id=n, user=u)
+        if id and id == (cal.user+"_"+cal.id):
+            return cal
+        elif name and name == cal.name:
             return cal
         elif (user and user == cal.user) or not user:
             cals.append(cal)
-    return cals
+    return cals if not any([id, name, user]) else None
 
-def get_book(id=None, user=None):
+def get_book(id=None, name=None, user=None):
     bks = []
     for x in glob.glob('/home/radicale/.config/radicale/collections/*/*.vcf'):
-        bk = Calendar(id=os.path.basename(x).split(".vcf")[0], user=x.split("/")[-2])
-        if id and id == bk.id:
+        n = os.path.basename(x).split(".vcf")[0]
+        u = x.split("/")[-2]
+        bk = Calendar(id=n, user=u)
+        if id and id == (bk.user+"_"+bk.id):
+            return bk
+        elif name and name == cal.name:
             return bk
         elif (user and user == bk.user) or not user:
             bks.append(bk)
-    return bks
+    return bks if not any([id, name, user]) else None
 
 def my_url():
     url = "http"
