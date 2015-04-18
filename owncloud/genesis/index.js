@@ -1,7 +1,3 @@
 module.exports = {
-  name: 'owncloud',
-
-  isDevelopingAddon: function() {
-    return true;
-  }
+  name: 'owncloud'
 };

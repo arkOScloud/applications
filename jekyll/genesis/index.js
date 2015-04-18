@@ -1,7 +1,3 @@
 module.exports = {
-  name: 'jekyll',
-
-  isDevelopingAddon: function() {
-    return true;
-  }
+  name: 'jekyll'
 };
