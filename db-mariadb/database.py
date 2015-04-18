@@ -7,7 +7,7 @@ import _mysql_exceptions
 
 from arkos import conns
 from arkos.databases import Database, DatabaseUser, DatabaseManager
-from arkos.utilities import random_string
+from arkos.utilities import shell, random_string
 from arkos.utilities.errors import ConnectionError
 
 
@@ -132,6 +132,8 @@ class MariaDBUser(DatabaseUser):
 
 class MariaDBMgr(DatabaseManager):
     def connect(self, user='root', passwd='', db=None):
+        if not os.path.exists("/var/lib/mysql/mysql"):
+            shell("mysql_install_db --user=mysql --basedir=/usr --datadir=/var/lib/mysql")
         try:
             conns.MariaDB.ping()
             self.state = True
