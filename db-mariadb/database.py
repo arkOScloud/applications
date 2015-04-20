@@ -159,7 +159,7 @@ class MariaDBMgr(DatabaseManager):
             raise ConnectionError("MariaDB")
     
     def change_admin_passwd(self):
-        new_passwd = random_string()
+        new_passwd = random_string()[:16]
         if os.path.isfile(os.path.join(sys.path[0], 'secrets.json')):
             secrets = os.path.join(sys.path[0], 'secrets.json')
         else:
