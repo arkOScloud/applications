@@ -34,7 +34,8 @@
             "name": "MariaDB",
             "package": "mariadb",
             "binary": "mysqld",
-            "daemon": "mysqld"
+            "daemon": "mysqld",
+            "internal": true
         },
         {
             "type": "python",
