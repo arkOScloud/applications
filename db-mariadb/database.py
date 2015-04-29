@@ -172,6 +172,7 @@ class MariaDBMgr(DatabaseManager):
         c = MySQLdb.connect('localhost', 'root', '', 'mysql')
         c.query('UPDATE user SET password=PASSWORD("'+new_passwd+'") WHERE User=\'root\'')
         c.query('FLUSH PRIVILEGES')
+        c.commit()
         return new_passwd
 
     def validate(self, id='', user='', passwd=''):
