@@ -6,6 +6,7 @@ import MySQLdb
 import _mysql_exceptions
 
 from arkos import conns
+from arkos.system import services
 from arkos.databases import Database, DatabaseUser, DatabaseManager
 from arkos.utilities import shell, random_string
 from arkos.utilities.errors import ConnectionError
@@ -98,7 +99,7 @@ class MariaDBUser(DatabaseUser):
         if self.manager.validate(user=self.id, passwd=passwd):
             conns.MariaDB.query('CREATE USER \'%s\'@\'localhost\' IDENTIFIED BY \'%s\''
                 % (self.id,passwd))
-    
+
     def remove_user(self):
         self.manager.connect()
         conns.MariaDB.query('DROP USER \'%s\'@\'localhost\'' % self.id)
@@ -123,10 +124,10 @@ class MariaDBUser(DatabaseUser):
                 status += line + '\n'
             return status
         elif action == 'grant':
-            conns.MariaDB.query('GRANT ALL ON %s.* TO \'%s\'@\'localhost\'' 
+            conns.MariaDB.query('GRANT ALL ON %s.* TO \'%s\'@\'localhost\''
                 % (db.id, self.id))
         elif action == 'revoke':
-            conns.MariaDB.query('REVOKE ALL ON %s.* FROM \'%s\'@\'localhost\'' 
+            conns.MariaDB.query('REVOKE ALL ON %s.* FROM \'%s\'@\'localhost\''
                 % (db.id, self.id))
 
 
@@ -157,8 +158,14 @@ class MariaDBMgr(DatabaseManager):
         except:
             self.state = False
             raise ConnectionError("MariaDB")
-    
+
     def change_admin_passwd(self):
+        try:
+            s = services.get("mysqld")
+            if s.state != "running":
+                s.start()
+        except:
+            return ""
         new_passwd = random_string()[:16]
         if os.path.isfile(os.path.join(sys.path[0], 'secrets.json')):
             secrets = os.path.join(sys.path[0], 'secrets.json')
@@ -199,7 +206,7 @@ class MariaDBMgr(DatabaseManager):
     def get_dbs(self):
         self.connect()
         dblist = []
-        excludes = ['Database', 'information_schema', 
+        excludes = ['Database', 'information_schema',
             'mysql', 'performance_schema']
         conns.MariaDB.query('SHOW DATABASES')
         r = conns.MariaDB.store_result()
@@ -208,7 +215,7 @@ class MariaDBMgr(DatabaseManager):
             if not db[0] in excludes and db[0].split():
                 dblist.append(MariaDB(id=db[0], manager=self))
         return dblist
-    
+
     def add_db(self, id):
         db = MariaDB(id=id, manager=self)
         db.add()
@@ -225,7 +232,7 @@ class MariaDBMgr(DatabaseManager):
             if not usr[0] in userlist and not usr[0] in excludes:
                 userlist.append(MariaDBUser(id=usr[0], manager=self))
         return userlist
-    
+
     def add_user(self, id, passwd):
         user = MariaDBUser(id=id, manager=self)
         user.add(passwd)
