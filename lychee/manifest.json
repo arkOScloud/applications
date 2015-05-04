@@ -13,7 +13,7 @@
             "secondary": ["Websites", "CMS"]
         }
     ],
-    "version": "2.7.1-1",
+    "version": "2.7.2-1",
     "author": "knitatoms",
     "homepage": "https://knitatoms.net",
     "app_author": "electerious",
@@ -36,6 +36,18 @@
     "dependencies": [
         {
             "type": "system",
+            "name": "php",
+            "package": "php",
+            "binary": null
+        },
+        {
+            "type": "system",
+            "name": "PHP FastCGI",
+            "package": "php-fpm",
+            "binary": "php-fpm"
+        },
+        {
+            "type": "system",
             "name": "PHP xCache",
             "package": "php-xcache",
             "binary": null
@@ -54,8 +66,7 @@
     ],
     "generation": 1,
     "website_updates": false,
-    "download_url": "https://github.com/electerious/Lychee/archive/v2.7.1.tar.gz",
+    "download_url": "https://github.com/electerious/Lychee/archive/v2.7.2.tar.gz",
     "database_engines": ["db-mariadb"],
-    "uses_php": true,
-    "uses_ssl": true
+    "uses_php": true
 }

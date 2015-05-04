@@ -17,7 +17,7 @@
             "secondary": ["Documents", "Music", "Photos", "Calendar", "Contacts"]
         }
     ],
-    "version": "8.0.2-1",
+    "version": "8.0.3-1",
     "author": "arkOS",
     "homepage": "http://arkos.io",
     "app_author": "ownCloud",
@@ -38,6 +38,18 @@
     ],
     "modules": ["website", "backup"],
     "dependencies": [
+        {
+            "type": "system",
+            "name": "php",
+            "package": "php",
+            "binary": null
+        },
+        {
+            "type": "system",
+            "name": "PHP FastCGI",
+            "package": "php-fpm",
+            "binary": "php-fpm"
+        },
         {
             "type": "system",
             "name": "PHP GD Image Processing",
@@ -70,11 +82,10 @@
     ],
     "generation": 1,
     "website_updates": false,
-    "download_url": "https://download.owncloud.org/community/owncloud-8.0.2.tar.bz2",
+    "download_url": "https://download.owncloud.org/community/owncloud-8.0.3.tar.bz2",
     "website_datapaths": true,
     "website_extra_options": true,
     "website_default_data_subdir": "data",
     "database_engines": ["db-mariadb"],
-    "uses_php": true,
-    "uses_ssl": true
+    "uses_php": true
 }
