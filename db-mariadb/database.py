@@ -5,7 +5,7 @@ import re
 import MySQLdb
 import _mysql_exceptions
 
-from arkos import conns
+from arkos import conns, secrets
 from arkos.system import services
 from arkos.databases import Database, DatabaseUser, DatabaseManager
 from arkos.utilities import shell, random_string
@@ -133,6 +133,7 @@ class MariaDBUser(DatabaseUser):
 
 class MariaDBMgr(DatabaseManager):
     def connect(self, user='root', passwd='', db=None):
+        passwd = passwd or secrets.get("mysql")
         if not os.path.exists("/var/lib/mysql/mysql"):
             shell("mysql_install_db --user=mysql --basedir=/usr --datadir=/var/lib/mysql")
         try:
@@ -143,15 +144,7 @@ class MariaDBMgr(DatabaseManager):
             pass
         try:
             if not passwd:
-                if os.path.isfile(os.path.join(sys.path[0], 'secrets.json')):
-                    secrets = os.path.join(sys.path[0], 'secrets.json')
-                else:
-                    secrets = "/etc/arkos/secrets.json"
-                with open(secrets, "r") as f:
-                    passwd = json.loads(f.read())
-                passwd = passwd.get("mysql")
-                if not passwd:
-                    passwd = self.change_admin_passwd()
+                passwd = self.change_admin_passwd()
             conns.MariaDB = MySQLdb.connect('localhost', user, passwd, db or "")
             self.state = True
             self.connection = conns.MariaDB
@@ -167,15 +160,8 @@ class MariaDBMgr(DatabaseManager):
         except:
             return ""
         new_passwd = random_string()[:16]
-        if os.path.isfile(os.path.join(sys.path[0], 'secrets.json')):
-            secrets = os.path.join(sys.path[0], 'secrets.json')
-        else:
-            secrets = "/etc/arkos/secrets.json"
-        with open(secrets, "r") as f:
-            data = json.loads(f.read())
-        data["mysql"] = new_passwd
-        with open(secrets, "w") as f:
-            f.write(json.dumps(data))
+        secrets.set("mysql", new_passwd)
+        secrets.save()
         c = MySQLdb.connect('localhost', 'root', '', 'mysql')
         c.query('UPDATE user SET password=PASSWORD("'+new_passwd+'") WHERE User=\'root\'')
         c.query('FLUSH PRIVILEGES')

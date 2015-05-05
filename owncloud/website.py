@@ -54,7 +54,7 @@ class ownCloud(Site):
 
     def post_install(self, vars, dbpasswd=""):
         secret_key = random_string()
-        
+
         # If there is a custom path for the data directory, add to open_basedir
         uid, gid = users.get_system("http").uid, groups.get_system("http").gid
         os.makedirs(os.path.join(self.path, "data"))
@@ -94,7 +94,7 @@ class ownCloud(Site):
         # Make sure that the correct PHP settings are enabled
         php.enable_mod('mysql', 'pdo_mysql', 'zip', 'gd', 'ldap',
             'iconv', 'openssl', 'xcache', 'posix')
-        
+
         # Make sure xcache has the correct settings, otherwise ownCloud breaks
         with open('/etc/php/conf.d/xcache.ini', 'w') as f:
             f.writelines(['extension=xcache.so\n',
@@ -103,7 +103,7 @@ class ownCloud(Site):
                 'xcache.admin.enable_auth = Off\n',
                 'xcache.admin.user = "admin"\n',
                 'xcache.admin.pass = "'+secret_key[8:24]+'"\n'])
-        
+
         php.change_setting("always_populate_raw_post_data", "-1")
         mydir = os.getcwd()
         os.chdir(self.path)
@@ -114,7 +114,7 @@ class ownCloud(Site):
         if s["code"] != 0:
             raise Exception("ownCloud LDAP configuration failed")
         os.chdir(mydir)
-        
+
         ldap_sql = ("REPLACE INTO appconfig (appid, configkey, configvalue) VALUES"
             "('user_ldap', 'ldap_uuid_attribute', 'auto'),"
             "('user_ldap', 'ldap_host', 'localhost'),"
@@ -240,7 +240,7 @@ class ownCloud(Site):
                     oc.insert(x[0] + 1, '"forcessl" => false,\n')
         with open(px, 'w') as f:
             f.writelines(oc)
-    
+
     def site_edited(self):
         # Remove the existing trusted_sites array then add a new one based on the new addr
         if not os.path.exists(os.path.join(self.path, 'config', 'config.php')):
@@ -252,9 +252,8 @@ class ownCloud(Site):
         data = data.split("\n")
         with open(path, "w") as f:
             for x in data:
-                if not x.endswith("\n"): 
+                if not x.endswith("\n"):
                     x += "\n"
                 if x.startswith(");"):
                     f.write("  'trusted_domains' => array('localhost','%s'),\n"%self.addr)
                 f.write(x)
-        
