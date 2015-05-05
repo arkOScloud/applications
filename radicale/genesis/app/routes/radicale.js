@@ -9,7 +9,7 @@ export default Ember.Route.extend({
       addressBooks: this.get('store').find('addressBook'),
       domains: this.get('store').find('domain'),
       users: this.get('store').find('user'),
-      status: $.getJSON(ENV.APP.krakenHost+'/apps/radicale/setup')
+      status: $.getJSON(ENV.APP.krakenHost+'/api/apps/radicale/setup')
     });
   },
   actions: {

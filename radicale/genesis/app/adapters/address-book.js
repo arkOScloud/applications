@@ -3,5 +3,5 @@ import ApplicationAdapter from "./application";
 
 
 export default ApplicationAdapter.extend({
-    namespace: 'apps/radicale'
+    namespace: 'api/apps/radicale'
 });
