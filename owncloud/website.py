@@ -116,6 +116,7 @@ class ownCloud(Site):
         os.chdir(mydir)
 
         ldap_sql = ("REPLACE INTO appconfig (appid, configkey, configvalue) VALUES"
+            "('core', 'backgroundjobs_mode', 'cron'),"
             "('user_ldap', 'ldap_uuid_attribute', 'auto'),"
             "('user_ldap', 'ldap_host', 'localhost'),"
             "('user_ldap', 'ldap_port', '389'),"
@@ -150,6 +151,11 @@ class ownCloud(Site):
         self.db.execute(ldap_sql, commit=True)
         self.db.execute("INSERT INTO group_user VALUES ('admin','%s');" % vars.get("oc-admin", "admin"), commit=True)
 
+        if not os.path.exists("/etc/cron.d"):
+            os.mkdir("/etc/cron.d")
+        with open("/etc/cron.d/oc-%s" % self.id, "w") as f:
+            f.write("*/15 * * * * http php -f %s > /dev/null 2>&1" % os.path.join(self.path, "cron.php"))
+
     def pre_remove(self):
         datadir = ''
         if os.path.exists(os.path.join(self.path, 'config', 'config.php')):
@@ -169,7 +175,8 @@ class ownCloud(Site):
             php.open_basedir('del', datadir)
 
     def post_remove(self):
-        pass
+        if os.path.exists("/etc/cron.d/oc-%s" % self.id):
+            os.unlink("/etc/cron.d/oc-%s" % self.id)
 
     def enable_ssl(self, cfile, kfile):
         # First, force SSL in ownCloud's config file
