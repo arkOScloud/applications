@@ -27,13 +27,13 @@ def on_load(app):
     if not app.id == "xmpp":
         return
     reload = False
-    domains = domains.get()
-    for x in domains:
+    doms = domains.get()
+    for x in doms:
         if not os.path.exists("/etc/prosody/conf.d/%s.cfg.lua" % x.name):
             add_domain(x, False)
             reload = True
     for x in os.listdir("/etc/prosody/conf.d"):
-        if x.rstrip(".cfg.lua") not in [y.id for y in domains]:
+        if x.rstrip(".cfg.lua") not in [y.name for y in doms]:
             os.unlink(os.path.join("/etc/prosody/conf.d", x))
             reload = True
     if reload:
