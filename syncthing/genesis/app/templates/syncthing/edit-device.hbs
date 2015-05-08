@@ -1,4 +1,4 @@
-{{#g-modal title="Sync Device" icon="fa-hdd-o" ok="save" close="removeModal"}}
+{{#g-modal title="Edit Sync Device" icon="fa-hdd-o" ok="save" close="removeModal"}}
     <div class="form-group">
         <label for="id">Device Name</label>
         {{input type="text" class="form-control required" value=model.id}}
@@ -6,7 +6,7 @@
     </div>
     <div class="form-group">
         <label for="deviceID">Path to Folder</label>
-        {{input type="text" class="form-control required" value=model.deviceID}}
+        {{input type="text" class="form-control required disabled" value=model.deviceID}}
         <p class="help-block">The device ID to enter here can be found in the <code>Edit > Show ID</code> dialog on the other device. Spaces and dashes are optional (ignored). When adding a new device, keep in mind that this device must be added on the other side too.</p>
     </div>
     <div class="form-group">

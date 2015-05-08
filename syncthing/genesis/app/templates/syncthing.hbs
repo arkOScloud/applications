@@ -1,6 +1,6 @@
 <div class="btn-group pull-right">
-    <a href="#" class="btn btn-default" {{action 'showModal' 'syncthing/folder' model}}><i class="fa fa-folder"></i> New Folder</a>
-    <a href="#" class="btn btn-default" {{action 'showModal' 'syncthing/device' model}}><i class="fa fa-hdd-o"></i> New Device</a>
+    <a href="#" class="btn btn-default" {{action 'showModal' 'syncthing/new-folder' model}}><i class="fa fa-folder"></i> New Folder</a>
+    <a href="#" class="btn btn-default" {{action 'showModal' 'syncthing/new-device' model}}><i class="fa fa-hdd-o"></i> New Device</a>
     <a href="#" class="btn btn-default" {{action 'showModal' 'syncthing/settings' model}}><i class="fa fa-cog"></i> Settings</a>
     <a href="#" class="btn btn-default" {{action 'showModal' 'syncthing/my-id' model}}><i class="fa fa-code"></i> Device ID</a>
 </div>
@@ -15,7 +15,7 @@
           <h2>{{folder.id}}</h2>
           <p class="lead">Sync Folder</p>
           <div class="ui-item-buttons">
-            <a href="#" class="ui-item-button" {{action 'showModal' 'syncthing/folder' folder model}}><i class="fa fa-info-circle fa-fw fa-lg"></i><br />Edit</a>
+            <a href="#" class="ui-item-button" {{action 'showModal' 'syncthing/edit-folder' folder model}}><i class="fa fa-info-circle fa-fw fa-lg"></i><br />Edit</a>
             <a href="#" class="ui-item-button text-danger" {{action 'showConfirm' 'delete' "Are you sure you want to remove this folder from your sync list? The folder's data will not be removed." folder}}><i class="fa fa-minus-circle fa-fw fa-lg"></i><br />Delete</a>
           </div>
         </div>
@@ -33,7 +33,7 @@
           <h2>{{device.name}}</h2>
           <p class="lead">Sync Device</p>
           <div class="ui-item-buttons">
-            <a href="#" class="ui-item-button" {{action 'showModal' 'syncthing/device' device}}><i class="fa fa-info-circle fa-fw fa-lg"></i><br />Edit</a>
+            <a href="#" class="ui-item-button" {{action 'showModal' 'syncthing/edit-device' device}}><i class="fa fa-info-circle fa-fw fa-lg"></i><br />Edit</a>
             <a href="#" class="ui-item-button text-danger" {{action 'showConfirm' 'delete' 'Are you sure you want to remove this device from your sync list? It will also be removed from all of your folders.' device}}><i class="fa fa-minus-circle fa-fw fa-lg"></i><br />Delete</a>
           </div>
         </div>

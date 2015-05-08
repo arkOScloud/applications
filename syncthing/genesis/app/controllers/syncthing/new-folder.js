@@ -2,9 +2,7 @@ import Ember from "ember";
 
 
 export default Ember.ObjectController.extend({
-  setExtra: function(){
-    if (!!this.get('extra')) this.set('extra', this.get('model.extra'));
-  }.observes('model'),
+  newFolder: {rescanIntervalS: 60},
   devicesSelected: [],
   devicesSelectedProp: (function(){
     this.get("devicesSelected");
@@ -19,19 +17,23 @@ export default Ember.ObjectController.extend({
     save: function() {
       var self = this;
       var folder = self.store.createRecord('folder', {
-        id: this.get('model.id'),
-        path: this.get('model.path'),
-        readOnly: this.get('model.readOnly'),
-        ignorePerms: this.get('model.ignorePerms'),
-        versioning: this.get('model.versioning'),
-        keepVersions: this.get('model.keepVersions'),
-        rescanIntervalS: this.get('model.rescanIntervalS'),
+        id: this.get('newFolder.id'),
+        path: this.get('newFolder.path'),
+        readOnly: this.get('newFolder.readOnly') || false,
+        ignorePerms: this.get('newFolder.ignorePerms') || false,
+        versioning: this.get('newFolder.versioning') || false,
+        keepVersions: this.get('newFolder.keepVersions'),
+        rescanIntervalS: this.get('newFolder.rescanIntervalS'),
         devices: this.get('devicesSelected')
       });
       var promise = folder.save();
       promise.then(function(){}, function(){
         folder.deleteRecord();
       });
+    },
+    removeModal: function() {
+      this.set("newFolder", {rescanIntervalS: 60});
+      return true;
     }
   }
 });

@@ -37,7 +37,7 @@ def pull_config():
 def save_config(config):
     api_key = get_api_key()
     api("http://localhost:8384/rest/system/config", config, "POST",
-        [("X-API-Key", api_key)], crit=True)
+        returns="raw", headers=[("X-API-Key", api_key)], crit=True)
     s = services.get("syncthing@syncthing")
     s.restart()
     return config
@@ -56,8 +56,7 @@ def add_repo(name, dir, ro, perms, vers, rsc, nids=[]):
         "rescanIntervalS": rsc or 60, "devices": [],
         "versioning": {"params": {}, "type": ""}}
     for x in nids:
-        nid = next((dev for dev in config["devices"] if dev["name"] == x), None)
-        folder["devices"].append({"deviceID": nid})
+        folder["devices"].append({"deviceID": x})
     if vers:
         folder["versioning"]["type"] = "simple"
         folder["versioning"]["params"] = {"key": "keep", "val": vers}
@@ -86,8 +85,7 @@ def edit_repo(name, dir, ro, perms, vers, rsc, nids=[]):
     folder["devices"] = []
     folder["versioning"] = {"params": {}, "type": ""}
     for x in nids:
-        nid = next((dev for dev in config["devices"] if dev["name"] == x), None)
-        folder["devices"].append({"deviceID": nid})
+        folder["devices"].append({"deviceID": x})
     v = e.find("versioning")
     if vers:
         folder["versioning"]["type"] = "simple"

@@ -16,14 +16,18 @@ class SyncthingFoldersAPI(MethodView):
 
     def post(self):
         data = request.get_json()["folder"]
-        folder = backend.add_repo(data)
+        folder = backend.add_repo(data["id"], data["path"], data["read_only"],
+            data["ignore_perms"], data["keep_versions"] if data["versioning"] else False,
+            data["rescan_interval_s"], data["devices"])
         return jsonify(folder=folder)
 
     def put(self, id=None):
         if not id:
             abort(422)
         data = request.get_json()["folder"]
-        folder = backend.edit_repo(data)
+        folder = backend.edit_repo(data["id"], data["path"], data["read_only"],
+            data["ignore_perms"], data["keep_versions"] if data["versioning"] else False,
+            data["rescan_interval_s"], data["devices"])
         return jsonify(folder=folder)
 
     def delete(self, id=None):
@@ -45,7 +49,8 @@ class SyncthingDevicesAPI(MethodView):
 
     def post(self):
         data = request.get_json()["device"]
-        device = backend.add_device(data)
+        device = backend.add_device(data["name"], data["device_id"],
+            list(data["addresses"]) if not type(data["addresses"]) == list else data["addresses"])
         return jsonify(device=device)
 
     def put(self, id=None):

@@ -9,8 +9,8 @@ export default DS.Model.extend({
     introducer: DS.attr('boolean'),
     addresses: DS.attr(),
     selectId: function() {
-      return this.get('name');
-    }.property('name'),
+      return this.get('deviceID');
+    }.property('deviceID'),
     selectText: function() {
       return this.get('name');
     }.property('name')

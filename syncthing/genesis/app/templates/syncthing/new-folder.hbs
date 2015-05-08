@@ -1,47 +1,47 @@
-{{#g-modal title="Sync Folder" icon="fa-folder" ok="save" close="removeModal"}}
+{{#g-modal title="New Sync Folder" icon="fa-folder" ok="save" close="removeModal"}}
     <div class="form-group">
         <label for="id">Folder Name</label>
-        {{input type="text" class="form-control required" value=model.id}}
+        {{input type="text" class="form-control required" value=newFolder.id}}
         <p class="help-block">Short identifier for the folder. Must be the same on all devices.</p>
     </div>
     <div class="form-group">
         <label for="path">Path to Folder</label>
-        {{input type="text" class="form-control required" value=model.path}}
+        {{input type="text" class="form-control required" value=newFolder.path}}
         <p class="help-block">Path to the folder on your arkOS server to sync. Will be created if it does not exist.</p>
     </div>
     <div class="checkbox">
         <label>
-            {{input type="checkbox" checked=model.readOnly}} Read Only?
+            {{input type="checkbox" checked=newFolder.readOnly}} Read Only?
         </label>
         <p class="help-block">Files on your arkOS server are protected from changes made on other devices, but changes made on <strong>this</strong> device will be sent to all others.</p>
     </div>
     <div class="checkbox">
         <label>
-            {{input type="checkbox" checked=model.ignorePerms}} Ignore Permissions?
+            {{input type="checkbox" checked=newFolder.ignorePerms}} Ignore Permissions?
         </label>
         <p class="help-block">File permission bits are ignored when looking for changes. Use this when syncing to FAT filesystems.</p>
     </div>
     <div class="checkbox">
         <label>
-            {{input type="checkbox" checked=model.versioning}} Enable File Versioning
+            {{input type="checkbox" checked=newFolder.versioning}} Enable File Versioning
         </label>
         <p class="help-block">Files are moved to date-stamped versions in a <code>.stversions</code> folder when replaced or deleted by File Sync.</p>
     </div>
-    {{#if model.versioning}}
+    {{#if newFolder.versioning}}
     <div class="form-group">
         <label for="keepVersions">Keep Versions</label>
-        {{input type="text" class="form-control required" value=model.keepVersions}}
+        {{input type="text" class="form-control required" value=newFolder.keepVersions}}
         <p class="help-block">The number of old versions to keep, per file.</p>
     </div>
     {{/if}}
     <div class="form-group">
         <label for="rescanIntervalS">Rescan Interval</label>
-        {{input type="text" class="form-control required" value=model.rescanIntervalS}}
+        {{input type="text" class="form-control required" value=newFolder.rescanIntervalS}}
         <p class="help-block">The number of seconds to wait between each scan for modification of the local folder.</p>
     </div>
     <div class="form-group">
         <label for="share">Share With Devices</label>
-        {{g-multiselect options=extra.devices selected=devicesSelected addAction="addSelectedId" removeAction="removeSelectedId" }}
+        {{g-multiselect options=model.devices selected=selectedFolders addAction="addSelectedId" removeAction="removeSelectedId" }}
         <p class="help-block">Select the devices to share this folder with.</p>
     </div>
 {{/g-modal}}
