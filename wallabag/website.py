@@ -85,13 +85,13 @@ class Wallabag(Site):
             f.writelines(oc)
 
         # Make sure that the correct PHP settings are enabled
-        php.enable_mod('mysql' if dbengine == 'mysql' else 'sqlite3', 
-            'pdo_mysql' if dbengine == 'mysql' else 'pdo_sqlite', 
+        php.enable_mod('mysql' if dbengine == 'mysql' else 'sqlite3',
+            'pdo_mysql' if dbengine == 'mysql' else 'pdo_sqlite',
             'zip', 'tidy', 'xcache', 'openssl')
 
         # Set up Composer and install the proper modules
         php.composer_install(self.path)
-        
+
         uid, gid = users.get_system("http").uid, groups.get_system("http").gid
 
         # Set up the database then delete the install folder
@@ -112,7 +112,7 @@ class Wallabag(Site):
             shutil.copy(os.path.join(self.path, 'install/poche.sqlite'), '/var/lib/sqlite3/%s.db' % self.db.id)
             php.open_basedir('add', '/var/lib/sqlite3')
             os.chown("/var/lib/sqlite3/%s.db" % self.db.id, -1, gid)
-            os.chmod("/var/lib/sqlite3/%s.db", 0664)
+            os.chmod("/var/lib/sqlite3/%s.db" % self.db.id, 0664)
             self.db.execute(
                 "INSERT INTO users (username, password, name, email) VALUES ('%s', '%s', '%s', '');" % (username, passwd, username))
             self.db.execute(
