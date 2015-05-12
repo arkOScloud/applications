@@ -13,7 +13,7 @@
             "secondary": ["Documents", "Music", "Photos"]
         }
     ],
-    "version": "0.5",
+    "version": "0.6",
     "author": "arkOS",
     "homepage": "https://arkos.io",
     "app_author": "Jakob Borg",
@@ -35,6 +35,13 @@
             "name": "Syncthing",
             "package": "syncthing",
             "binary": "syncthing"
+        },
+        {
+            "type": "system",
+            "name": "python2-lxml",
+            "package": "python2-lxml",
+            "binary": null,
+            "internal": true
         }
     ],
     "generation": 1,

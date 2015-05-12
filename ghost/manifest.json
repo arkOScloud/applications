@@ -27,6 +27,12 @@
             "type": "system",
             "name": "nodejs",
             "package": "nodejs",
+            "binary": null
+        },
+        {
+            "type": "system",
+            "name": "npm",
+            "package": "npm",
             "binary": "npm"
         }
     ],

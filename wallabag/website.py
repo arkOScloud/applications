@@ -97,7 +97,7 @@ class Wallabag(Site):
         # Set up the database then delete the install folder
         if dbengine == 'mysql':
             with open(os.path.join(self.path, 'install/mysql.sql')) as f:
-                self.db.execute(f.read())
+                self.db.execute(f.read(), commit=True)
             self.db.execute(
                 "INSERT INTO users (username, password, name, email) VALUES ('%s', '%s', '%s', '');" % (username, passwd, username),
                 commit=True)

@@ -34,14 +34,14 @@
             "name": "MariaDB",
             "package": "mariadb",
             "binary": "mysqld",
-            "daemon": "mysqld",
-            "internal": true
+            "daemon": "mysqld"
         },
         {
-            "type": "python",
+            "type": "system",
             "name": "MySQL-Python",
             "package": "mysql-python",
-            "module": "_mysql"
+            "binary": null,
+            "internal": true
         }
     ],
     "generation": 1,
