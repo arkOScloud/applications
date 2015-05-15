@@ -155,6 +155,7 @@ class ownCloud(Site):
             os.mkdir("/etc/cron.d")
         with open("/etc/cron.d/oc-%s" % self.id, "w") as f:
             f.write("*/15 * * * * http php -f %s > /dev/null 2>&1" % os.path.join(self.path, "cron.php"))
+        self.site_edited()
 
     def pre_remove(self):
         datadir = ''
@@ -214,15 +215,15 @@ class ownCloud(Site):
                     raise
         shutil.copy(cfile, '/usr/share/ca-certificates/')
         fname = cfile.rstrip('/').split('/')[-1]
-        with open('/etc/ca-certificates.conf', 'r') as f:
-            ic = f.readlines()
-        oc = []
-        for l in ic:
-            if l != fname+'\n':
-                oc.append(l)
-        oc.append(fname+'\n')
+        if os.path.exists('/etc/ca-certificates.conf'):
+            with open('/etc/ca-certificates.conf', 'r') as f:
+                ic = f.readlines()
+            if not fname+'\n' in ic:
+                ic.append(fname+'\n')
+        else:
+            ic = [fname+'\n']
         with open('/etc/ca-certificates.conf', 'w') as f:
-            f.writelines(oc)
+            f.writelines(ic)
         shell('update-ca-certificates')
 
     def disable_ssl(self):
@@ -250,8 +251,10 @@ class ownCloud(Site):
 
     def site_edited(self):
         # Remove the existing trusted_sites array then add a new one based on the new addr
-        if not os.path.exists(os.path.join(self.path, 'config', 'config.php')):
+        if os.path.exists(os.path.join(self.path, 'config', 'config.php')):
             path = os.path.join(self.path, 'config', 'config.php')
+        else:
+            raise Exception("ownCloud config file not found")
         with open(path, "r") as f:
             data = f.read()
         while re.search("\n(\s*('|\")trusted_domains.*?\).*?\n)", data, re.DOTALL):
