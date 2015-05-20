@@ -11,16 +11,24 @@ from arkos.utilities import api
 def on_load(app):
     if app.id != "syncthing":
         pass
+    s = services.get("syncthing@syncthing")
+    if not s.state == "running":
+        s.start()
+        count = 0
+        while count < 5:
+            if not os.path.exists("/home/syncthing/.config/syncthing/config.xml"):
+                time.sleep(5)
+                count += 1
+            else:
+                break
+    if not os.path.exists("/home/syncthing/.config/syncthing/config.xml"):
+        raise Exception("Syncthing taking too long to generate config, try again later")
     global api_key
     api_key = get_api_key()
     global my_id
     my_id = get_myid()
 
 def get_api_key():
-    if not os.path.exists("/home/syncthing/.config/syncthing/config.xml"):
-        s = services.get("syncthing@syncthing")
-        s.start()
-        time.sleep(5)
     with open("/home/syncthing/.config/syncthing/config.xml", "r") as f:
         data = f.read()
     parser = ET.XMLParser(remove_blank_text=True)
@@ -138,6 +146,7 @@ def get_nodes(id=None):
     config = pull_config()
     for x in config["devices"]:
         x["id"] = x["name"]
+        x["is_main_device"] = x["deviceID"] == my_id
     if id:
         return next((dev for dev in config["devices"] if dev["id"] == id), None)
     return config["devices"]

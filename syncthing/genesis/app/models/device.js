@@ -8,6 +8,7 @@ export default DS.Model.extend({
     compression: DS.attr('string'),
     introducer: DS.attr('boolean'),
     addresses: DS.attr(),
+    isMainDevice: DS.attr('boolean'),
     selectId: function() {
       return this.get('deviceID');
     }.property('deviceID'),

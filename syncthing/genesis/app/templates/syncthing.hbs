@@ -9,7 +9,7 @@
     {{#each folder in model.folders}}
       <div class="ui-item">
         <div class="ui-item-icon">
-            <i class="fa fa-folder fa-fw fa-5x"></i>
+            <i class="fa fa-folder-o fa-fw fa-5x"></i>
         </div>
         <div class="ui-item-content">
           <h2>{{folder.id}}</h2>
@@ -34,7 +34,10 @@
           <p class="lead">Sync Device</p>
           <div class="ui-item-buttons">
             <a href="#" class="ui-item-button" {{action 'showModal' 'syncthing/edit-device' device}}><i class="fa fa-info-circle fa-fw fa-lg"></i><br />Edit</a>
+            {{#if device.isMainDevice}}
+            {{else}}
             <a href="#" class="ui-item-button text-danger" {{action 'showConfirm' 'delete' 'Are you sure you want to remove this device from your sync list? It will also be removed from all of your folders.' device}}><i class="fa fa-minus-circle fa-fw fa-lg"></i><br />Delete</a>
+            {{/if}}
           </div>
         </div>
       </div>

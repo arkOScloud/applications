@@ -1,7 +1,7 @@
 {{#g-modal title="Edit Sync Folder" icon="fa-folder" ok="save" close="removeModal"}}
     <div class="form-group">
         <label for="id">Folder Name</label>
-        {{input type="text" class="form-control required disabled" value=model.id}}
+        {{input type="text" class="form-control required" value=model.id disabled="true"}}
         <p class="help-block">Short identifier for the folder. Must be the same on all devices.</p>
     </div>
     <div class="form-group">

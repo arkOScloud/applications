@@ -32,7 +32,7 @@
           <h2>{{book.name}}</h2>
           <p class="lead">For {{book.user}}</p>
           <div class="ui-item-buttons">
-            <a href="#" class="ui-item-button" {{action 'showModal' 'radicale/url' cal model}}><i class="fa fa-code fa-fw fa-lg"></i><br />URL</a>
+            <a href="#" class="ui-item-button" {{action 'showModal' 'radicale/url' book model}}><i class="fa fa-code fa-fw fa-lg"></i><br />URL</a>
             <a href="#" class="ui-item-button text-danger" {{action 'showConfirm' 'delete' 'Are you sure you want to delete this address book?' book}}><i class="fa fa-minus-circle fa-fw fa-lg"></i><br />Delete</a>
           </div>
         </div>

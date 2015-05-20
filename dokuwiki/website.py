@@ -3,7 +3,6 @@ import os
 
 from arkos.languages import php
 from arkos.websites import Site
-from arkos.utilities import shell
 
 
 class DokuWiki(Site):
@@ -30,26 +29,24 @@ class DokuWiki(Site):
         ),
     ]
 
-    def pre_install(self, name, vars):
+    def pre_install(self, vars):
         pass
 
-    def post_install(self, name, path, vars, dbinfo={}):
+    def post_install(self, vars, dbpasswd=""):
         # UPDATE: Config DB info and enable modules
         index_php = os.path.join(path, 'index.php')
-        os.remove(index_php)
+        os.unlink(index_php)
         with open(index_php, "w") as f:
             f.write(switching_index)  # see below
-        shell('chown -R http ' + path)
 
-    def pre_remove(self, site):
+    def pre_remove(self):
         pass
 
-    def post_remove(self, site):
+    def post_remove(self):
         pass
 
-    def ssl_enable(self, path, cfile, kfile):
-        name = os.path.basename(path)
-        n = nginx.loadf('/etc/nginx/sites-available/%s' % name)
+    def ssl_enable(self, cfile, kfile):
+        n = nginx.loadf('/etc/nginx/sites-available/%s' % self.name)
         for x in n.servers:
             if x.filter('Location', '/'):
                 x.remove(x.filter('Location', '/')[0])
@@ -60,18 +57,17 @@ class DokuWiki(Site):
                               'X-Forwarded-Proto $scheme'),
                 )
                 x.add(self.addtoblock[0])
-                nginx.dumpf(n, '/etc/nginx/sites-available/%s' % name)
+                nginx.dumpf(n, '/etc/nginx/sites-available/%s' % self.name)
 
-    def ssl_disable(self, path):
-        name = os.path.basename(path)
-        n = nginx.loadf('/etc/nginx/sites-available/%s' % name)
+    def ssl_disable(self):
+        n = nginx.loadf('/etc/nginx/sites-available/%s' % self.name)
         for x in n.servers:
             if x.filter('Location', '/'):
                 x.remove(x.filter('Location', '/')[0])
                 x.add(self.addtoblock[0])
-                nginx.dumpf(n, '/etc/nginx/sites-available/%s' % name)
+                nginx.dumpf(n, '/etc/nginx/sites-available/%s' % self.name)
 
-    def update(self, path, pkg, ver):
+    def update(self, pkg, ver):
         pass
         # TODO update
 

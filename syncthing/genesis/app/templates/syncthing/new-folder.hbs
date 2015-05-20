@@ -41,7 +41,7 @@
     </div>
     <div class="form-group">
         <label for="share">Share With Devices</label>
-        {{g-multiselect options=model.devices selected=selectedFolders addAction="addSelectedId" removeAction="removeSelectedId" }}
+        {{g-multiselect options=model.devices selected=devicesSelected addAction="addSelectedId" removeAction="removeSelectedId" }}
         <p class="help-block">Select the devices to share this folder with.</p>
     </div>
 {{/g-modal}}
