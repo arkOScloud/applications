@@ -203,29 +203,6 @@ class ownCloud(Site):
         with open(px, 'w') as f:
             f.writelines(oc)
 
-        # Next, update the ca-certificates thing to include our cert
-        # (if necessary)
-        if not os.path.exists('/usr/share/ca-certificates'):
-            try:
-                os.makedirs('/usr/share/ca-certificates')
-            except OSError, e:
-                if e.errno == errno.EEXIST and os.path.isdir('/usr/share/ca-certificates'):
-                    pass
-                else:
-                    raise
-        shutil.copy(cfile, '/usr/share/ca-certificates/')
-        fname = cfile.rstrip('/').split('/')[-1]
-        if os.path.exists('/etc/ca-certificates.conf'):
-            with open('/etc/ca-certificates.conf', 'r') as f:
-                ic = f.readlines()
-            if not fname+'\n' in ic:
-                ic.append(fname+'\n')
-        else:
-            ic = [fname+'\n']
-        with open('/etc/ca-certificates.conf', 'w') as f:
-            f.writelines(ic)
-        shell('update-ca-certificates')
-
     def disable_ssl(self):
         if os.path.exists(os.path.join(self.path, 'config', 'config.php')):
             px = os.path.join(self.path, 'config', 'config.php')
