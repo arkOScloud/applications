@@ -149,6 +149,7 @@ class ownCloud(Site):
             "('user_ldap', 'ldap_expert_uuid_attr', '');"
         )
         self.db.execute(ldap_sql, commit=True)
+        self.db.execute("DELETE FROM group_user", commit=True)
         self.db.execute("INSERT INTO group_user VALUES ('admin','%s');" % vars.get("oc-admin", "admin"), commit=True)
 
         if not os.path.exists("/etc/cron.d"):
