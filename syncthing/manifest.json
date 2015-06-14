@@ -13,7 +13,7 @@
             "secondary": ["Documents", "Music", "Photos"]
         }
     ],
-    "version": "0.7",
+    "version": "0.8",
     "author": "arkOS",
     "homepage": "https://arkos.io",
     "app_author": "Jakob Borg",

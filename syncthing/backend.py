@@ -11,6 +11,13 @@ from arkos.utilities import api
 def on_load(app):
     if app.id != "syncthing":
         pass
+    if not users.get_system("syncthing"):
+        u = users.SystemUser('syncthing')
+        u.add()
+    u = users.get_system('syncthing')
+    if not os.path.exists("/home/syncthing"):
+        os.makedirs("/home/syncthing")
+        os.chown("/home/syncthing", u.uid, 100)
     s = services.get("syncthing@syncthing")
     if not s.state == "running":
         s.start()
