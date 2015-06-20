@@ -9,7 +9,7 @@ DEFAULT_CONFIG = (
     '\tldap = {\n'
     '\t\thostname = "localhost",\n'
     '\t\tuser = {\n'
-    '\t\t\tbasedn = "ou=users,dc=arkos-servers,dc=org",\n',
+    '\t\t\tbasedn = "ou=users,dc=arkos-servers,dc=org",\n'
     '\t\t\tfilter = "(&(objectClass=posixAccount)(mail=*@%s))",\n'
     '\t\t\tusernamefield = "mail",\n'
     '\t\t\tnamefield = "cn",\n'
