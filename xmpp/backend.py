@@ -57,6 +57,7 @@ def remove_domain(domain, reload=True):
 
 def add_ssl(name, cert, key):
     # Add an SSL certificate to an XMPP domain
+    domain = domains.get(name)
     with open("/etc/prosody/conf.d/%s.cfg.lua" % name, "w") as f:
         data = [
             'VirtualHost "%s"\n' % name,
