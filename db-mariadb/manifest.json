@@ -24,7 +24,8 @@
         {
             "name": "MariaDB",
             "binary": "mysqld",
-            "ports": [["tcp", 3306]]
+            "ports": [["tcp", 3306]],
+            "default_policy": 0
         }
     ],
     "modules": ["database"],

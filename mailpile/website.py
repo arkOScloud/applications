@@ -1,5 +1,6 @@
 import nginx
 import os
+import stat
 
 from arkos.websites import Site
 from arkos.system import users, services
@@ -21,6 +22,8 @@ class Mailpile(Site):
     def post_install(self, vars, dbpasswd=""):
         users.SystemUser("mailpile").add()
 
+        st = os.stat(os.path.join(self.path, 'mp'))
+        os.chmod(os.path.join(self.path, 'mp'), st.st_mode | stat.S_IEXEC)
         cfg = {
             'directory': self.path,
             'user': 'mailpile',
@@ -32,18 +35,18 @@ class Mailpile(Site):
         }
         s = services.Service(self.id, "supervisor", cfg=cfg)
         s.add()
-    
+
     def pre_remove(self):
         pass
 
     def post_remove(self):
         services.get(self.id).remove()
-    
+
     def enable_ssl(self, cfile, kfile):
         pass
-    
+
     def disable_ssl(self):
         pass
-    
+
     def update(self, pkg, ver):
         pass
