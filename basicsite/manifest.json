@@ -1,0 +1,33 @@
+{
+    "id": "basicsite",
+    "name": "Basic Website",
+    "type": "website",
+    "icon": "fa fa-globe",
+    "description": {
+        "short": "Upload your own HTML/PHP files",
+        "long": "Create a custom website with your own HTML or PHP files."
+    },
+    "categories": [
+        {
+            "primary": "Websites",
+            "secondary": ["Websites", "Static Sites"]
+        }
+    ],
+    "version": "1",
+    "author": "arkOS",
+    "homepage": "https://arkos.io",
+    "app_author": "",
+    "app_homepage": "",
+    "logo": false,
+    "screenshots": [],
+    "services": [],
+    "modules": ["website", "backup"],
+    "dependencies": [],
+    "generation": 1,
+    "website_updates": false,
+    "website_extra_options": true,
+    "download_url": null,
+    "database_engines": [],
+    "uses_php": false,
+    "uses_ssl": true
+}
