@@ -36,7 +36,7 @@ class Ghost(Site):
         if os.path.exists(os.path.join(self.path, 'npm-shrinkwrap.json')):
             os.unlink(os.path.join(self.path, 'npm-shrinkwrap.json'))
 
-        nodejs.install_from_package(self.path, 'production', {'sqlite': '/usr/bin/sqlite3', 'python': '/usr/bin/python2'})
+        nodejs.install_from_package(self.path, 'production', {'python': '/usr/bin/python2'})
         users.SystemUser("ghost").add()
 
         # Get Mail settings
@@ -81,7 +81,7 @@ class Ghost(Site):
                 os.chown(os.path.join(r, x), uid, -1)
             for x in f:
                 os.chown(os.path.join(r, x), uid, -1)
-        
+
         cfg = {
                 'directory': self.path,
                 'user': 'ghost',
@@ -114,7 +114,7 @@ class Ghost(Site):
                 nginx.dumpf(n, '/etc/nginx/sites-available/%s'%self.id)
         with open(os.path.join(self.path, 'config.js'), 'r') as f:
             data = f.read()
-        data = data.replace('production: {\n        url: \'http://', 
+        data = data.replace('production: {\n        url: \'http://',
             'production: {\n        url: \'https://')
         with open(os.path.join(self.path, 'config.js'), 'w') as f:
             f.write(data)
@@ -129,7 +129,7 @@ class Ghost(Site):
                 nginx.dumpf(n, '/etc/nginx/sites-available/%s'%self.id)
         with open(os.path.join(self.path, 'config.js'), 'r') as f:
             data = f.read()
-        data = data.replace('production: {\n        url: \'https://', 
+        data = data.replace('production: {\n        url: \'https://',
             'production: {\n        url: \'http://')
         with open(os.path.join(self.path, 'config.js'), 'w') as f:
             f.write(data)
