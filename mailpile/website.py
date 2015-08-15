@@ -1,6 +1,5 @@
 import nginx
 import os
-import stat
 
 from arkos.websites import Site
 from arkos.system import users, services
@@ -22,8 +21,8 @@ class Mailpile(Site):
     def post_install(self, vars, dbpasswd=""):
         users.SystemUser("mailpile").add()
 
-        st = os.stat(os.path.join(self.path, 'mp'))
-        os.chmod(os.path.join(self.path, 'mp'), st.st_mode | stat.S_IEXEC)
+        st = os.stat(os.path.join(self.path, 'scripts/mailpile'))
+        os.chmod(os.path.join(self.path, 'scripts/mailpile'), st.st_mode | 0111)
         cfg = {
             'directory': self.path,
             'user': 'mailpile',
