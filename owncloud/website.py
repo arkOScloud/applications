@@ -54,6 +54,7 @@ class ownCloud(Site):
 
     def post_install(self, vars, dbpasswd=""):
         secret_key = random_string()
+        php.open_basedir('add', '/dev')
 
         # If there is a custom path for the data directory, add to open_basedir
         uid, gid = users.get_system("http").uid, groups.get_system("http").gid
@@ -95,7 +96,7 @@ class ownCloud(Site):
         php.enable_mod('mysql', 'pdo_mysql', 'zip', 'gd', 'ldap',
             'iconv', 'openssl', 'xcache', 'posix')
 
-        # Make sure xcache has the correct settings, otherwise ownCloud breaks
+        # Make sure xcache + php-fpm have the correct settings, otherwise ownCloud breaks
         with open('/etc/php/conf.d/xcache.ini', 'w') as f:
             f.writelines(['extension=xcache.so\n',
                 'xcache.size=64M\n',
@@ -103,6 +104,13 @@ class ownCloud(Site):
                 'xcache.admin.enable_auth = Off\n',
                 'xcache.admin.user = "admin"\n',
                 'xcache.admin.pass = "'+secret_key[8:24]+'"\n'])
+        with open("/etc/php/php-fpm.conf", "r") as f:
+            lines = f.readlines()
+        with open("/etc/php/php-fpm.conf", "w") as f:
+            for line in lines:
+                if ";clear_env = " in line:
+                    line = "clear_env = no\n"
+                f.write(line)
 
         php.change_setting("always_populate_raw_post_data", "-1")
         mydir = os.getcwd()
@@ -149,12 +157,27 @@ class ownCloud(Site):
             "('user_ldap', 'ldap_expert_uuid_attr', '');"
         )
         self.db.execute(ldap_sql, commit=True)
-        self.db.execute("DELETE FROM group_user; INSERT INTO group_user VALUES ('admin','%s');" % vars.get("oc-admin", "admin"), commit=True)
+        self.db.execute("DELETE FROM group_user", commit=True)
+        self.db.execute("INSERT INTO group_user VALUES ('admin','%s');" % vars.get("oc-admin", "admin"), commit=True)
 
         if not os.path.exists("/etc/cron.d"):
             os.mkdir("/etc/cron.d")
         with open("/etc/cron.d/oc-%s" % self.id, "w") as f:
             f.write("*/15 * * * * http php -f %s > /dev/null 2>&1" % os.path.join(self.path, "cron.php"))
+
+        with open(os.path.join(self.path, "config", "config.php"), "r") as f:
+            data = f.read()
+        while re.search("\n(\s*('|\")memcache.local.*?\n)", data, re.DOTALL):
+            data = data.replace(re.search("\n(\s*('|\")memcache.local.*?\n)", data, re.DOTALL).group(1), "")
+        data = data.split("\n")
+        with open(os.path.join(self.path, "config", "config.php"), "w") as f:
+            for x in data:
+                if not x.endswith("\n"):
+                    x += "\n"
+                if x.startswith(");"):
+                    f.write("  'memcache.local' => '\OC\Memcache\XCache',\n")
+                f.write(x)
+
         self.site_edited()
 
     def pre_remove(self):
