@@ -1,0 +1,41 @@
+{
+	"id": "ucoin-server",
+    "name": "uCoin Server",
+    "type": "app",
+    "icon": "fa fa-bank",
+    "description": {
+        "short": "uCoin Server allows one to host uCoin nodes of any uCoin currency.",
+        "long": "uCoin Server is a cryptocurrency server that allows you to create and host Universal Basic Income currencies. This way one can realize a monetary system that not only touches everyone globally, but distributes it such a way, that it is free of corruption, bureaucracy and injustice, that could never be achieved otherwise in an semi- to fully-automated economy."
+    },
+    "categories": [
+        {
+            "primary": "Cryptocoin",
+            "secondary": ["Money Server"]
+        }
+    ],
+    "version": "0.1",
+    "author": "Folatt RPG",
+    "homepage": "https://github.com/Folatt",
+    "app_author": "Cédric Moreau",
+    "app_homepage": "http://ucoin.io",
+    "logo": true,
+    "screenshots": [],
+    "services": [],
+    "modules": ["backend", "api"],
+    "dependencies": [
+        {
+            "type": "system",
+            "name": "nodejs",
+            "package": "nodejs",
+            "binary": null
+        },
+        {
+            "type": "system",
+            "name": "npm",
+            "package": "npm",
+            "binary": "npm" 
+        }
+    ],
+    "generation": 1,
+    "uses_ssl": false
+}
