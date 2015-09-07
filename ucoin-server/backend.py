@@ -18,6 +18,7 @@ def on_load(app):
     if not nodejs.is_installed('ucoin'):
         logger.info("Installing ucoin, this can take a long time..")
         nodejs.install('ucoin', as_global=True, opts={"python": "=python2.7"})
+    configUCoin()
     runUCoin(app)
 
 def runUCoin(app):
@@ -33,6 +34,16 @@ def runUCoin(app):
 
     s = services.Service(app.id, "supervisor", cfg=cfg)
     s.add()
+    
+def configUCoin(*mods, **kwargs):
+    # Runs uCoin.
+    logger.info("configuring ucoind..")
+    opts = "--salt 'test1' --passwd 'test1' --noupnp --ipv4 127.0.0.1 \
+    --remoteh sluimers.net --port 32118 --remotep 32118 --currency 'uCoin Florin - Alpha'"
+    s = shell("sudo -u ucoin-server ucoind config %s" % opts)
+    if s["stderr"] != '' or '[ERROR]' in s["stdout"]:
+        logger.error("uCoin config of %s failed; log output follows:\n%s"%(" ".join(x for x in mods),s["stderr"]))
+        raise Exception("uCoin config failed, check logs for info")
 
 def setup(sync_node, sync_port, ipv4, port, salt, passwd):
     # Runs uCoin.
