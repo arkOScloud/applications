@@ -18,6 +18,8 @@ def on_load(app):
     if not nodejs.is_installed('ucoin'):
         logger.info("Installing ucoin, this can take a long time..")
         nodejs.install('ucoin', as_global=True, opts={"python": "=python2.7"})
+        nodejs.add_user("ucoin-server")
+        
     configUCoin()
     runUCoin(app)
 
