@@ -10,7 +10,7 @@ from arkos.utilities import api
 
 def on_load(app):
     if app.id != "syncthing":
-        pass
+        return
     if not users.get_system("syncthing"):
         u = users.SystemUser('syncthing')
         u.add()
