@@ -105,12 +105,10 @@ class Ghost(Site):
         n = nginx.loadf('/etc/nginx/sites-available/%s'%self.id)
         for x in n.servers:
             if x.filter('Location', '/'):
-                x.remove(x.filter('Location', '/')[0])
-                self.addtoblock[0].add(
+                x.filter('Location', '/')[0].add(
                     nginx.Key('proxy_set_header', 'X-Forwarded-For $proxy_add_x_forwarded_for'),
-                    nginx.Key('proxy_set_header', 'X-Forwarded-Proto $scheme'),
+                    nginx.Key('proxy_set_header', 'X-Forwarded-Proto $scheme')
                 )
-                x.add(self.addtoblock[0])
                 nginx.dumpf(n, '/etc/nginx/sites-available/%s'%self.id)
         with open(os.path.join(self.path, 'config.js'), 'r') as f:
             data = f.read()
@@ -124,8 +122,13 @@ class Ghost(Site):
         n = nginx.loadf('/etc/nginx/sites-available/%s'%self.id)
         for x in n.servers:
             if x.filter('Location', '/'):
-                x.remove(x.filter('Location', '/')[0])
-                x.add(self.addtoblock[0])
+                toremove = []
+                for y in x.filter('Location', '/')[0].all():
+                    if y.value == 'X-Forwarded-For $proxy_add_x_forwarded_for' or \
+                       y.value == 'X-Forwarded-Proto $scheme':
+                        toremove.append(y)
+                for y in toremove:
+                    x.filter('Location', '/')[0].remove(y)
                 nginx.dumpf(n, '/etc/nginx/sites-available/%s'%self.id)
         with open(os.path.join(self.path, 'config.js'), 'r') as f:
             data = f.read()
