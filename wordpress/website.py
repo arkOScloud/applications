@@ -79,13 +79,13 @@ class WordPress(Site):
             )
 
         # Make sure that the correct PHP settings are enabled
-        php.enable_mod('mysql', 'xcache')
+        php.enable_mod('mysql', 'opcache')
 
         # Finally, make sure that permissions are set so that Wordpress
         # can make adjustments and save plugins when need be.
         uid, gid = users.get_system("http").uid, groups.get_system("http").gid
-        for r, d, f in os.walk(self.path):  
-            for x in d:  
+        for r, d, f in os.walk(self.path):
+            for x in d:
                 os.chown(os.path.join(r, x), uid, gid)
             for x in f:
                 os.chown(os.path.join(r, x), uid, gid)
@@ -129,7 +129,7 @@ class WordPress(Site):
             oc.append('define(\'FORCE_SSL_ADMIN\', false);\n')
         with open(os.path.join(self.path, 'wp-config.php'), 'w') as f:
             f.writelines(oc)
-    
+
     def site_edited(self):
         if not self.db:
             return

@@ -25,7 +25,8 @@ class Ghost(Site):
         with open(os.path.join(self.path, 'package.json'), 'r') as f:
             d = json.loads(f.read())
         del d['dependencies']['bcryptjs']
-        d['dependencies']['bcrypt'] = '0.8.1'
+        d['dependencies']['bcrypt'] = '0.8.5'
+        d['engines']['node'] = '~0.10.0 || ~0.12.0 || ^4.2.0 || ^5.6.0'
         with open(os.path.join(self.path, 'package.json'), 'w') as f:
             f.write(json.dumps(d))
         with open(os.path.join(self.path, 'core/server/models/user.js'), 'r') as f:
