@@ -79,7 +79,8 @@ class WordPress(Site):
             )
 
         # Make sure that the correct PHP settings are enabled
-        php.enable_mod('mysql', 'opcache')
+        php.enable_mod('mysqli', 'opcache')
+        php.enable_mod('apcu', config_file="/etc/php/conf.d/apcu.ini")
 
         # Finally, make sure that permissions are set so that Wordpress
         # can make adjustments and save plugins when need be.

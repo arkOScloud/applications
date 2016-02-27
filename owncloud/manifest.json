@@ -17,7 +17,7 @@
             "secondary": ["Documents", "Music", "Photos", "Calendar", "Contacts"]
         }
     ],
-    "version": "8.2.2-1",
+    "version": "8.2.2-2",
     "author": "arkOS",
     "homepage": "http://arkos.io",
     "app_author": "ownCloud",
@@ -69,6 +69,12 @@
             "binary": null
         },
         {
+            "type": "system",
+            "name": "PHP APCu BC",
+            "package": "php-apcu-bc",
+            "binary": null
+        },
+        {
             "type": "app",
             "name": "MariaDB",
             "package": "db-mariadb"
@@ -78,7 +84,15 @@
     "website_updates": false,
     "download_url": "https://download.owncloud.org/community/owncloud-8.2.2.tar.bz2",
     "website_datapaths": true,
-    "website_extra_options": true,
+    "website_options": [
+      {
+        "id": "oc-admin",
+        "name": "ownCloud Admin User",
+        "help": "This user will be given administrative privileges for ownCloud.",
+        "type": "select",
+        "choices": "users"
+      }
+    ],
     "website_default_data_subdir": "data",
     "database_engines": ["db-mariadb"],
     "uses_php": true

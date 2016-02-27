@@ -80,6 +80,8 @@ class ownCloud(Site):
         # Make sure that the correct PHP settings are enabled
         php.enable_mod('opcache', 'mysql', 'pdo_mysql', 'zip', 'gd', 'ldap',
             'iconv', 'openssl', 'posix')
+        php.enable_mod('apcu', 'apc', config_file="/etc/php/conf.d/apcu.ini")
+        php.change_setting('apc.enable_cli', '1', config_file="/etc/php/conf.d/apcu.ini")
 
         # Make sure php-fpm has the correct settings, otherwise ownCloud breaks
         with open("/etc/php/php-fpm.conf", "r") as f:
@@ -146,6 +148,19 @@ class ownCloud(Site):
             os.mkdir("/etc/cron.d")
         with open("/etc/cron.d/oc-%s" % self.id, "w") as f:
             f.write("*/15 * * * * http php -f %s > /dev/null 2>&1" % os.path.join(self.path, "cron.php"))
+
+        with open(os.path.join(self.path, "config", "config.php"), "r") as f:
+            data = f.read()
+        while re.search("\n(\s*('|\")memcache.local.*?\n)", data, re.DOTALL):
+            data = data.replace(re.search("\n(\s*('|\")memcache.local.*?\n)", data, re.DOTALL).group(1), "")
+        data = data.split("\n")
+        with open(os.path.join(self.path, "config", "config.php"), "w") as f:
+            for x in data:
+                if not x.endswith("\n"):
+                    x += "\n"
+                if x.startswith(");"):
+                    f.write("  'memcache.local' => '\OC\Memcache\APCu',\n")
+                f.write(x)
 
         self.site_edited()
 
