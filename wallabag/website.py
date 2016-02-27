@@ -85,9 +85,8 @@ class Wallabag(Site):
             f.writelines(oc)
 
         # Make sure that the correct PHP settings are enabled
-        php.enable_mod('mysql' if dbengine == 'mysql' else 'sqlite3',
-            'pdo_mysql' if dbengine == 'mysql' else 'pdo_sqlite',
-            'zip', 'tidy', 'xcache', 'openssl')
+        php.enable_mod('sqlite3', 'pdo_mysql' if dbengine == 'mysql' else 'pdo_sqlite',
+            'zip', 'tidy')
 
         # Set up Composer and install the proper modules
         php.composer_install(self.path)
