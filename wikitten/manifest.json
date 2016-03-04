@@ -1,0 +1,51 @@
+{
+    "id": "wikitten",
+    "name": "Wikitten",
+    "type": "website",
+    "icon": "fa fa-wikipedia-w",
+    "description": {
+        "short": "Your personal wiki.",
+        "long": "Wikitten is a small, fast, PHP wiki, and the perfect place to store your notes, code snippets, ideas, and so on."
+    },
+    "categories": [
+        {
+            "primary": "Websites",
+            "secondary": ["Websites", "Wiki"]
+        }
+    ],
+    "version": "1",
+    "author": "mrbn",
+    "homepage": "https://git.coderouge.co/u/mrbn",
+    "app_author": "Victor Stanciu",
+    "app_homepage": "http://wikitten.vizuina.com/",
+    "logo": false,
+    "screenshots": [],
+    "services": [
+        {
+            "name": "PHP FastCGI",
+            "binary": "php-fpm",
+            "ports": []
+        }
+    ],
+    "modules": ["website", "backup"],
+    "dependencies": [
+        {
+            "type": "system",
+            "name": "php",
+            "package": "php",
+            "binary": null
+        },
+        {
+            "type": "system",
+            "name": "PHP FastCGI",
+            "package": "php-fpm",
+            "binary": "php-fpm"
+        }
+    ],
+    "generation": 1,
+    "website_updates": false,
+    "website_extra_options": false,
+    "download_url": "https://github.com/victorstanciu/Wikitten.git",
+    "database_engines": [],
+    "uses_php": true
+}
