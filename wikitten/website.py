@@ -4,7 +4,6 @@ import shutil
 
 from arkos.system import users, groups
 from arkos.websites import Site
-from arkos.languages import php
 
 
 class wikitten(Site):
