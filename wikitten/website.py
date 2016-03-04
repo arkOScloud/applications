@@ -59,3 +59,4 @@ class wikitten(Site):
 
     def update(self, pkg, ver):
         pass
+ 	# TODO: pull from Git at appropriate intervals
