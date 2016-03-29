@@ -19,7 +19,7 @@
     "app_author": "Victor Stanciu",
     "app_homepage": "http://wikitten.vizuina.com/",
     "logo": false,
-    "screenshots": [],
+    "screenshots": ["screen-1.png", "screen-2.png"],
     "services": [
         {
             "name": "PHP FastCGI",
