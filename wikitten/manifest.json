@@ -18,7 +18,7 @@
     "homepage": "https://git.coderouge.co/u/mrbn",
     "app_author": "Victor Stanciu",
     "app_homepage": "http://wikitten.vizuina.com/",
-    "logo": false,
+    "logo": true,
     "screenshots": ["screen-1.png", "screen-2.png"],
     "services": [
         {
