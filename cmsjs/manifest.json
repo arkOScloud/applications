@@ -13,7 +13,7 @@
             "secondary": ["Websites", "CMS"]
         }
     ],
-    "version": "1",
+    "version": "1.0.0-1",
     "author": "mrbn",
     "homepage": "https://git.coderouge.co/u/mrbn",
     "app_author": "Chris Diana",

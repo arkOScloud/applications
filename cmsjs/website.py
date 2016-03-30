@@ -13,7 +13,7 @@ class cmsjs(Site):
         ),
     ]
     def pre_install(self, vars):
-	pass
+        pass
 
     def post_install(self, vars, dbpasswd=""):
         # Write a standard CMS.js config file
@@ -47,5 +47,5 @@ class cmsjs(Site):
         pass
 
     def update(self, pkg, ver):
-	# TODO: pull from Git at appropriate intervals
+        # TODO: pull from Git at appropriate intervals
         pass
