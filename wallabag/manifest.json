@@ -13,7 +13,7 @@
             "secondary": ["News Readers (RSS)", "Bookmarking"]
         }
     ],
-    "version": "1.9.1b-1",
+    "version": "1.9.1b-2",
     "author": "arkOS",
     "homepage": "https://arkos.io",
     "app_author": "Nicholas Loeuillet",
@@ -43,12 +43,6 @@
         },
         {
             "type": "system",
-            "name": "PHP xCache",
-            "package": "php-xcache",
-            "binary": null
-        },
-        {
-            "type": "system",
             "name": "PHP Tidy",
             "package": "php-tidy",
             "binary": null
@@ -67,7 +61,20 @@
     ],
     "generation": 1,
     "website_updates": true,
-    "website_extra_options": true,
+    "website_options": [
+      {
+        "id": "wb-username",
+        "name": "Wallabag Username",
+        "help": "This will be the username of the first user for Wallabag.",
+        "type": "text"
+      },
+      {
+        "id": "wb-password",
+        "name": "Wallabag Password",
+        "help": "",
+        "type": "password"
+      }
+    ],
     "download_url": "https://github.com/wallabag/wallabag/archive/1.9.1-b.tar.gz",
     "database_engines": ["db-sqlite3"],
     "uses_php": true

@@ -12,28 +12,28 @@ from arkos.system import users, groups
 
 class ownCloud(Site):
     addtoblock = [
-        nginx.Key('error_page', '403 = /core/templates/403.php'),
-        nginx.Key('error_page', '404 = /core/templates/404.php'),
+        nginx.Key('error_page', '403 /core/templates/403.php'),
+        nginx.Key('error_page', '404 /core/templates/404.php'),
         nginx.Key('client_max_body_size', '10G'),
         nginx.Key('fastcgi_buffers', '64 4K'),
-        nginx.Key('rewrite', '^/caldav(.*)$ /remote.php/caldav$1 redirect'),
-        nginx.Key('rewrite', '^/carddav(.*)$ /remote.php/carddav$1 redirect'),
-        nginx.Key('rewrite', '^/webdav(.*)$ /remote.php/webdav$1 redirect'),
+        nginx.Key('fastcgi_buffer_size', '64K'),
+        nginx.Key('rewrite', '^/.well-known/carddav /remote.php/carddav/ permanent'),
+        nginx.Key('rewrite', '^/.well-known/caldav /remote.php/caldav/ permanent'),
         nginx.Location('= /robots.txt',
             nginx.Key('allow', 'all'),
             nginx.Key('log_not_found', 'off'),
             nginx.Key('access_log', 'off')
             ),
-        nginx.Location('~ ^/(?:\.htaccess|data|config|db_structure\.xml|README)',
+        nginx.Location('~ ^/(build|tests|config|lib|3rdparty|templates|data)/',
+            nginx.Key('deny', 'all')
+            ),
+        nginx.Location('~ ^/(?:\.|autotest|occ|issue|indie|db_|console)/',
             nginx.Key('deny', 'all')
             ),
         nginx.Location('/',
-            nginx.Key('rewrite', '^/.well-known/host-meta /public.php?service=host-meta last'),
-            nginx.Key('rewrite', '^/.well-known/host-meta.json /public.php?service=host-meta-json last'),
-            nginx.Key('rewrite', '^/.well-known/carddav /remote.php/carddav/ redirect'),
-            nginx.Key('rewrite', '^/.well-known/caldav /remote.php/caldav/ redirect'),
+            nginx.Key('rewrite', '^/remote/(.*) /remote.php last'),
             nginx.Key('rewrite', '^(/core/doc/[^\/]+/)$ $1/index.html'),
-            nginx.Key('try_files', '$uri $uri/ index.php')
+            nginx.Key('try_files', '$uri $uri/ =404')
             ),
         nginx.Location('~ \.php(?:$|/)',
             nginx.Key('fastcgi_split_path_info', '^(.+\.php)(/.+)$'),
@@ -41,10 +41,14 @@ class ownCloud(Site):
             nginx.Key('fastcgi_param', 'SCRIPT_FILENAME $document_root$fastcgi_script_name'),
             nginx.Key('fastcgi_param', 'PATH_INFO $fastcgi_path_info'),
             nginx.Key('fastcgi_pass', 'unix:/run/php-fpm/php-fpm.sock'),
+            nginx.Key('fastcgi_intercept_errors', 'on'),
             nginx.Key('fastcgi_read_timeout', '900s')
             ),
-        nginx.Location('~* \.(?:jpg|jpeg|gif|bmp|ico|png|css|js|swf)$',
-            nginx.Key('expires', '30d'),
+        nginx.Location('~* \.(?:css|js)$',
+            nginx.Key('add_header', 'Cache-Control "public, max-age=7200"'),
+            nginx.Key('access_log', 'off')
+            ),
+        nginx.Location('~* \.(?:jpg|jpeg|gif|bmp|ico|png|swf)$',
             nginx.Key('access_log', 'off')
             )
         ]
@@ -73,37 +77,13 @@ class ownCloud(Site):
             os.chown(os.path.join(self.data_path), uid, gid)
             php.open_basedir('add', self.data_path)
 
-        # Create ownCloud automatic configuration file
-        with open(os.path.join(self.path, 'config', 'autoconfig.php'), 'w') as f:
-            f.write(
-                '<?php\n'
-                '   $AUTOCONFIG = array(\n'
-                '   "adminlogin" => "admin",\n'
-                '   "adminpass" => "'+dbpasswd+'",\n'
-                '   "dbtype" => "mysql",\n'
-                '   "dbname" => "'+self.db.id+'",\n'
-                '   "dbuser" => "'+self.db.id+'",\n'
-                '   "dbpass" => "'+dbpasswd+'",\n'
-                '   "dbhost" => "localhost",\n'
-                '   "dbtableprefix" => "",\n'
-                '   "directory" => "'+self.data_path+'",\n'
-                '   );\n'
-                '?>\n'
-                )
-        os.chown(os.path.join(self.path, 'config', 'autoconfig.php'), uid, gid)
-
         # Make sure that the correct PHP settings are enabled
-        php.enable_mod('mysql', 'pdo_mysql', 'zip', 'gd', 'ldap',
-            'iconv', 'openssl', 'xcache', 'posix')
+        php.enable_mod('opcache', 'mysql', 'pdo_mysql', 'zip', 'gd', 'ldap',
+            'iconv', 'openssl', 'posix')
+        php.enable_mod('apcu', 'apc', config_file="/etc/php/conf.d/apcu.ini")
+        php.change_setting('apc.enable_cli', '1', config_file="/etc/php/conf.d/apcu.ini")
 
-        # Make sure xcache + php-fpm have the correct settings, otherwise ownCloud breaks
-        with open('/etc/php/conf.d/xcache.ini', 'w') as f:
-            f.writelines(['extension=xcache.so\n',
-                'xcache.size=64M\n',
-                'xcache.var_size=64M\n',
-                'xcache.admin.enable_auth = Off\n',
-                'xcache.admin.user = "admin"\n',
-                'xcache.admin.pass = "'+secret_key[8:24]+'"\n'])
+        # Make sure php-fpm has the correct settings, otherwise ownCloud breaks
         with open("/etc/php/php-fpm.conf", "r") as f:
             lines = f.readlines()
         with open("/etc/php/php-fpm.conf", "w") as f:
@@ -115,15 +95,19 @@ class ownCloud(Site):
         php.change_setting("always_populate_raw_post_data", "-1")
         mydir = os.getcwd()
         os.chdir(self.path)
-        s = shell("sudo -u http php index.php")
-        if "<strong>Error</strong>" in s["stdout"]:
+        s = shell(('php occ maintenance:install '
+            '--database "mysql" --database-name "{}" --database-user "{}" '
+            '--database-pass "{}" --admin-pass "{}" --data-dir "{}"'
+            ).format(self.db.id, self.db.id, dbpasswd, dbpasswd, self.data_path))
+        if s["code"] != 0:
             raise Exception("ownCloud database population failed")
-        s = shell("sudo -u http php occ app:enable user_ldap")
+        s = shell("php occ app:enable user_ldap")
         if s["code"] != 0:
             raise Exception("ownCloud LDAP configuration failed")
         os.chdir(mydir)
+        os.chown(os.path.join(self.path, "config/config.php"), uid, gid)
 
-        ldap_sql = ("REPLACE INTO appconfig (appid, configkey, configvalue) VALUES"
+        ldap_sql = ("REPLACE INTO oc_appconfig (appid, configkey, configvalue) VALUES"
             "('core', 'backgroundjobs_mode', 'cron'),"
             "('user_ldap', 'ldap_uuid_attribute', 'auto'),"
             "('user_ldap', 'ldap_host', 'localhost'),"
@@ -157,8 +141,8 @@ class ownCloud(Site):
             "('user_ldap', 'ldap_expert_uuid_attr', '');"
         )
         self.db.execute(ldap_sql, commit=True)
-        self.db.execute("DELETE FROM group_user", commit=True)
-        self.db.execute("INSERT INTO group_user VALUES ('admin','%s');" % vars.get("oc-admin", "admin"), commit=True)
+        self.db.execute("DELETE FROM oc_group_user;", commit=True)
+        self.db.execute("INSERT INTO oc_group_user VALUES ('admin','%s');" % vars.get("oc-admin", "admin"), commit=True)
 
         if not os.path.exists("/etc/cron.d"):
             os.mkdir("/etc/cron.d")
@@ -175,7 +159,7 @@ class ownCloud(Site):
                 if not x.endswith("\n"):
                     x += "\n"
                 if x.startswith(");"):
-                    f.write("  'memcache.local' => '\OC\Memcache\XCache',\n")
+                    f.write("  'memcache.local' => '\OC\Memcache\APCu',\n")
                 f.write(x)
 
         self.site_edited()

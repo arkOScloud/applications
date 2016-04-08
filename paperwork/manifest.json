@@ -1,0 +1,85 @@
+{
+    "id": "paperwork",
+    "name": "Paperwork",
+    "type": "website",
+    "icon": "fa fa-file-text-o",
+    "description": {
+        "short": "Note-taking & archiving alternative to Evernote, Microsoft OneNote & Google Keep",
+        "long": ""
+    },
+    "categories": [
+        {
+            "primary": "Organization",
+            "secondary": ["Notes"]
+        },
+        {
+            "primary": "File Storage",
+            "secondary": ["Documents"]
+        }
+    ],
+    "version": "20160328-1",
+    "author": "arkOS",
+    "homepage": "http://arkos.io",
+    "app_author": "twostairs",
+    "app_homepage": "http://paperwork.rocks",
+    "logo": true,
+    "screenshots": ["screen-1.png", "screen-2.png"],
+    "services": [
+        {
+            "name": "PHP FastCGI",
+            "binary": "php-fpm",
+            "ports": []
+        }
+    ],
+    "modules": ["website", "backup"],
+    "dependencies": [
+        {
+            "type": "system",
+            "name": "php",
+            "package": "php",
+            "binary": null
+        },
+        {
+            "type": "system",
+            "name": "PHP FastCGI",
+            "package": "php-fpm",
+            "binary": "php-fpm"
+        },
+        {
+            "type": "system",
+            "name": "PHP GD Image Processing",
+            "package": "php-gd",
+            "binary": null
+        },
+        {
+            "type": "system",
+            "name": "PHP APCu",
+            "package": "php-apcu",
+            "binary": null
+        },
+        {
+            "type": "system",
+            "name": "PHP APCu BC",
+            "package": "php-apcu-bc",
+            "binary": null
+        },
+        {
+            "type": "system",
+            "name": "PHP Mcrypt",
+            "package": "php-mcrypt",
+            "binary": null
+        },
+        {
+            "type": "app",
+            "name": "MariaDB",
+            "package": "db-mariadb"
+        }
+    ],
+    "generation": 1,
+    "website_updates": false,
+    "download_url": "https://github.com/twostairs/paperwork/archive/master.zip",
+    "website_datapaths": false,
+    "website_options": [],
+    "database_engines": ["db-mariadb"],
+    "uses_php": true
+}

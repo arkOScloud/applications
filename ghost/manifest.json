@@ -13,7 +13,7 @@
             "secondary": ["Blogs", "Websites", "CMS"]
         }
     ],
-    "version": "0.6.4-2",
+    "version": "0.7.8-1",
     "author": "ajvb",
     "homepage": "http://arkos.io",
     "app_author": "Ghost",
@@ -38,7 +38,7 @@
     ],
     "generation": 1,
     "website_updates": true,
-    "download_url": "https://github.com/TryGhost/Ghost/releases/download/0.6.4/Ghost-0.6.4.zip",
+    "download_url": "https://github.com/TryGhost/Ghost/releases/download/0.7.8/Ghost-0.7.8.zip",
     "database_engines": [],
     "uses_php": false,
     "uses_ssl": true
