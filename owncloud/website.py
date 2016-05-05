@@ -24,10 +24,10 @@ class ownCloud(Site):
             ),
         nginx.Location('= /.well-known/carddav',
             nginx.Key('return', '301 $scheme://$host/remote.php/dav')
-        )
+        ),
         nginx.Location('= /.well-known/caldav',
             nginx.Key('return', '301 $scheme://$host/remote.php/dav')
-        )
+        ),
         nginx.Location('/',
             nginx.Key('rewrite', '^ /index.php$uri'),
             ),
@@ -53,7 +53,7 @@ class ownCloud(Site):
             nginx.Key('index', 'index.php')
         ),
         nginx.Location('~* \.(?:css|js)$',
-            nginx.Key('try_files', '$uri /index.php$uri$is_args$args')
+            nginx.Key('try_files', '$uri /index.php$uri$is_args$args'),
             nginx.Key('add_header', 'Cache-Control "public, max-age=7200"'),
             nginx.Key('add_header', 'X-Content-Type-Options nosniff'),
             nginx.Key('add_header', 'X-XSS-Protection "1; mode=block"'),
