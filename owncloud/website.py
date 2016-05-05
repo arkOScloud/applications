@@ -17,38 +17,54 @@ class ownCloud(Site):
         nginx.Key('client_max_body_size', '10G'),
         nginx.Key('fastcgi_buffers', '64 4K'),
         nginx.Key('fastcgi_buffer_size', '64K'),
-        nginx.Key('rewrite', '^/.well-known/carddav /remote.php/carddav/ permanent'),
-        nginx.Key('rewrite', '^/.well-known/caldav /remote.php/caldav/ permanent'),
         nginx.Location('= /robots.txt',
             nginx.Key('allow', 'all'),
             nginx.Key('log_not_found', 'off'),
             nginx.Key('access_log', 'off')
             ),
-        nginx.Location('~ ^/(build|tests|config|lib|3rdparty|templates|data)/',
-            nginx.Key('deny', 'all')
-            ),
-        nginx.Location('~ ^/(?:\.|autotest|occ|issue|indie|db_|console)/',
-            nginx.Key('deny', 'all')
-            ),
+        nginx.Location('= /.well-known/carddav',
+            nginx.Key('return', '301 $scheme://$host/remote.php/dav')
+        )
+        nginx.Location('= /.well-known/caldav',
+            nginx.Key('return', '301 $scheme://$host/remote.php/dav')
+        )
         nginx.Location('/',
-            nginx.Key('rewrite', '^/remote/(.*) /remote.php last'),
-            nginx.Key('rewrite', '^(/core/doc/[^\/]+/)$ $1/index.html'),
-            nginx.Key('try_files', '$uri $uri/ =404')
+            nginx.Key('rewrite', '^ /index.php$uri'),
             ),
-        nginx.Location('~ \.php(?:$|/)',
-            nginx.Key('fastcgi_split_path_info', '^(.+\.php)(/.+)$'),
+        nginx.Location('~ ^/(?:build|tests|config|lib|3rdparty|templates|data)/',
+            nginx.Key('deny', 'all')
+            ),
+        nginx.Location('~ ^/(?:\.|autotest|occ|issue|indie|db_|console)',
+            nginx.Key('deny', 'all')
+            ),
+        nginx.Location('~ ^/(?:index|remote|public|cron|core/ajax/update|status|ocs/v[12]|updater/.+|ocs-provider/.+|core/templates/40[34])\.php(?:$|/)',
             nginx.Key('include', 'fastcgi_params'),
+            nginx.Key('fastcgi_split_path_info', '^(.+\.php)(/.+)$'),
             nginx.Key('fastcgi_param', 'SCRIPT_FILENAME $document_root$fastcgi_script_name'),
             nginx.Key('fastcgi_param', 'PATH_INFO $fastcgi_path_info'),
+            nginx.Key('fastcgi_param', 'modHeadersAvailable true'),
+            nginx.Key('fastcgi_param', 'front_controller_active true'),
             nginx.Key('fastcgi_pass', 'unix:/run/php-fpm/php-fpm.sock'),
             nginx.Key('fastcgi_intercept_errors', 'on'),
             nginx.Key('fastcgi_read_timeout', '900s')
             ),
+        nginx.Location('~ ^/(?:updater|ocs-provider)(?:$|/)',
+            nginx.Key('try_files', '$uri/ =404'),
+            nginx.Key('index', 'index.php')
+        ),
         nginx.Location('~* \.(?:css|js)$',
+            nginx.Key('try_files', '$uri /index.php$uri$is_args$args')
             nginx.Key('add_header', 'Cache-Control "public, max-age=7200"'),
+            nginx.Key('add_header', 'X-Content-Type-Options nosniff'),
+            nginx.Key('add_header', 'X-XSS-Protection "1; mode=block"'),
+            nginx.Key('add_header', 'X-Frame-Options "SAMEORIGIN"'),
+            nginx.Key('add_header', 'X-Robots-Tag none'),
+            nginx.Key('add_header', 'X-Download-Options noopen'),
+            nginx.Key('add_header', 'X-Permitted-Cross-Domain-Policies none'),
             nginx.Key('access_log', 'off')
             ),
-        nginx.Location('~* \.(?:jpg|jpeg|gif|bmp|ico|png|swf)$',
+        nginx.Location('~* \.(?:svg|gif|png|html|ttf|woff|ico|jpg|jpeg)$',
+            nginx.Key('try_files', '$uri /index.php$uri$is_args$args'),
             nginx.Key('access_log', 'off')
             )
         ]
@@ -79,9 +95,10 @@ class ownCloud(Site):
 
         # Make sure that the correct PHP settings are enabled
         php.enable_mod('opcache', 'mysql', 'pdo_mysql', 'zip', 'gd', 'ldap',
-            'iconv', 'openssl', 'posix')
+                       'iconv', 'openssl', 'posix')
         php.enable_mod('apcu', 'apc', config_file="/etc/php/conf.d/apcu.ini")
-        php.change_setting('apc.enable_cli', '1', config_file="/etc/php/conf.d/apcu.ini")
+        php.change_setting('apc.enable_cli', '1',
+                           config_file="/etc/php/conf.d/apcu.ini")
 
         # Make sure php-fpm has the correct settings, otherwise ownCloud breaks
         with open("/etc/php/php-fpm.conf", "r") as f:
@@ -96,9 +113,11 @@ class ownCloud(Site):
         mydir = os.getcwd()
         os.chdir(self.path)
         s = shell(('php occ maintenance:install '
-            '--database "mysql" --database-name "{}" --database-user "{}" '
-            '--database-pass "{}" --admin-pass "{}" --data-dir "{}"'
-            ).format(self.db.id, self.db.id, dbpasswd, dbpasswd, self.data_path))
+                   '--database "mysql" --database-name "{}" '
+                   '--database-user "{}" --database-pass "{}" '
+                   '--admin-pass "{}" --data-dir "{}"'
+                   ).format(self.db.id, self.db.id, dbpasswd,
+                            dbpasswd, self.data_path))
         if s["code"] != 0:
             raise Exception("ownCloud database population failed")
         s = shell("php occ app:enable user_ldap")
@@ -108,41 +127,41 @@ class ownCloud(Site):
         os.chown(os.path.join(self.path, "config/config.php"), uid, gid)
 
         ldap_sql = ("REPLACE INTO oc_appconfig (appid, configkey, configvalue) VALUES"
-            "('core', 'backgroundjobs_mode', 'cron'),"
-            "('user_ldap', 'ldap_uuid_attribute', 'auto'),"
-            "('user_ldap', 'ldap_host', 'localhost'),"
-            "('user_ldap', 'ldap_port', '389'),"
-            "('user_ldap', 'ldap_base', 'dc=arkos-servers,dc=org'),"
-            "('user_ldap', 'ldap_base_users', 'dc=arkos-servers,dc=org'),"
-            "('user_ldap', 'ldap_base_groups', 'dc=arkos-servers,dc=org'),"
-            "('user_ldap', 'ldap_tls', '0'),"
-            "('user_ldap', 'ldap_display_name', 'cn'),"
-            "('user_ldap', 'ldap_userlist_filter', 'objectClass=mailAccount'),"
-            "('user_ldap', 'ldap_group_filter', 'objectClass=posixGroup'),"
-            "('user_ldap', 'ldap_group_display_name', 'cn'),"
-            "('user_ldap', 'ldap_group_member_assoc_attribute', 'uniqueMember'),"
-            "('user_ldap', 'ldap_login_filter', '(&(|(objectclass=posixAccount))(|(uid=%uid)))'),"
-            "('user_ldap', 'ldap_quota_attr', 'mailQuota'),"
-            "('user_ldap', 'ldap_quota_def', ''),"
-            "('user_ldap', 'ldap_email_attr', 'mail'),"
-            "('user_ldap', 'ldap_cache_ttl', '600'),"
-            "('user_ldap', 'ldap_configuration_active', '1'),"
-            "('user_ldap', 'home_folder_naming_rule', ''),"
-            "('user_ldap', 'ldap_backup_host', ''),"
-            "('user_ldap', 'ldap_dn', ''),"
-            "('user_ldap', 'ldap_agent_password', ''),"
-            "('user_ldap', 'ldap_backup_port', ''),"
-            "('user_ldap', 'ldap_nocase', ''),"
-            "('user_ldap', 'ldap_turn_off_cert_check', ''),"
-            "('user_ldap', 'ldap_override_main_server', ''),"
-            "('user_ldap', 'ldap_attributes_for_user_search', ''),"
-            "('user_ldap', 'ldap_attributes_for_group_search', ''),"
-            "('user_ldap', 'ldap_expert_username_attr', 'uid'),"
-            "('user_ldap', 'ldap_expert_uuid_attr', '');"
+                    "('core', 'backgroundjobs_mode', 'cron'),"
+                    "('user_ldap', 'ldap_uuid_attribute', 'auto'),"
+                    "('user_ldap', 'ldap_host', 'localhost'),"
+                    "('user_ldap', 'ldap_port', '389'),"
+                    "('user_ldap', 'ldap_base', 'dc=arkos-servers,dc=org'),"
+                    "('user_ldap', 'ldap_base_users', 'dc=arkos-servers,dc=org'),"
+                    "('user_ldap', 'ldap_base_groups', 'dc=arkos-servers,dc=org'),"
+                    "('user_ldap', 'ldap_tls', '0'),"
+                    "('user_ldap', 'ldap_display_name', 'cn'),"
+                    "('user_ldap', 'ldap_userlist_filter', 'objectClass=mailAccount'),"
+                    "('user_ldap', 'ldap_group_filter', 'objectClass=posixGroup'),"
+                    "('user_ldap', 'ldap_group_display_name', 'cn'),"
+                    "('user_ldap', 'ldap_group_member_assoc_attribute', 'uniqueMember'),"
+                    "('user_ldap', 'ldap_login_filter', '(&(|(objectclass=posixAccount))(|(uid=%uid)))'),"
+                    "('user_ldap', 'ldap_quota_attr', 'mailQuota'),"
+                    "('user_ldap', 'ldap_quota_def', ''),"
+                    "('user_ldap', 'ldap_email_attr', 'mail'),"
+                    "('user_ldap', 'ldap_cache_ttl', '600'),"
+                    "('user_ldap', 'ldap_configuration_active', '1'),"
+                    "('user_ldap', 'home_folder_naming_rule', ''),"
+                    "('user_ldap', 'ldap_backup_host', ''),"
+                    "('user_ldap', 'ldap_dn', ''),"
+                    "('user_ldap', 'ldap_agent_password', ''),"
+                    "('user_ldap', 'ldap_backup_port', ''),"
+                    "('user_ldap', 'ldap_nocase', ''),"
+                    "('user_ldap', 'ldap_turn_off_cert_check', ''),"
+                    "('user_ldap', 'ldap_override_main_server', ''),"
+                    "('user_ldap', 'ldap_attributes_for_user_search', ''),"
+                    "('user_ldap', 'ldap_attributes_for_group_search', ''),"
+                    "('user_ldap', 'ldap_expert_username_attr', 'uid'),"
+                    "('user_ldap', 'ldap_expert_uuid_attr', '');"
         )
         self.db.execute(ldap_sql, commit=True)
         self.db.execute("DELETE FROM oc_group_user;", commit=True)
-        self.db.execute("INSERT INTO oc_group_user VALUES ('admin','%s');" % vars.get("oc-admin", "admin"), commit=True)
+        self.db.execute("INSERT INTO oc_group_user VALUES ('admin','{0}');".format(vars.get("oc-admin", "admin")), commit=True)
 
         if not os.path.exists("/etc/cron.d"):
             os.mkdir("/etc/cron.d")
@@ -161,6 +180,9 @@ class ownCloud(Site):
                 if x.startswith(");"):
                     f.write("  'memcache.local' => '\OC\Memcache\APCu',\n")
                 f.write(x)
+
+        if os.path.exists(os.path.join(self.data_path, 'data/files_external/rootcerts.crt')):
+            os.chown(os.path.join(self.data_path, 'data/files_external/rootcerts.crt'), uid, gid)
 
         self.site_edited()
 

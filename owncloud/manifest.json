@@ -17,7 +17,7 @@
             "secondary": ["Documents", "Music", "Photos", "Calendar", "Contacts"]
         }
     ],
-    "version": "9.0.0-1",
+    "version": "9.0.1-1",
     "author": "arkOS",
     "homepage": "http://arkos.io",
     "app_author": "ownCloud",
@@ -82,7 +82,7 @@
     ],
     "generation": 1,
     "website_updates": false,
-    "download_url": "https://download.owncloud.org/community/owncloud-9.0.0.tar.bz2",
+    "download_url": "https://download.owncloud.org/community/owncloud-9.0.1.tar.bz2",
     "website_datapaths": true,
     "website_options": [
       {
