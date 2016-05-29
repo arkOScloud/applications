@@ -1,0 +1,34 @@
+<h1 class="page-header">uCoin Server Setup</h1>
+<div id="main">
+    <div class="form-group">
+        <label for="setupSyncNode">Node</label>
+        {{input type="text" class="form-control required" value=setupSyncNode}}
+        <p class="help-block">This should be the address of an existing uCoin currency server you want to synchronize with, leave it at default ('sluimers.net').</p>
+    </div>
+    <div class="form-group">
+        <label for="setupSyncPort">domain</label>
+        {{input type="text" class="form-control required" value=setupSyncPort}}
+        <p class="help-block">This should be the port the node uses, leave it at default (port 32118).</p>
+    </div>
+    <div class="form-group">
+        <label for="setupDomain">domain</label>
+        {{input type="text" class="form-control required" value=setupDomain}}
+        <p class="help-block">This should be the domain name that you use?</p>
+    </div>
+    <div class="form-group">
+        <label for="setupPort">Port</label>
+        {{input type="text" class="form-control required" value=setupPort}}
+        <p class="help-block">This is the port you use?</p>
+    </div>
+    <div class="form-group">
+        <label for="setupSalt">Salt</label>
+        {{input type="text" class="form-control required" value=setupSalt}}
+        <p class="help-block">Salt whatever.</p>
+    </div>
+    <div class="form-group">
+        <label for="setupPassword">Password</label>
+        {{input type="text" class="form-control required" value=setupPassword}}
+        <p class="help-block">Password whatever.</p>
+    </div>
+</div>
+<a href="#" class="btn btn-primary" {{action 'setup'}}><i class="fa fa-check"></i> Finish</a>
