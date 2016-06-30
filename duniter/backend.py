@@ -30,8 +30,8 @@ def on_load(app):
         "remotep": "8999"
     }
         
-    configDuniter(cfg)
-    runDuniter(app)
+    #configDuniter(cfg)
+    #runDuniter(app)
 
 def runDuniter(app):
     cfg = {
@@ -54,11 +54,11 @@ def configDuniter(config):
     logger.info("configuring duniter..")
     
     configString = "".join(" --{0}".format(k+" "+v if v!=None else k) for k,v in config.viewitems())
-    s = shell("sudo -u duniter ucoind config %s" % configString)
+    s = shell("gksu -u 'duniter ucoind config %s'" % configString)
     if s["code"] != 0:
         logger.error("Duniter config failed; log output follows:\n%s" % s["stderr"])
         raise Exception("Duniter config failed, check logs for info")
-    s = shell("sudo -u duniter ucoind sync duniter.org 8999")
+    s = shell("gksu -u duniter 'ucoind sync duniter.org 8999'")
     if s["code"] != 0:
         logger.error("Duniter sync failed; log output follows:\n%s" % s["stderr"])
         raise Exception("Duniter sync failed, check logs for info")
