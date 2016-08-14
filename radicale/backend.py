@@ -1,4 +1,4 @@
-import ConfigParser
+import configparser
 import glob
 import nginx
 import os
@@ -268,7 +268,7 @@ def setup(addr, port):
     wsgi_file += 'application = radicale.Application()\n'
     with open('/etc/radicale/radicale.wsgi', 'w') as f:
         f.write(wsgi_file)
-    os.chmod('/etc/radicale/radicale.wsgi', 0766)
+    os.chmod('/etc/radicale/radicale.wsgi', 0o766)
     cfg = {
         'directory': '/etc/radicale',
         'user': 'radicale',
