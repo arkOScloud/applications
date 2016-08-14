@@ -60,11 +60,11 @@ class Grav(Site):
 
         # Add execution flag to binaries
         st = os.stat(os.path.join(self.path, "bin/gpm"))
-        os.chmod(os.path.join(self.path, "bin/gpm"), st.st_mode | 0111)
+        os.chmod(os.path.join(self.path, "bin/gpm"), st.st_mode | 0o111)
         st = os.stat(os.path.join(self.path, "bin/grav"))
-        os.chmod(os.path.join(self.path, "bin/grav"), st.st_mode | 0111)
+        os.chmod(os.path.join(self.path, "bin/grav"), st.st_mode | 0o111)
         st = os.stat(os.path.join(self.path, "bin/plugin"))
-        os.chmod(os.path.join(self.path, "bin/plugin"), st.st_mode | 0111)
+        os.chmod(os.path.join(self.path, "bin/plugin"), st.st_mode | 0o111)
 
         # Make sure that the correct PHP settings are enabled
         php.enable_mod('curl', 'gd', 'opcache', 'zip')
