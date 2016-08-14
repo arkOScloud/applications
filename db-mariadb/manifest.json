@@ -13,7 +13,7 @@
             "secondary": []
         }
     ],
-    "version": "2.9.1",
+    "version": "3.0",
     "author": "arkOS",
     "homepage": "https://arkos.io",
     "app_author": "MariaDB Foundation",
@@ -39,8 +39,8 @@
         },
         {
             "type": "system",
-            "name": "MySQL-Python",
-            "package": "mysql-python",
+            "name": "Python MySQL Client",
+            "package": "python-mysqlclient",
             "binary": null,
             "internal": true
         }
