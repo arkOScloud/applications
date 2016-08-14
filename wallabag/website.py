@@ -111,7 +111,7 @@ class Wallabag(Site):
             shutil.copy(os.path.join(self.path, 'install/poche.sqlite'), '/var/lib/sqlite3/%s.db' % self.db.id)
             php.open_basedir('add', '/var/lib/sqlite3')
             os.chown("/var/lib/sqlite3/%s.db" % self.db.id, -1, gid)
-            os.chmod("/var/lib/sqlite3/%s.db" % self.db.id, 0664)
+            os.chmod("/var/lib/sqlite3/%s.db" % self.db.id, 0o664)
             self.db.execute(
                 "INSERT INTO users (username, password, name, email) VALUES ('%s', '%s', '%s', '');" % (username, passwd, username))
             self.db.execute(
@@ -125,7 +125,7 @@ class Wallabag(Site):
         for r, d, f in os.walk(self.path):
             for x in d:
                 if d in ["assets", "cache", "db"]:
-                    os.chmod(os.path.join(r, d), 0755)
+                    os.chmod(os.path.join(r, d), 0o755)
                 os.chown(os.path.join(r, x), uid, gid)
             for x in f:
                 os.chown(os.path.join(r, x), uid, gid)
