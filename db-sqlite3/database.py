@@ -82,7 +82,7 @@ class SQLite3Mgr(DatabaseManager):
             g.add()
         if not os.path.isdir('/var/lib/sqlite3'):
             os.makedirs('/var/lib/sqlite3')
-        if oct(stat.S_IMODE(os.stat('/var/lib/sqlite3').st_mode)) != 0775:
-            os.chmod('/var/lib/sqlite3', 0775)
+        if oct(stat.S_IMODE(os.stat('/var/lib/sqlite3').st_mode)) != 0o775:
+            os.chmod('/var/lib/sqlite3', 0o775)
         if int(os.stat('/var/lib/sqlite3').st_gid) != g.gid:
             os.chown('/var/lib/sqlite3', -1, g.gid)
