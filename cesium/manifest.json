@@ -1,0 +1,43 @@
+{
+	"id": "cesium",
+    "name": "Cesium",
+    "type": "website",
+    "icon": "fa fa-btc",
+    "description": {
+        "short": "Duniter wallet.",
+        "long": "Cesium is Duniter's webclient and thus wallet for Duniter currencies."
+    },
+    "categories": [
+        {
+            "primary": "Cryptocurrency",
+            "secondary": ["Cryptocurrency Client"]
+        }
+    ],
+    "version": "0.1",
+    "author": "Folatt RPG",
+    "homepage": "https://git.coderouge.co/u/folatt",
+    "app_author": "Moul",
+    "app_homepage": "https://github.com/duniter/cesium",
+    "logo": true,
+    "screenshots": [],
+    "services": [],
+    "modules": ["website"],
+    "dependencies": [
+        {
+            "type": "system",
+            "name": "nodejs",
+            "package": "nodejs",
+            "binary": null
+        },
+        {
+            "type": "system",
+            "name": "npm",
+            "package": "npm",
+            "binary": "npm" 
+        }
+    ],
+    "generation": 1,
+    "website_updates": true,
+    "download_url": "https://github.com/duniter/cesium/releases/download/0.1.26/cesium-web-0.1.26.zip",
+    "uses_ssl": false
+}

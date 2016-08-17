@@ -69,7 +69,7 @@ class ownCloud(Site):
         else:
             try:
                 os.makedirs(os.path.join(self.data_path))
-            except OSError, e:
+            except OSError as e:
                 if e[0] == 17:
                     pass
                 else:

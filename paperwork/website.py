@@ -84,10 +84,10 @@ class Paperword(Site):
         uid, gid = users.get_system("http").uid, groups.get_system("http").gid
         for r, d, f in os.walk(os.path.join(self.path, 'app')):
             for x in d:
-                os.chmod(os.path.join(r, x), 0755)
+                os.chmod(os.path.join(r, x), 0o755)
                 os.chown(os.path.join(r, x), uid, gid)
             for x in f:
-                os.chmod(os.path.join(r, x), 0644)
+                os.chmod(os.path.join(r, x), 0o644)
                 os.chown(os.path.join(r, x), uid, gid)
         if os.path.exists(os.path.join(self.path, 'app/storage/setup')):
             os.unlink(os.path.join(self.path, 'app/storage/setup'))

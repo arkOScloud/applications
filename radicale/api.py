@@ -5,9 +5,9 @@ from flask.views import MethodView
 
 
 class CalendarsAPI(MethodView):
-    def get(self, id=None):
-        calendars = radicale.get_cal(id)
-        if id and not calendars:
+    def get(self, app_id=None):
+        calendars = radicale.get_cal(app_id)
+        if app_id and not calendars:
             abort(404)
         if type(calendars) == list:
             return jsonify(calendars=[x.as_dict() for x in calendars])
@@ -20,18 +20,18 @@ class CalendarsAPI(MethodView):
         addrbk.add()
         return jsonify(message="Calendar created successfully", address_book=addrbk.as_dict())
     
-    def delete(self, id):
-        calendar = radicale.get_cal(id)
-        if not id or not calendar:
+    def delete(self, app_id):
+        calendar = radicale.get_cal(app_id)
+        if not app_id or not calendar:
             abort(404)
         calendar.remove()
         return Response(status=204)
 
 
 class AddressBooksAPI(MethodView):
-    def get(self, id=None):
-        addrbks = radicale.get_book(id)
-        if id and not addrbks:
+    def get(self, app_id=None):
+        addrbks = radicale.get_book(app_id)
+        if app_id and not addrbks:
             abort(404)
         if type(addrbks) == list:
             return jsonify(address_books=[x.as_dict() for x in addrbks])
@@ -44,9 +44,9 @@ class AddressBooksAPI(MethodView):
         addrbk.add()
         return jsonify(message="Address book created successfully", address_book=addrbk.as_dict())
     
-    def delete(self, id):
-        addrbk = radicale.get_book(id)
-        if not id or not addrbk:
+    def delete(self, app_id):
+        addrbk = radicale.get_book(app_id)
+        if not app_id or not addrbk:
             abort(404)
         addrbk.remove()
         return Response(status=204)

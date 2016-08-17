@@ -9,7 +9,7 @@ from arkos import conns, secrets
 from arkos.system import services
 from arkos.databases import Database, DatabaseUser, DatabaseManager
 from arkos.utilities import shell, random_string
-from arkos.utilities.errors import ConnectionError
+from arkos.utilities.errors import ConnectionError, ArkOSConnectionError
 
 
 class MariaDB(Database):
@@ -150,7 +150,7 @@ class MariaDBMgr(DatabaseManager):
             self.connection = conns.MariaDB
         except:
             self.state = False
-            raise ConnectionError("MariaDB")
+            raise ArkOSConnectionError("MariaDB")
 
     def change_admin_passwd(self):
         try:

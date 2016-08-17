@@ -22,7 +22,7 @@ class Mailpile(Site):
         users.SystemUser("mailpile").add()
 
         st = os.stat(os.path.join(self.path, 'scripts/mailpile'))
-        os.chmod(os.path.join(self.path, 'scripts/mailpile'), st.st_mode | 0111)
+        os.chmod(os.path.join(self.path, 'scripts/mailpile'), st.st_mode | 0o111)
         cfg = {
             'directory': self.path,
             'user': 'mailpile',

@@ -23,7 +23,7 @@ class wikitten(Site):
         ]
 
     def pre_install(self, vars):
-	pass
+        pass
 
     def post_install(self, vars, dbpasswd=""):
         # Write a standard Wikitten config file

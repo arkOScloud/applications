@@ -14,6 +14,7 @@ class Jekyll(Site):
         ruby.install_gem('jekyll', 'rdiscount')
 
     def post_install(self, vars, dbpasswd=""):
+        
         # Make sure the webapps config points to the _site directory and generate it.
         c = nginx.loadf(os.path.join('/etc/nginx/sites-available', self.id))
         for x in c.servers:
@@ -26,10 +27,10 @@ class Jekyll(Site):
         uid, gid = users.get_system("http").uid, groups.get_system("http").gid
         for r, d, f in os.walk(self.path):
             for x in d:
-                os.chmod(os.path.join(r, x), 0755)
+                os.chmod(os.path.join(r, x), 0o755)
                 os.chown(os.path.join(r, x), uid, gid)
             for x in f:
-                os.chmod(os.path.join(r, x), 0644)
+                os.chmod(os.path.join(r, x), 0o644)
                 os.chown(os.path.join(r, x), uid, gid)
 
         # Return an explicatory message.
@@ -60,8 +61,8 @@ class Jekyll(Site):
         uid, gid = users.get_system("http").uid, groups.get_system("http").gid
         for r, d, f in os.walk(self.path):
             for x in d:
-                os.chmod(os.path.join(r, x), 0755)
+                os.chmod(os.path.join(r, x), 0o755)
                 os.chown(os.path.join(r, x), uid, gid)
             for x in f:
-                os.chmod(os.path.join(r, x), 0644)
+                os.chmod(os.path.join(r, x), 0o644)
                 os.chown(os.path.join(r, x), uid, gid)

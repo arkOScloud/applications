@@ -1,0 +1,42 @@
+{
+	"id": "keeweb",
+    "name": "KeeWeb",
+    "type": "website",
+    "icon": "fa fa-unlock-alt",
+    "description": {
+        "short": "Password manager.",
+        "long": "Password Manager."
+    },
+    "categories": [
+        {
+            "primary": "passwordmanager"
+        }
+    ],
+    "version": "0.1",
+    "author": "Folatt RPG",
+    "homepage": "https://git.coderouge.co/u/folatt",
+    "app_author": "antelle",
+    "app_homepage": "https://github.com/keeweb/keeweb",
+    "logo": true,
+    "screenshots": [],
+    "services": [],
+    "modules": ["website"],
+    "dependencies": [
+        {
+            "type": "system",
+            "name": "nodejs",
+            "package": "nodejs",
+            "binary": null
+        },
+        {
+            "type": "system",
+            "name": "npm",
+            "package": "npm",
+            "binary": "npm" 
+        }
+    ],
+    "generation": 1,
+    "website_updates": true,
+    "download_url": "https://github.com/keeweb/keeweb/releases/download/v1.2.3/KeeWeb.linux.x64.zip",
+    "uses_ssl": false
+}

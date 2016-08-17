@@ -1,5 +1,4 @@
 from flask.views import MethodView
-from flask import current_app
 
 '''
 Created on May 17, 2015
@@ -15,10 +14,10 @@ class DuniterAPI(MethodView):
     def post(self):
         print("post duniter")
 
-    def put(self, id=None):
+    def put(self, app_id=None):
         print("put duniter")
     
-    def delete(self, id=None):
+    def delete(self, app_id=None):
         print("delete duniter")
 
 duniterservers = DuniterAPI.as_view('duniter_api')

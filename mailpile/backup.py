@@ -22,9 +22,9 @@ class MailpileBackup(BackupController):
     
     def post_restore(self, site, dbpasswd):
         users.SystemUser("mailpile").add()
-        for r, d, f in os.walk(site.path):
+        for _, d, f in os.walk(site.path):
             for x in d:
-                os.chmod(os.path.join(root, x), 0755)
+                os.chmod(os.path.join(root, x), 0o755)
             for x in f:
-                os.chmod(os.path.join(root, x), 0644)
+                os.chmod(os.path.join(root, x), 0o644)
         services.get(site.name).enable()
