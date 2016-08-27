@@ -7,20 +7,23 @@ from arkos.websites import Site
 
 class cmsjs(Site):
     addtoblock = [
-        nginx.Location('/',
+        nginx.Location(
+            '/',
             nginx.Key('try_files', '$uri $uri/ /index.html'),
             nginx.Key('autoindex', 'on'),
         ),
     ]
-    def pre_install(self, vars):
+
+    def pre_install(self, vars_):
         pass
 
-    def post_install(self, vars, dbpasswd=""):
+    def post_install(self, vars_, dbpasswd=""):
         # Write a standard CMS.js config file
         with open(os.path.join(self.path, 'js/config.js'), 'r') as f:
             d = f.read()
         d = d.replace("siteName: 'My Site'", "siteName: 'CMS.js on arkOS'")
-        d = d.replace("siteTagline: 'Your site tagline'", "siteTagline: 'Configure js/config.js to your liking'")
+        d = d.replace("siteTagline: 'Your site tagline'",
+                      "siteTagline: 'Configure js/config.js to your liking'")
         d = d.replace("mode: 'Github'", "mode: 'Server'")
 
         with open(os.path.join(self.path, 'js/config.js'), 'w') as f:

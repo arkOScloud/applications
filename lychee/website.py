@@ -8,44 +8,50 @@ from arkos.system import users, groups
 
 class Lychee(Site):
     addtoblock = [
-        nginx.Location('= /favicon.ico',
+        nginx.Location(
+            '= /favicon.ico',
             nginx.Key('log_not_found', 'off'),
             nginx.Key('access_log', 'off')
-            ),
-        nginx.Location('= /robots.txt',
+        ),
+        nginx.Location(
+            '= /robots.txt',
             nginx.Key('allow', 'all'),
             nginx.Key('log_not_found', 'off'),
             nginx.Key('access_log', 'off')
-            ),
-        nginx.Location('~ \.php$',
+        ),
+        nginx.Location(
+            '~ \.php$',
             nginx.Key('fastcgi_pass', 'unix:/run/php-fpm/php-fpm.sock'),
             nginx.Key('fastcgi_index', 'index.php'),
             nginx.Key('include', 'fastcgi.conf')
-            )
-        ]
+        )]
 
-    def pre_install(self, vars):
+    def pre_install(self, vars_):
         pass
 
-    def post_install(self, vars, dbpasswd=""):
+    def post_install(self, vars_, dbpasswd=""):
         # Create Lychee automatic configuration file
         with open(os.path.join(self.path, 'data', 'config.php'), 'w') as f:
             f.write(
                 '<?php\n'
-                '   if(!defined(\'LYCHEE\')) exit(\'Error: Direct access is allowed!\');\n'
+                '   if(!defined(\'LYCHEE\')) '
+                'exit(\'Error: Direct access is allowed!\');\n'
                 '   $dbHost = \'localhost\';\n'
-                '   $dbUser = \'' + self.db.id + '\';\n'
-                '   $dbPassword = \'' + dbpasswd + '\';\n'
-                '   $dbName = \'' + self.db.id + '\';\n'
+                '   $dbUser = \'{0}\';\n'
+                '   $dbPassword = \'{1}\';\n'
+                '   $dbName = \'{0}\';\n'
                 '   $dbTablePrefix = \'\';\n'
-                '?>\n'
+                '?>\n'.format(self.db.id, dbpasswd)
             )
 
         # Make sure that the correct PHP settings are enabled
-        php.enable_mod('mysql', 'mysqli', 'gd', 'zip', 'exif', 'json', 'mbstring')
+        php.enable_mod('mysql', 'mysqli', 'gd',
+                       'zip', 'exif', 'json', 'mbstring')
 
-        # Rename lychee index.html to index.php to make it work with our default nginx config
-        os.rename(os.path.join(self.path, "index.html"), os.path.join(self.path, "index.php"))
+        # Rename lychee index.html to index.php to make it
+        # work with our default nginx config
+        os.rename(os.path.join(self.path, "index.html"),
+                  os.path.join(self.path, "index.php"))
 
         # Finally, make sure that permissions are set so that Lychee
         # can make adjustments and save plugins when need be.
@@ -67,4 +73,3 @@ class Lychee(Site):
 
     def disable_ssl(self):
         pass
-

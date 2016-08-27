@@ -8,30 +8,36 @@ from arkos.websites import Site
 
 class wikitten(Site):
     addtoblock = [
-        nginx.Location('~* ^/static/(css|js|img|fonts)/.+.(jpg|jpeg|gif|css|png|js|ico|html|xml|txt|swf|pdf|txt|bmp|eot|svg|ttf|woff|woff2)$',
+        nginx.Location(
+            '~* ^/static/(css|js|img|fonts)/.+.'
+            '(jpg|jpeg|gif|css|png|js|ico|html|xml|txt|'
+            'swf|pdf|txt|bmp|eot|svg|ttf|woff|woff2)$',
             nginx.Key('access_log', 'off'),
             nginx.Key('expires', 'max')
-            ),
-        nginx.Location('/',
+        ),
+        nginx.Location(
+            '/',
             nginx.Key('rewrite', '^(.*)$ /index.php last')
-            ),
-        nginx.Location('~ \.php$',
+        ),
+        nginx.Location(
+            '~ \.php$',
             nginx.Key('fastcgi_pass', 'unix:/run/php-fpm/php-fpm.sock'),
             nginx.Key('fastcgi_index', 'index.php'),
             nginx.Key('include', 'fastcgi.conf')
-            )
-        ]
+        )]
 
-    def pre_install(self, vars):
+    def pre_install(self, vars_):
         pass
 
-    def post_install(self, vars, dbpasswd=""):
+    def post_install(self, vars_, dbpasswd=""):
         # Write a standard Wikitten config file
-        shutil.copy(os.path.join(self.path, 'config.php.example'),
-            os.path.join(self.path, 'config.php'))
+        shutil.copy(os.path.join(
+                        self.path,
+                        'config.php.example'),
+                    os.path.join(self.path, 'config.php'))
         with open(os.path.join(self.path, 'config.php'), 'r') as f:
             d = f.read()
-        d = d.replace("'My Wiki'", "'%s'" % self.id)
+        d = d.replace("'My Wiki'", "'{0}'".format(self.id))
 
         with open(os.path.join(self.path, 'config.php'), 'w') as f:
             f.write(d)
@@ -58,4 +64,4 @@ class wikitten(Site):
 
     def update(self, pkg, ver):
         pass
- 	# TODO: pull from Git at appropriate intervals
+    # TODO: pull from Git at appropriate intervals

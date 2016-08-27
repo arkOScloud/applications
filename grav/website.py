@@ -9,46 +9,58 @@ from arkos.utilities import shell
 
 class Grav(Site):
     addtoblock = [
-        nginx.Location('= /favicon.ico',
+        nginx.Location(
+            '= /favicon.ico',
             nginx.Key('log_not_found', 'off'),
             nginx.Key('access_log', 'off')
             ),
-        nginx.Location('= /robots.txt',
+        nginx.Location(
+            '= /robots.txt',
             nginx.Key('allow', 'all'),
             nginx.Key('log_not_found', 'off'),
             nginx.Key('access_log', 'off')
             ),
-        nginx.Location('/',
+        nginx.Location(
+            '/',
             nginx.Key('try_files', '$uri $uri/ /index.html'),
-            nginx.If('(!-e $request_filename)',
+            nginx.If(
+                '(!-e $request_filename)',
                 nginx.Key('rewrite', '^(.*)$ /index.php last')
                 )
             ),
-        nginx.Location('~ \.php$',
+        nginx.Location(
+            '~ \.php$',
             nginx.Key('fastcgi_pass', 'unix:/run/php-fpm/php-fpm.sock'),
             nginx.Key('fastcgi_split_path_info', '^(.+\.php)(/.+)$'),
             nginx.Key('fastcgi_index', 'index.php'),
-            nginx.Key('fastcgi_param', 'SCRIPT_FILENAME $document_root/$fastcgi_script_name'),
+            nginx.Key('fastcgi_param', 'SCRIPT_FILENAME '
+                      '$document_root/$fastcgi_script_name'),
             nginx.Key('include', 'fastcgi_params')
             ),
-        nginx.Location('~* /(.git|cache|bin|logs|backups|tests)/.*$',
+        nginx.Location(
+            '~* /(.git|cache|bin|logs|backups|tests)/.*$',
             nginx.Key('return', '403')
             ),
-        nginx.Location('~* /(system|vendor)/.*\.(txt|xml|md|html|yaml|php|pl|py|cgi|twig|sh|bat)$',
+        nginx.Location(
+            '~* /(system|vendor)/.*\.'
+            '(txt|xml|md|html|yaml|php|pl|py|cgi|twig|sh|bat)$',
             nginx.Key('return', '403')
             ),
-        nginx.Location('~* /user/.*\.(txt|md|yaml|php|pl|py|cgi|twig|sh|bat)$',
+        nginx.Location(
+            '~* /user/.*\.(txt|md|yaml|php|pl|py|cgi|twig|sh|bat)$',
             nginx.Key('return', '403')
             ),
-        nginx.Location('~ /(LICENSE.txt|composer.lock|composer.json|nginx.conf|web.config|htaccess.txt|\.htaccess)',
+        nginx.Location(
+            '~ /(LICENSE.txt|composer.lock|composer.json|nginx.conf'
+            '|web.config|htaccess.txt|\.htaccess)',
             nginx.Key('return', '403')
             ),
         ]
 
-    def pre_install(self, vars):
+    def pre_install(self, vars_):
         pass
 
-    def post_install(self, vars, dbpasswd=""):
+    def post_install(self, vars_, dbpasswd=""):
         # Get around top-level zip restriction (FIXME 0.7.2)
         if "grav-admin" in os.listdir(self.path):
             tmp_path = os.path.abspath(os.path.join(self.path, "../grav-tmp"))

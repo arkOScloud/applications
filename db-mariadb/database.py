@@ -16,15 +16,15 @@ class MariaDB(Database):
     def add_db(self):
         self.manager.connect()
         if self.manager.validate(self.id):
-            conns.MariaDB.query('CREATE DATABASE %s' % self.id)
+            conns.MariaDB.query('CREATE DATABASE {0}'.format(self.id))
 
     def remove_db(self):
         self.manager.connect()
-        conns.MariaDB.query('DROP DATABASE %s' % self.id)
+        conns.MariaDB.query('DROP DATABASE {0}'.format(self.id))
 
     def execute(self, cmd, commit=False, strf=True):
         self.manager.connect()
-        conns.MariaDB.query('USE %s' % self.id)
+        conns.MariaDB.query('USE {0}'.format(self.id))
         cur = conns.MariaDB.cursor()
         parse, s = [], ""
         for l in cmd.split('\n'):
@@ -52,12 +52,14 @@ class MariaDB(Database):
             return parse
 
     def get_size(self):
-        s = self.execute("SELECT sum(data_length+index_length) FROM information_schema.TABLES WHERE table_schema LIKE '%s';" % self.id, strf=False)
+        s = self.execute("SELECT sum(data_length+index_length) FROM "
+                         "information_schema.TABLES WHERE table_schema LIKE '{0}';"
+                         .format(self.id), strf=False)
         return int(s[0][0]) if s[0][0] else 0
 
     def dump(self):
         self.manager.connect()
-        conns.MariaDB.query("USE %s" % self.id)
+        conns.MariaDB.query("USE {0}".format(self.id))
         cur = conns.MariaDB.cursor()
         tables, data = [], ""
         cur.execute("SHOW TABLES")
@@ -97,18 +99,18 @@ class MariaDBUser(DatabaseUser):
     def add_user(self, passwd):
         self.manager.connect()
         if self.manager.validate(user=self.id, passwd=passwd):
-            conns.MariaDB.query('CREATE USER \'%s\'@\'localhost\' IDENTIFIED BY \'%s\''
-                % (self.id,passwd))
+            conns.MariaDB.query('CREATE USER \'{0}\'@\'localhost\' IDENTIFIED BY \'{1}\''
+                .format(self.id,passwd))
 
     def remove_user(self):
         self.manager.connect()
-        conns.MariaDB.query('DROP USER \'%s\'@\'localhost\'' % self.id)
+        conns.MariaDB.query('DROP USER \'{0}\'@\'localhost\''.focmat(self.id))
 
     def chperm(self, action, db=None):
         self.manager.connect()
         if action == 'check':
-            conns.MariaDB.query('SHOW GRANTS FOR \'%s\'@\'localhost\''
-                % self.id)
+            conns.MariaDB.query('SHOW GRANTS FOR \'{0}\'@\'localhost\''
+                .format(self.id))
             r = conns.MariaDB.store_result()
             out = r.fetch_row(0)
             parse = []
@@ -124,11 +126,11 @@ class MariaDBUser(DatabaseUser):
                 status += line + '\n'
             return status
         elif action == 'grant':
-            conns.MariaDB.query('GRANT ALL ON %s.* TO \'%s\'@\'localhost\''
-                % (db.id, self.id))
+            conns.MariaDB.query('GRANT ALL ON {0}.* TO \'{1}\'@\'localhost\''
+                .format(db.id, self.id))
         elif action == 'revoke':
-            conns.MariaDB.query('REVOKE ALL ON %s.* FROM \'%s\'@\'localhost\''
-                % (db.id, self.id))
+            conns.MariaDB.query('REVOKE ALL ON {0}.* FROM \'{1}\'@\'localhost\''
+                .format(db.id, self.id))
 
 
 class MariaDBMgr(DatabaseManager):
@@ -170,11 +172,13 @@ class MariaDBMgr(DatabaseManager):
 
     def validate(self, id='', user='', passwd=''):
         if id and re.search('\.|-|`|\\\\|\/|^test$|[ ]', id):
-            raise Exception('Database name must not contain spaces, dots, dashes or other special characters')
+            raise Exception('Database name must not contain spaces, dots, '
+                            'dashes or other special characters')
         elif id and len(id) > 16:
             raise Exception('Database name must be shorter than 16 characters')
         if user and re.search('\.|-|`|\\\\|\/|^test$|[ ]', user):
-            raise Exception('Database username must not contain spaces, dots, dashes or other special characters')
+            raise Exception('Database username must not contain spaces, dots, '
+                            'dashes or other special characters')
         elif user and len(user) > 16:
             raise Exception('Database username must be shorter than 16 characters')
         if passwd and len(passwd) < 8:
@@ -182,11 +186,13 @@ class MariaDBMgr(DatabaseManager):
         if id:
             for x in self.get_dbs():
                 if x.id == id:
-                    raise Exception('You already have a database named %s - please remove that one or choose a new name!' % id)
+                    raise Exception('You already have a database named {0} '
+                                    '- please remove that one or choose a new name!'.format(id))
         if user:
             for x in self.get_users():
                 if x.id == user:
-                    raise Exception('You already have a database user named %s - please remove that one or choose a new name!' % user)
+                    raise Exception('You already have a database user named {0} '
+                                    '- please remove that one or choose a new name!'.format(user))
         return True
 
     def get_dbs(self):

@@ -9,7 +9,7 @@ from arkos.websites import Site
 
 class KeeWeb(Site):
     addtoblock = []
-    
+
     def pre_install(self):
         pass
 

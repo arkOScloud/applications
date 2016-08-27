@@ -10,7 +10,8 @@ class ownCloudBackup(BackupController):
     def get_data(self, site):
         datadir = None
         if os.path.exists(os.path.join(site.path, 'config', 'config.php')):
-            with open(os.path.join(site.path, 'config', 'config.php'), 'r') as f:
+            with open(os.path.join(site.path, 'config',
+                                   'config.php'), 'r') as f:
                 for line in f.readlines():
                     if 'datadirectory' in line:
                         data = line.split("'")[1::2]

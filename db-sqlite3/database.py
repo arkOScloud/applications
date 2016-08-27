@@ -13,22 +13,22 @@ class SQLite3(Database):
         if re.search('\.|-|`|\\\\|\/|[ ]', self.id):
             raise Exception('Name must not contain spaces, dots, dashes or other special characters')
         self.manager.chkpath()
-        path = '/var/lib/sqlite3/%s.db' % self.id
-        status = shell('sqlite3 %s "ATTACH \'%s\' AS %s;"' % (path,path,self.id))
+        path = '/var/lib/sqlite3/{0}.db'.format(self.id)
+        status = shell('sqlite3 {0} "ATTACH \'{1}\' AS {2};"'.format(path, path, self.id))
         if status["code"] >= 1:
             raise Exception(status["stderr"])
 
     def remove_db(self):
-        shell('rm /var/lib/sqlite3/%s.db' % self.id)
+        shell('rm /var/lib/sqlite3/{0}.db'.format(self.id))
 
     def execute(self, cmd, strf=False):
         cmds = cmd.split(';')
-        conn = sqlite3.connect('/var/lib/sqlite3/%s.db' % self.id)
+        conn = sqlite3.connect('/var/lib/sqlite3/{0}.db'.format(self.id))
         c = conn.cursor()
         out = []
         for x in cmds:
             if x.split():
-                c.execute('%s' % x)
+                c.execute('{0}'.format(x))
                 out += c.fetchall()
         conn.commit()
         if not strf:
@@ -44,7 +44,7 @@ class SQLite3(Database):
 
     def dump(self):
         self.manager.chkpath()
-        conn = sqlite3.connect('/var/lib/sqlite3/%s.db' % self.id)
+        conn = sqlite3.connect('/var/lib/sqlite3/{0}.db'.format(self.id))
         data = ""
         for x in conn.iterdump():
             data += x

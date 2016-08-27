@@ -11,22 +11,26 @@ from arkos.websites import Site
 
 class Cesium(Site):
     addtoblock = [
-        nginx.Location('= /favicon.ico',
+        nginx.Location(
+            '= /favicon.ico',
             nginx.Key('log_not_found', 'off'),
             nginx.Key('access_log', 'off')
-            ),
-        nginx.Location('= /robots.txt',
+        ),
+        nginx.Location(
+            '= /robots.txt',
             nginx.Key('allow', 'all'),
             nginx.Key('log_not_found', 'off'),
             nginx.Key('access_log', 'off')
-            ),
-        nginx.Location('~ \.php$',
-            nginx.Key('fastcgi_pass', 'unix:/run/php-fpm/php-fpm.sock'),
+        ),
+        nginx.Location(
+            '~ \.php$',
+            nginx.Key('fastcgi_pass',
+                      'unix:/run/php-fpm/php-fpm.sock'),
             nginx.Key('fastcgi_index', 'index.php'),
             nginx.Key('include', 'fastcgi.conf')
-            )
+        )
         ]
-    
+
     def pre_install(self):
         pass
 
