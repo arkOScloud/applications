@@ -56,15 +56,15 @@ class AddressBooksAPI(MethodView):
 
 def setup():
     if request.method == "GET":
-        return jsonify(running=radicale.is_running(), 
-            installed=radicale.is_installed(),
-            url=radicale.my_url())
+        return jsonify(running=radicale.is_running(),
+                       installed=radicale.is_installed(),
+                       url=radicale.my_url())
     else:
         data = json.loads(request.data)["config"]
         radicale.setup(data["addr"], data["port"])
-        return jsonify(running=radicale.is_running(), 
-            installed=radicale.is_installed(),
-            url=radicale.my_url())
+        return jsonify(running=radicale.is_running(),
+                       installed=radicale.is_installed(),
+                       url=radicale.my_url())
 
 
 calendars = CalendarsAPI.as_view('calendars_api')

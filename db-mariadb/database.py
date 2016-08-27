@@ -9,7 +9,7 @@ from arkos import conns, secrets
 from arkos.system import services
 from arkos.databases import Database, DatabaseUser, DatabaseManager
 from arkos.utilities import shell, random_string
-from arkos.utilities.errors import ConnectionError, ArkOSConnectionError
+from arkos.utilities.errors import ArkOSConnectionError
 
 
 class MariaDB(Database):
