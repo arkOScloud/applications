@@ -55,7 +55,7 @@ class SQLite3Mgr(DatabaseManager):
     def connect(self):
         pass
     
-    def validate(self, id='', user='', passwd=''):
+    def validate(self, id_='', user='', passwd=''):
         pass
 
     def get_dbs(self):
@@ -63,11 +63,11 @@ class SQLite3Mgr(DatabaseManager):
         dblist = []
         for thing in os.listdir('/var/lib/sqlite3'):
             if thing.endswith('.db'):
-                dblist.append(SQLite3(id=thing.split('.db')[0], manager=self))
+                dblist.append(SQLite3(id_=thing.split('.db')[0], manager=self))
         return dblist
     
-    def add_db(self, id):
-        db = SQLite3(id=id, manager=self)
+    def add_db(self, id_):
+        db = SQLite3(id_=id_, manager=self)
         db.add()
         return db
     

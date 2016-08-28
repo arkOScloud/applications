@@ -16,7 +16,7 @@ class CalendarsAPI(MethodView):
 
     def post(self):
         data = json.loads(request.data)["calendar"]
-        addrbk = radicale.Calendar(id=data["name"], user=data["user"])
+        addrbk = radicale.Calendar(id_=data["name"], user=data["user"])
         addrbk.add()
         return jsonify(message="Calendar created successfully",
                        address_book=addrbk.as_dict())
@@ -41,7 +41,7 @@ class AddressBooksAPI(MethodView):
 
     def post(self):
         data = json.loads(request.data)["address_book"]
-        addrbk = radicale.AddressBook(id=data["name"], user=data["user"])
+        addrbk = radicale.AddressBook(id_=data["name"], user=data["user"])
         addrbk.add()
         return jsonify(message="Address book created successfully",
                        address_book=addrbk.as_dict())

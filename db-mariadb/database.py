@@ -170,11 +170,11 @@ class MariaDBMgr(DatabaseManager):
         c.commit()
         return new_passwd
 
-    def validate(self, id='', user='', passwd=''):
-        if id and re.search('\.|-|`|\\\\|\/|^test$|[ ]', id):
+    def validate(self, id_='', user='', passwd=''):
+        if id_ and re.search('\.|-|`|\\\\|\/|^test$|[ ]', id_):
             raise Exception('Database name must not contain spaces, dots, '
                             'dashes or other special characters')
-        elif id and len(id) > 16:
+        elif id_ and len(id_) > 16:
             raise Exception('Database name must be shorter than 16 characters')
         if user and re.search('\.|-|`|\\\\|\/|^test$|[ ]', user):
             raise Exception('Database username must not contain spaces, dots, '
@@ -183,11 +183,11 @@ class MariaDBMgr(DatabaseManager):
             raise Exception('Database username must be shorter than 16 characters')
         if passwd and len(passwd) < 8:
             raise Exception('Database password must be longer than 8 characters')
-        if id:
+        if id_:
             for x in self.get_dbs():
-                if x.id == id:
+                if x.id == id_:
                     raise Exception('You already have a database named {0} '
-                                    '- please remove that one or choose a new name!'.format(id))
+                                    '- please remove that one or choose a new name!'.format(id_))
         if user:
             for x in self.get_users():
                 if x.id == user:
@@ -205,11 +205,11 @@ class MariaDBMgr(DatabaseManager):
         dbs = r.fetch_row(0)
         for db in dbs:
             if not db[0] in excludes and db[0].split():
-                dblist.append(MariaDB(id=db[0], manager=self))
+                dblist.append(MariaDB(id_=db[0], manager=self))
         return dblist
 
-    def add_db(self, id):
-        db = MariaDB(id=id, manager=self)
+    def add_db(self, id_):
+        db = MariaDB(id_=id_, manager=self)
         db.add()
         return db
 
@@ -222,10 +222,10 @@ class MariaDBMgr(DatabaseManager):
         output = r.fetch_row(0)
         for usr in output:
             if not usr[0] in userlist and not usr[0] in excludes:
-                userlist.append(MariaDBUser(id=usr[0], manager=self))
+                userlist.append(MariaDBUser(id_=usr[0], manager=self))
         return userlist
 
-    def add_user(self, id, passwd):
-        user = MariaDBUser(id=id, manager=self)
+    def add_user(self, id_, passwd):
+        user = MariaDBUser(id_=id_, manager=self)
         user.add(passwd)
         return user

@@ -15,10 +15,10 @@ class DuniterAPI(MethodView):
     def post(self):
         print("post duniter")
 
-    def put(self, app_id=None):
+    def put(self, id_=None):
         print("put duniter")
 
-    def delete(self, app_id=None):
+    def delete(self, id_=None):
         print("delete duniter")
 
 duniterservers = DuniterAPI.as_view('duniter_api')
