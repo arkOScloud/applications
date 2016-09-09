@@ -10,7 +10,7 @@ from arkos.utilities import shell, random_string
 from arkos.system import users, groups
 
 
-class ownCloud(Site):
+class Nextcloud(Site):
     addtoblock = [
         nginx.Key('error_page', '403 /core/templates/403.php'),
         nginx.Key('error_page', '404 /core/templates/404.php'),
@@ -100,7 +100,7 @@ class ownCloud(Site):
         php.change_setting('apc.enable_cli', '1',
                            config_file="/etc/php/conf.d/apcu.ini")
 
-        # Make sure php-fpm has the correct settings, otherwise ownCloud breaks
+        # Make sure php-fpm has the correct settings, otherwise Nextcloud breaks
         with open("/etc/php/php-fpm.conf", "r") as f:
             lines = f.readlines()
         with open("/etc/php/php-fpm.conf", "w") as f:
@@ -119,10 +119,10 @@ class ownCloud(Site):
                    ).format(self.db.id, self.db.id, dbpasswd,
                             dbpasswd, self.data_path))
         if s["code"] != 0:
-            raise Exception("ownCloud database population failed")
+            raise Exception("Nextcloud database population failed")
         s = shell("php occ app:enable user_ldap")
         if s["code"] != 0:
-            raise Exception("ownCloud LDAP configuration failed")
+            raise Exception("Nextcloud LDAP configuration failed")
         os.chdir(mydir)
         os.chown(os.path.join(self.path, "config/config.php"), uid, gid)
 
@@ -161,11 +161,11 @@ class ownCloud(Site):
         )
         self.db.execute(ldap_sql, commit=True)
         self.db.execute("DELETE FROM oc_group_user;", commit=True)
-        self.db.execute("INSERT INTO oc_group_user VALUES ('admin','{0}');".format(vars.get("oc-admin", "admin")), commit=True)
+        self.db.execute("INSERT INTO oc_group_user VALUES ('admin','{0}');".format(vars.get("nc-admin", "admin")), commit=True)
 
         if not os.path.exists("/etc/cron.d"):
             os.mkdir("/etc/cron.d")
-        with open("/etc/cron.d/oc-%s" % self.id, "w") as f:
+        with open("/etc/cron.d/nc-%s" % self.id, "w") as f:
             f.write("*/15 * * * * http php -f %s > /dev/null 2>&1" % os.path.join(self.path, "cron.php"))
 
         with open(os.path.join(self.path, "config", "config.php"), "r") as f:
@@ -205,11 +205,11 @@ class ownCloud(Site):
             php.open_basedir('del', datadir)
 
     def post_remove(self):
-        if os.path.exists("/etc/cron.d/oc-%s" % self.id):
-            os.unlink("/etc/cron.d/oc-%s" % self.id)
+        if os.path.exists("/etc/cron.d/nc-%s" % self.id):
+            os.unlink("/etc/cron.d/nc-%s" % self.id)
 
     def enable_ssl(self, cfile, kfile):
-        # First, force SSL in ownCloud's config file
+        # First, force SSL in Nextcloud's config file
         if os.path.exists(os.path.join(self.path, 'config', 'config.php')):
             px = os.path.join(self.path, 'config', 'config.php')
         else:
@@ -260,7 +260,7 @@ class ownCloud(Site):
         if os.path.exists(os.path.join(self.path, 'config', 'config.php')):
             path = os.path.join(self.path, 'config', 'config.php')
         else:
-            raise Exception("ownCloud config file not found")
+            raise Exception("Nextcloud config file not found")
         with open(path, "r") as f:
             data = f.read()
         while re.search("\n(\s*('|\")trusted_domains.*?\).*?\n)", data, re.DOTALL):
