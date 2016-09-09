@@ -23,7 +23,7 @@
     "app_author": "Nextcloud",
     "app_homepage": "https://www.nextcloud.com/",
     "logo": true,
-    "screenshots": ["screen-1.jpg", "screen-2.jpg"],
+    "screenshots": ["screen-01.jpg", "screen-02.jpg", "screen-03.jpg"],
     "services": [
         {
             "name": "MariaDB",
