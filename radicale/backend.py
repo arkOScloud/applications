@@ -204,14 +204,14 @@ def get_cal(id_=None, name=None, user=None):
     for x in glob.glob('/home/radicale/.config/radicale/collections/*/*.ics'):
         n = os.path.basename(x).split(".ics")[0]
         u = x.split("/")[-2]
-        cal = Calendar(id=n, user=u)
-        if id and id == (cal.user+"_"+cal.id):
+        cal = Calendar(id_=n, user=u)
+        if id_ and id_ == (cal.user+"_"+cal.id):
             return cal
         elif name and name == cal.name:
             return cal
         elif (user and user == cal.user) or not user:
             cals.append(cal)
-    return cals if not any([id, name, user]) else None
+    return cals if not any([id_, name, user]) else None
 
 
 def get_book(id_=None, name=None, user=None):
@@ -219,14 +219,14 @@ def get_book(id_=None, name=None, user=None):
     for x in glob.glob('/home/radicale/.config/radicale/collections/*/*.vcf'):
         n = os.path.basename(x).split(".vcf")[0]
         u = x.split("/")[-2]
-        bk = Calendar(id=n, user=u)
+        bk = Calendar(id_=n, user=u)
         if id and id == (bk.user+"_"+bk.id):
             return bk
         elif name and name == cal.name:
             return bk
         elif (user and user == bk.user) or not user:
             bks.append(bk)
-    return bks if not any([id, name, user]) else None
+    return bks if not any([id_, name, user]) else None
 
 
 def my_url():
@@ -241,7 +241,7 @@ def my_url():
 
 
 def is_installed():
-    # Verify the different components of the server setup
+    """ Verify the different components of the server setup """
     if not os.path.exists('/etc/radicale/config') \
             or not os.path.isdir('/usr/lib/radicale') \
             or not os.path.exists('/etc/radicale/radicale.wsgi') \

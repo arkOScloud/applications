@@ -1,6 +1,6 @@
 from arkos import signals, logger
 from arkos.languages import nodejs
-from arkos.utilities import shell
+from arkos.utilities import shell, errors
 from arkos.system import users, services
 
 '''
@@ -16,12 +16,9 @@ def on_load(app):
 
     if users.get_system("duniter") == None:
         users.SystemUser("duniter").add()
-    if not nodejs.has_user("duniter"):
-        nodejs.add_user("duniter")
     if not nodejs.is_installed("duniter"):
         logger.info("Installing duniter, this can take a long time..")
-        nodejs.install('duniter', as_global=True,
-                       opts={"python": "=python2.7"})
+        nodejs.install('duniter', as_global=True)
 
     cfg = {
         "salt": "'test1'",
@@ -41,7 +38,7 @@ def runDuniter(app):
     cfg = {
         'directory': '/home/duniter',
         'user': 'duniter',
-        'command': '/var/lib/npm/.npm-global/bin/ucoind start',
+        'command': '/usr/bin/duniter start',
         'environment': 'HOME="/home/duniter",USER="duniter",'
         'PATH="/var/lib/npm/.npm-global/bin:%(ENV_PATH)s"',
         'autostart': 'true',
@@ -56,20 +53,22 @@ def runDuniter(app):
 
 def configDuniter(config):
     """ Configures Duniter server """
-    logger.info("configuring duniter..")
+    logger.info("Duniter", "configuring duniter..")
 
     configString = "".join(" --{0}".format(k+" "+v if v is not None else k)
                            for k, v in config.items())
-    s = shell("gksu -u 'duniter ucoind config {0}'".format(configString))
+    s = shell("duniter config {0}".format(configString))
     if s["code"] != 0:
-        logger.error("Duniter config failed; log output follows:\n{0}"
+        logger.error("Duniter",
+                     "Duniter config failed; log output follows:\n{0}"
                      .format(s["stderr"]))
-        raise Exception("Duniter config failed, check logs for info")
-    s = shell("gksu -u duniter 'ucoind sync duniter.org 8999'")
+        raise errors.Error("Duniter config failed, check logs for info")
+    s = shell("duniter sync duniter.org 8999")
     if s["code"] != 0:
-        logger.error("Duniter sync failed; log output follows:\n{0}"
+        logger.error("Duniter",
+                     "Duniter sync failed; log output follows:\n{0}"
                      .format(s["stderr"]))
-        raise Exception("Duniter sync failed, check logs for info")
+        raise errors.Error("Duniter sync failed, check logs for info")
 
 
 signals.add("duniter", "apps", "post_load", on_load)
