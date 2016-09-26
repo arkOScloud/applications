@@ -46,7 +46,7 @@ class Jekyll(Site):
 
     def disable_ssl(self):
         pass
-    
+
     def update(self, pkg, ver):
         ruby.update_gem('jekyll', 'rdiscount')
 

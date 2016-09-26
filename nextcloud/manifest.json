@@ -1,0 +1,100 @@
+{
+    "id": "nextcloud",
+    "name": "Nextcloud",
+    "type": "website",
+    "icon": "fa fa-cloud",
+    "description": {
+        "short": "Access & share your files, calendars, contacts, mail & more from any device, on your terms",
+        "long": "Nextcloud gives you a private, secure way to share, work with others and access your own data using an easy to use interface. Be it music, calendar appointments, bookmarks, email or your documents, Nextcloud keeps your data safe."
+    },
+    "categories": [
+        {
+            "primary": "Websites",
+            "secondary": ["Personal Cloud"]
+        },
+        {
+            "primary": "File Storage",
+            "secondary": ["Documents", "Music", "Photos", "Calendar", "Contacts"]
+        }
+    ],
+    "version": "10.0.0-1",
+    "author": "arkOS",
+    "homepage": "http://arkos.io",
+    "app_author": "Nextcloud",
+    "app_homepage": "https://www.nextcloud.com/",
+    "logo": true,
+    "screenshots": ["screen-01.jpg", "screen-02.jpg", "screen-03.jpg"],
+    "services": [
+        {
+            "name": "MariaDB",
+            "binary": "mysqld",
+            "ports": []
+        },
+        {
+            "name": "PHP FastCGI",
+            "binary": "php-fpm",
+            "ports": []
+        }
+    ],
+    "modules": ["website", "backup"],
+    "dependencies": [
+        {
+            "type": "system",
+            "name": "php",
+            "package": "php",
+            "binary": null
+        },
+        {
+            "type": "system",
+            "name": "PHP FastCGI",
+            "package": "php-fpm",
+            "binary": "php-fpm"
+        },
+        {
+            "type": "system",
+            "name": "PHP GD Image Processing",
+            "package": "php-gd",
+            "binary": null
+        },
+        {
+            "type": "system",
+            "name": "PHP Internationalization",
+            "package": "php-intl",
+            "binary": null
+        },
+        {
+            "type": "system",
+            "name": "PHP APCu",
+            "package": "php-apcu",
+            "binary": null
+        },
+        {
+            "type": "system",
+            "name": "PHP APCu BC",
+            "package": "php-apcu-bc",
+            "binary": null
+        },
+        {
+            "type": "app",
+            "name": "MariaDB",
+            "package": "db-mariadb"
+        }
+    ],
+    "generation": 1,
+    "website_updates": false,
+    "download_url": "https://download.nextcloud.com/server/releases/nextcloud-10.0.0.zip",
+    "website_datapaths": true,
+    "website_options": {
+      "users": [
+        {
+          "id": "nc-admin",
+          "label": "Nextcloud Admin User",
+          "required": true,
+          "help": "This user will be given administrative privileges for Nextcloud."
+        }
+      ]
+    },
+    "website_default_data_subdir": "data",
+    "database_engines": ["db-mariadb"],
+    "uses_php": true
+}

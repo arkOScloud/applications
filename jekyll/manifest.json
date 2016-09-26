@@ -50,7 +50,13 @@
     ],
     "generation": 1,
     "website_updates": true,
-    "website_extra_actions": true,
+    "website_actions": [
+      {
+        "id": "regenerate",
+        "icon": "refresh",
+        "name": "Regenerate Site"
+      }
+    ],
     "download_url": "https://pkg.arkos.io/resources/jekyll-sample.tar.gz",
     "database_engines": [],
     "uses_php": false,
