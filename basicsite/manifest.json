@@ -2,7 +2,7 @@
     "id": "basicsite",
     "name": "Basic Website",
     "type": "website",
-    "icon": "fa fa-globe",
+    "icon": "globe",
     "description": {
         "short": "Upload your own HTML/PHP files",
         "long": "Create a custom website with your own HTML or PHP files."
@@ -25,7 +25,21 @@
     "dependencies": [],
     "generation": 1,
     "website_updates": false,
-    "website_extra_options": true,
+    "website_options": {
+      "boolean": [
+        {
+          "id": "php",
+          "label": "Uses PHP"
+        }
+      ],
+      "textarea": [
+        {
+          "id": "addtoblock",
+          "label": "Server Block",
+          "help": "Add your NGINX server block here. The `listen`, `servername`, `root` and `index` lines, as well as any necessary PHP settings, are already prepared for you. Just put in any applicable `location` blocks or others you may require."
+        }
+      ]
+    },
     "download_url": null,
     "database_engines": [],
     "uses_php": false,

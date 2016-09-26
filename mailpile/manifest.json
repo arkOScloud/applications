@@ -2,7 +2,7 @@
     "id": "mailpile",
     "name": "Mailpile BETA 3",
     "type": "website",
-    "icon": "fa fa-envelope",
+    "icon": "envelope",
     "description": {
         "short": "A secure way to read, write, and organize piles and piles of email.",
         "long": "Mailpile is a modern, fast web-mail client with user-friendly encryption and privacy features. It places great emphasis on providing a clean, elegant user interface and pleasant user experience. In particular, Mailpile aims to make it easy and convenient to receive and send PGP encrypted or signed e-mail."

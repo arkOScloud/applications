@@ -2,7 +2,7 @@
     "id": "db-mariadb",
     "name": "MariaDB",
     "type": "database",
-    "icon": "fa fa-database",
+    "icon": "database",
     "description": {
         "short": "Manage MariaDB/MySQL databases",
         "long": ""

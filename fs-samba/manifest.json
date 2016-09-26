@@ -2,7 +2,7 @@
     "id": "fs-samba",
     "name": "File Shares (SMB)",
     "type": "fileshare",
-    "icon": "fa fa-windows",
+    "icon": "windows",
     "description": {
         "short": "Network file shares compatible with Windows (Samba/SMB/CIFS)",
         "long": "File shares using the Samba protocol allow you to easily share files and folders with Windows clients on your local network. These files and folders can be accessed through the Windows File Manager."

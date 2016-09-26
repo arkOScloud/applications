@@ -25,7 +25,6 @@
     "dependencies": [],
     "generation": 1,
     "website_updates": false,
-    "website_options": [],
     "download_url": "https://github.com/cdmedia/cms.js.git",
     "database_engines": [],
     "uses_php": false

@@ -2,7 +2,7 @@
     "id": "paperwork",
     "name": "Paperwork",
     "type": "website",
-    "icon": "fa fa-file-text-o",
+    "icon": "file text outline",
     "description": {
         "short": "Note-taking & archiving alternative to Evernote, Microsoft OneNote & Google Keep",
         "long": ""
@@ -79,7 +79,6 @@
     "website_updates": false,
     "download_url": "https://github.com/twostairs/paperwork/archive/master.zip",
     "website_datapaths": false,
-    "website_options": [],
     "database_engines": ["db-mariadb"],
     "uses_php": true
 }

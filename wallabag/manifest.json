@@ -2,7 +2,7 @@
     "id": "wallabag",
     "name": "Wallabag",
     "type": "website",
-    "icon": "fa fa-rss",
+    "icon": "rss",
     "description": {
         "short": "Self-hosted app for saving web pages and RSS feeds",
         "long": "Wallabag (formerly poche) is a self-hostable application for saving web pages. Unlike other services, wallabag is free (as in freedom) and open-source."
@@ -61,20 +61,23 @@
     ],
     "generation": 1,
     "website_updates": true,
-    "website_options": [
-      {
-        "id": "wb-username",
-        "name": "Wallabag Username",
-        "help": "This will be the username of the first user for Wallabag.",
-        "type": "text"
-      },
-      {
-        "id": "wb-password",
-        "name": "Wallabag Password",
-        "help": "",
-        "type": "password"
-      }
-    ],
+    "website_options": {
+      "text": [
+        {
+          "id": "wb-username",
+          "label": "Wallabag Username",
+          "required": true,
+          "help": "This will be the username of the first user for Wallabag."
+        }
+      ],
+      "password": [
+        {
+          "id": "wb-password",
+          "label": "Wallabag Password",
+          "required": true
+        }
+      ]
+    },
     "download_url": "https://github.com/wallabag/wallabag/archive/1.9.1-b.tar.gz",
     "database_engines": ["db-sqlite3"],
     "uses_php": true

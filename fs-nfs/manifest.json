@@ -2,7 +2,7 @@
     "id": "fs-nfs",
     "name": "File Shares (NFS)",
     "type": "fileshare",
-    "icon": "fa fa-apple",
+    "icon": "linux",
     "description": {
         "short": "Network file shares compatible with Linux systems (NFS)",
         "long": "File shares using the NFS protocol allow you to easily share files and folders with Linux clients on your local network. These files and folders can be accessed through the command line or your chosen Linux file browser."

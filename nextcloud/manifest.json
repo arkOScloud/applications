@@ -2,7 +2,7 @@
     "id": "nextcloud",
     "name": "Nextcloud",
     "type": "website",
-    "icon": "fa fa-cloud",
+    "icon": "cloud",
     "description": {
         "short": "Access & share your files, calendars, contacts, mail & more from any device, on your terms",
         "long": "Nextcloud gives you a private, secure way to share, work with others and access your own data using an easy to use interface. Be it music, calendar appointments, bookmarks, email or your documents, Nextcloud keeps your data safe."

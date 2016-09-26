@@ -2,7 +2,7 @@
     "id": "lychee",
     "name": "Lychee",
     "type": "website",
-    "icon": "fa fa-photo",
+    "icon": "photo",
     "description": {
         "short": "Photo management system",
         "long": "Lychee is an easy to use and great looking photo-management-system you can run on your server, to manage and share photos."
