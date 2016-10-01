@@ -47,9 +47,9 @@
             "binary": "php-fpm"
         },
         {
-            "type": "yaourt",
+            "type": "system",
             "name": "PHP xCache",
-            "package": "php53-xcache",
+            "package": "php-apcu",
             "binary": null
         },
         {

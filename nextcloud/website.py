@@ -86,7 +86,6 @@ class Nextcloud(Site):
         pass
 
     def post_install(self, vars_, dbpasswd=""):
-        secret_key = random_string()
         php.open_basedir('add', '/dev')
 
         # If there is a custom path for the data directory, add to open_basedir
