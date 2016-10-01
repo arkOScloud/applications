@@ -7,7 +7,7 @@ from arkos.tracked_services import get_open_port
 
 
 class Mailpile(Site):
-    def pre_install(self, vars_):
+    def pre_install(self, extra_vars):
         self.backend_port = str(get_open_port())
         self.addtoblock = [
             nginx.Location(
@@ -19,16 +19,13 @@ class Mailpile(Site):
                 nginx.Key('proxy_buffering', 'off')
             )]
 
-    def post_install(self, vars_, dbpasswd=""):
+    def post_install(self, extra_vars, dbpasswd=""):
         users.SystemUser("mailpile").add()
 
         st = os.stat(os.path.join(self.path, 'scripts/mailpile'))
-<<<<<<< HEAD
-        os.chmod(os.path.join(
-            self.path, 'scripts/mailpile'), st.st_mode | 0o111)
-=======
-        os.chmod(os.path.join(self.path, 'scripts/mailpile'), st.st_mode | 0o111)
->>>>>>> 9f1dd719e66ae7a5d97e4c59e95f20a7e852f9bd
+        os.chmod(
+            os.path.join(self.path, 'scripts/mailpile'), st.st_mode | 0o111
+        )
         cfg = {
             'directory': self.path,
             'user': 'mailpile',

@@ -3,17 +3,17 @@ import os
 
 from arkos.languages import ruby
 from arkos.websites import Site
-from arkos.utilities import shell
+from arkos.utilities import errors, shell
 from arkos.system import users, groups
 
 
 class Jekyll(Site):
     addtoblock = []
 
-    def pre_install(self, vars_):
+    def pre_install(self, extra_vars):
         ruby.install_gem('jekyll', 'rdiscount')
 
-    def post_install(self, vars_, dbpasswd=""):
+    def post_install(self, extra_vars, dbpasswd=""):
 
         # Make sure the webapps config points to
         # the _site directory and generate it.
@@ -26,8 +26,9 @@ class Jekyll(Site):
         s = shell('jekyll build --source {0} --destination {1}'
                   .format(self.path, os.path.join(self.path, '_site')))
         if s["code"] != 0:
-            raise Exception('Jekyll failed to build: {0}'
-                            .format(str(s["stderr"])))
+            raise errors.OperationFailedError(
+                'Jekyll failed to build: {0}'.format(str(s["stderr"]))
+            )
         uid, gid = users.get_system("http").uid, groups.get_system("http").gid
         for r, d, f in os.walk(self.path):
             for x in d:
@@ -66,8 +67,9 @@ class Jekyll(Site):
         s = shell('jekyll build --source {0} --destination {1}'
                   .format(self.path.split('/_site')[0], path))
         if s["code"] != 0:
-            raise Exception('Jekyll failed to build: {0}'
-                            .format(str(s["stderr"])))
+            raise errors.OperationFailedError(
+                'Jekyll failed to build: {0}'.format(str(s["stderr"]))
+            )
         uid, gid = users.get_system("http").uid, groups.get_system("http").gid
         for r, d, f in os.walk(self.path):
             for x in d:

@@ -5,54 +5,68 @@ import shutil
 
 from arkos.languages import php
 from arkos.websites import Site
-from arkos.utilities import shell, random_string
+from arkos.utilities import errors, shell, random_string
 from arkos.system import users, groups
 
 
 class Wallabag(Site):
     addtoblock = [
-        nginx.Location('~ /(db)',
+        nginx.Location(
+            '~ /(db)',
             nginx.Key('deny', 'all'),
             nginx.Key('return', '404')
-            ),
-        nginx.Location('= /favicon.ico',
+        ),
+        nginx.Location(
+            '= /favicon.ico',
             nginx.Key('log_not_found', 'off'),
             nginx.Key('access_log', 'off')
-            ),
-        nginx.Location('= /robots.txt',
+        ),
+        nginx.Location(
+            '= /robots.txt',
             nginx.Key('allow', 'all'),
             nginx.Key('log_not_found', 'off'),
             nginx.Key('access_log', 'off')
-            ),
-        nginx.Location('/',
+        ),
+        nginx.Location(
+            '/',
             nginx.Key('try_files', '$uri $uri/ /index.php?$args')
-            ),
-        nginx.Location('~ \.php$',
+        ),
+        nginx.Location(
+            '~ \.php$',
             nginx.Key('fastcgi_pass', 'unix:/run/php-fpm/php-fpm.sock'),
             nginx.Key('fastcgi_index', 'index.php'),
             nginx.Key('include', 'fastcgi.conf')
-            ),
-        nginx.Location('~* \.(js|css|png|jpg|jpeg|gif|ico)$',
+        ),
+        nginx.Location(
+            '~* \.(js|css|png|jpg|jpeg|gif|ico)$',
             nginx.Key('expires', 'max'),
             nginx.Key('log_not_found', 'off')
-        )]
+        )
+    ]
 
-    def pre_install(self, vars_):
-        if not vars.get('wb-username'):
-            raise Exception('Must choose a Wallabag username')
-        elif not vars.get('wb-passwd'):
-            raise Exception('Must choose a Wallabag password')
-        elif '"' in vars.get('wb-passwd') or "'" in vars.get('wb-passwd'):
-            raise Exception('Your Wallabag password must not include quotes')
+    def pre_install(self, extra_vars):
+        if not extra_vars.get('wb-username'):
+            raise errors.InvalidConfigError(
+                'Must choose a Wallabag username'
+            )
+        elif not extra_vars.get('wb-passwd'):
+            raise errors.InvalidConfigError(
+                'Must choose a Wallabag password'
+            )
+        elif '"' in extra_vars.get('wb-passwd')\
+                or "'" in extra_vars.get('wb-passwd'):
+            raise errors.InvalidConfigError(
+                'Your Wallabag password must not include quotes'
+            )
 
-    def post_install(self, vars_, dbpasswd=""):
+    def post_install(self, extra_vars, dbpasswd=""):
         secret_key = random_string()
         dbengine = 'mysql' \
             if self.meta.selected_dbengine == 'db-mariadb' \
             else 'sqlite'
 
-        username = vars_.get("wb-username")
-        passwd = vars_.get("wb-passwd") + username + secret_key
+        username = extra_vars.get("wb-username")
+        passwd = extra_vars.get("wb-passwd") + username + secret_key
         passwd = hashlib.sha1(passwd).hexdigest()
 
         # Write a standard Wallabag config file
@@ -77,10 +91,10 @@ class Wallabag(Site):
                     '\'/var/lib/sqlite3/{0}.db\');\n'.format(self.db.id)
                 oc.append(l)
             elif 'define (\'STORAGE_DB\'' in l and dbengine == 'mysql':
-                l = '@define (\'STORAGE_DB\', \'{0}\');\n'.format(self.db.id)
+                l = "@define ('STORAGE_DB', '{0}');\n".format(self.db.id)
                 oc.append(l)
             elif 'define (\'STORAGE_USER\'' in l and dbengine == 'mysql':
-                l = '@define (\'STORAGE_USER\', \'{0}\');\n'.format(self.db.id)
+                l = "@define ('STORAGE_USER', '{0}');\n".format(self.db.id)
                 oc.append(l)
             elif 'define (\'STORAGE_PASSWORD\'' in l and dbengine == 'mysql':
                 l = '@define (\'STORAGE_PASSWORD\', '\
@@ -164,11 +178,13 @@ class Wallabag(Site):
     def update(self, pkg, ver):
         # General update procedure
         shell('tar xzf {0} -C {1} --strip 1'.format(pkg, self.path))
-        for x in os.listdir(os.path.join(self.path, 'cache')):
-            if os.path.isdir(os.path.join(self.path, 'cache', x)):
-                shutil.rmtree(os.path.join(self.path, 'cache', x))
+        cachepath = os.path.join(self.path, 'cache')
+        for x in os.listdir(cachepath):
+            fpath = os.path.join(cachepath, x)
+            if os.path.isdir(fpath):
+                shutil.rmtree(fpath)
             else:
-                os.unlink(os.path.join(self.path, 'cache', x))
+                os.unlink(fpath)
         shutil.rmtree(os.path.join(self.path, 'install'))
         shell('chmod -R 755 {0} {1} {2}'
               .format(os.path.join(self.path, 'assets/'),

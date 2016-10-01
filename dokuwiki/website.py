@@ -39,12 +39,12 @@ class DokuWiki(Site):
         )
     ]
 
-    def pre_install(self, vars_):
+    def pre_install(self, extra_vars):
         pass
 
-    def post_install(self, vars_, dbpasswd=""):
+    def post_install(self, extra_vars, dbpasswd=""):
         # UPDATE: Config DB info and enable modules
-        index_php = os.path.join(os.path, 'index.php')
+        index_php = os.path.join(self.path, 'index.php')
         os.unlink(index_php)
         with open(index_php, "w") as f:
             f.write(switching_index)  # see below
@@ -56,7 +56,7 @@ class DokuWiki(Site):
         pass
 
     def ssl_enable(self, cfile, kfile):
-        n = nginx.loadf('/etc/nginx/sites-available/{0}'.format(self.name))
+        n = nginx.loadf('/etc/nginx/sites-available/{0}'.format(self.id))
         for x in n.servers:
             if x.filter('Location', '/'):
                 x.remove(x.filter('Location', '/')[0])
@@ -68,16 +68,16 @@ class DokuWiki(Site):
                 )
                 x.add(self.addtoblock[0])
                 nginx.dumpf(n, '/etc/nginx/sites-available/{0}'
-                            .format(self.name))
+                            .format(self.id))
 
     def ssl_disable(self):
-        n = nginx.loadf('/etc/nginx/sites-available/{0}'.format(self.name))
+        n = nginx.loadf('/etc/nginx/sites-available/{0}'.format(self.id))
         for x in n.servers:
             if x.filter('Location', '/'):
                 x.remove(x.filter('Location', '/')[0])
                 x.add(self.addtoblock[0])
                 nginx.dumpf(n, '/etc/nginx/sites-available/{0}'
-                            .format(self.name))
+                            .format(self.id))
 
     def update(self, pkg, ver):
         pass

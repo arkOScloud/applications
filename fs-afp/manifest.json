@@ -31,7 +31,7 @@
     "modules": ["fileshare"],
     "dependencies": [
         {
-            "type": "yaourt",
+            "type": "system",
             "name": "Netatalk",
             "package": "netatalk",
             "binary": null

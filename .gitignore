@@ -1,10 +1,5 @@
 # See http://help.github.com/ignore-files/ for more about ignoring files.
 
-# Eclipse project files 
+# Eclipse project files
 .project
 .pydevproject
-
-# other
-/duniter/
-/cesium/
-/keeweb/

@@ -1,15 +1,11 @@
-import json
 import os
-import sys
 import re
 import MySQLdb
-import _mysql_exceptions
 
 from arkos import conns, secrets
 from arkos.system import services
 from arkos.databases import Database, DatabaseUser, DatabaseManager
-from arkos.utilities import shell, random_string
-from arkos.utilities.errors import ConnectionServiceError
+from arkos.utilities import errors, shell, random_string
 
 
 class MariaDB(Database):
@@ -33,7 +29,9 @@ class MariaDB(Database):
             elif not re.search('[^-;]+;', l):
                 s = s + l
             elif re.search('^\s*USE\s*', l, re.IGNORECASE):
-                raise Exception('Cannot switch databases during execution')
+                raise errors.InvalidConfigError(
+                    'Cannot switch databases during execution'
+                )
             else:
                 s = s + l
                 cur.execute(s)
@@ -53,7 +51,8 @@ class MariaDB(Database):
 
     def get_size(self):
         s = self.execute("SELECT sum(data_length+index_length) FROM "
-                         "information_schema.TABLES WHERE table_schema LIKE '{0}';"
+                         "information_schema.TABLES WHERE table_schema "
+                         "LIKE '{0}';"
                          .format(self.id), strf=False)
         return int(s[0][0]) if s[0][0] else 0
 
@@ -66,13 +65,13 @@ class MariaDB(Database):
         for table in cur.fetchall():
             tables.append(table[0])
         for table in tables:
-            data += "DROP TABLE IF EXISTS `"+str(table)+"`;"
-            cur.execute("SHOW CREATE TABLE `"+str(table)+"`;")
-            data += "\n"+str(cur.fetchone()[1])+";\n\n"
-            cur.execute("SELECT * FROM `"+str(table)+"`;")
+            data += "DROP TABLE IF EXISTS `{0}`;".format(str(table))
+            cur.execute("SHOW CREATE TABLE `{0}`;".format(str(table)))
+            data += "\n{0};\n\n".format(str(cur.fetchone()[1]))
+            cur.execute("SELECT * FROM `{0}`;".format(str(table)))
             rows = cur.fetchall()
             if rows:
-                data += "INSERT INTO `"+str(table)+"` VALUES ("
+                data += "INSERT INTO `{0}` VALUES (".format(str(table))
                 s = True
             for row in rows:
                 f = True
@@ -81,12 +80,14 @@ class MariaDB(Database):
                 for field in row:
                     if not f:
                         data += ', '
-                    if type(field) in [int, long]:
+                    if type(field) == int:
                         data += str(field)
                     elif type(field) == str:
-                        data += '"'+str(conns.MariaDB.escape_string(field))+'"'
+                        data += '"{0}"'.format(
+                            str(conns.MariaDB.escape_string(field))
+                        )
                     else:
-                        data += '"'+str(field)+'"'
+                        data += '"{0}"'.format(str(field))
                     f = False
                 s = False
             if rows:
@@ -99,18 +100,22 @@ class MariaDBUser(DatabaseUser):
     def add_user(self, passwd):
         self.manager.connect()
         if self.manager.validate(user=self.id, passwd=passwd):
-            conns.MariaDB.query('CREATE USER \'{0}\'@\'localhost\' IDENTIFIED BY \'{1}\''
-                .format(self.id,passwd))
+            conns.MariaDB.query(
+                "CREATE USER '{0}'@'localhost' IDENTIFIED BY '{1}'"
+                .format(self.id, passwd)
+            )
 
     def remove_user(self):
         self.manager.connect()
-        conns.MariaDB.query('DROP USER \'{0}\'@\'localhost\''.focmat(self.id))
+        conns.MariaDB.query("DROP USER '{0}'@'localhost'".format(self.id))
 
     def chperm(self, action, db=None):
         self.manager.connect()
         if action == 'check':
-            conns.MariaDB.query('SHOW GRANTS FOR \'{0}\'@\'localhost\''
-                .format(self.id))
+            conns.MariaDB.query(
+                "SHOW GRANTS FOR '{0}'@'localhost'"
+                .format(self.id)
+            )
             r = conns.MariaDB.store_result()
             out = r.fetch_row(0)
             parse = []
@@ -126,18 +131,25 @@ class MariaDBUser(DatabaseUser):
                 status += line + '\n'
             return status
         elif action == 'grant':
-            conns.MariaDB.query('GRANT ALL ON {0}.* TO \'{1}\'@\'localhost\''
-                .format(db.id, self.id))
+            conns.MariaDB.query(
+                "GRANT ALL ON {0}.* TO '{1}'@'localhost'"
+                .format(db.id, self.id)
+            )
         elif action == 'revoke':
-            conns.MariaDB.query('REVOKE ALL ON {0}.* FROM \'{1}\'@\'localhost\''
-                .format(db.id, self.id))
+            conns.MariaDB.query(
+                "REVOKE ALL ON {0}.* FROM '{1}'@'localhost'"
+                .format(db.id, self.id)
+            )
 
 
 class MariaDBMgr(DatabaseManager):
     def connect(self, user='root', passwd='', db=None):
         passwd = passwd or secrets.get("mysql")
         if not os.path.exists("/var/lib/mysql/mysql"):
-            shell("mysql_install_db --user=mysql --basedir=/usr --datadir=/var/lib/mysql")
+            shell(
+                "mysql_install_db --user=mysql --basedir=/usr "
+                "--datadir=/var/lib/mysql"
+            )
         try:
             conns.MariaDB.ping()
             self.state = True
@@ -147,12 +159,14 @@ class MariaDBMgr(DatabaseManager):
         try:
             if not passwd:
                 passwd = self.change_admin_passwd()
-            conns.MariaDB = MySQLdb.connect('localhost', user, passwd, db or "")
+            conns.MariaDB = MySQLdb.connect(
+                'localhost', user, passwd, db or ""
+            )
             self.state = True
             self.connection = conns.MariaDB
         except:
             self.state = False
-            raise ConnectionServiceError("MariaDB")
+            raise errors.ConnectionServiceError("MariaDB")
 
     def change_admin_passwd(self):
         try:
@@ -165,51 +179,68 @@ class MariaDBMgr(DatabaseManager):
         secrets.set("mysql", new_passwd)
         secrets.save()
         c = MySQLdb.connect('localhost', 'root', '', 'mysql')
-        c.query('UPDATE user SET password=PASSWORD("'+new_passwd+'") WHERE User=\'root\'')
+        c.query(
+            "UPDATE user SET password=PASSWORD(\"{0}\") "
+            "WHERE User='root'".format(new_passwd)
+        )
         c.query('FLUSH PRIVILEGES')
         c.commit()
         return new_passwd
 
-    def validate(self, id_='', user='', passwd=''):
-        if id_ and re.search('\.|-|`|\\\\|\/|^test$|[ ]', id_):
-            raise Exception('Database name must not contain spaces, dots, '
-                            'dashes or other special characters')
-        elif id_ and len(id_) > 16:
-            raise Exception('Database name must be shorter than 16 characters')
+    def validate(self, id='', user='', passwd=''):
+        if id and re.search('\.|-|`|\\\\|\/|^test$|[ ]', id):
+            raise errors.InvalidConfigError(
+                'Database name must not contain spaces, dots, dashes or other '
+                'special characters'
+            )
+        elif id and len(id) > 16:
+            raise errors.InvalidConfigError(
+                'Database name must be shorter than 16 characters'
+            )
         if user and re.search('\.|-|`|\\\\|\/|^test$|[ ]', user):
-            raise Exception('Database username must not contain spaces, dots, '
-                            'dashes or other special characters')
+            raise errors.InvalidConfigError(
+                'Database username must not contain spaces, dots, dashes or '
+                'other special characters'
+            )
         elif user and len(user) > 16:
-            raise Exception('Database username must be shorter than 16 characters')
+            raise errors.InvalidConfigError(
+                'Database username must be shorter than 16 characters'
+            )
         if passwd and len(passwd) < 8:
-            raise Exception('Database password must be longer than 8 characters')
-        if id_:
+            raise errors.InvalidConfigError(
+                'Database password must be longer than 8 characters'
+            )
+        if id:
             for x in self.get_dbs():
-                if x.id == id_:
-                    raise Exception('You already have a database named {0} '
-                                    '- please remove that one or choose a new name!'.format(id_))
+                if x.id == id:
+                    raise errors.InvalidConfigError(
+                        'You already have a database named {0} - please '
+                        'remove that one or choose a new name!'.format(id)
+                    )
         if user:
             for x in self.get_users():
                 if x.id == user:
-                    raise Exception('You already have a database user named {0} '
-                                    '- please remove that one or choose a new name!'.format(user))
+                    raise errors.InvalidConfigError(
+                        'You already have a database user named {0} - please '
+                        'remove that one or choose a new name!'.format(user)
+                    )
         return True
 
     def get_dbs(self):
         self.connect()
         dblist = []
-        excludes = ['Database', 'information_schema',
-            'mysql', 'performance_schema']
+        excludes = ['Database', 'information_schema', 'mysql',
+                    'performance_schema']
         conns.MariaDB.query('SHOW DATABASES')
         r = conns.MariaDB.store_result()
         dbs = r.fetch_row(0)
         for db in dbs:
             if not db[0] in excludes and db[0].split():
-                dblist.append(MariaDB(id_=db[0], manager=self))
+                dblist.append(MariaDB(id=db[0], manager=self))
         return dblist
 
-    def add_db(self, id_):
-        db = MariaDB(id_=id_, manager=self)
+    def add_db(self, id):
+        db = MariaDB(id=id, manager=self)
         db.add()
         return db
 
@@ -222,10 +253,10 @@ class MariaDBMgr(DatabaseManager):
         output = r.fetch_row(0)
         for usr in output:
             if not usr[0] in userlist and not usr[0] in excludes:
-                userlist.append(MariaDBUser(id_=usr[0], manager=self))
+                userlist.append(MariaDBUser(id=usr[0], manager=self))
         return userlist
 
-    def add_user(self, id_, passwd):
-        user = MariaDBUser(id_=id_, manager=self)
+    def add_user(self, id, passwd):
+        user = MariaDBUser(id=id, manager=self)
         user.add(passwd)
         return user

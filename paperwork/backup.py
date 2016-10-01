@@ -22,6 +22,6 @@ class PaperworkBackup(BackupController):
     def post_restore(self, site, dbpasswd):
         dbstr = "mysql, localhost, 3389, {0}, {1}, {0}"\
             .format(site.id, dbpasswd)
-        with open(os.path.join(site.path,
-                               'app/storage/db_settings'), 'w') as f:
+        config_file = os.path.join(site.path, 'app/storage/db_settings')
+        with open(config_file, 'w') as f:
             f.write(dbstr)
