@@ -27,7 +27,7 @@ class Website(Site):
     def post_install(self, extra_vars, dbpasswd=""):
         # Write a basic index file showing that we are here
         if extra_vars.get('php'):
-            php.enable_mod('xcache')
+            php.enable_mod('apcu', config_file="/etc/php/conf.d/apcu.ini")
 
         index_ext = 'php' if extra_vars.get('php') else 'html'
         index_path = os.path.join(self.path, 'index.{0}'.format(index_ext))
@@ -36,11 +36,12 @@ class Website(Site):
                 '<html>\n'
                 '<body>\n'
                 '<h1>Genesis - Custom Site</h1>\n'
-                '<p>Your site is online and available at '+self.path+'</p>\n'
+                '<p>Your site is online and available at {0}</p>\n'
                 '<p>Feel free to paste your site files here</p>\n'
                 '</body>\n'
                 '</html>\n'
-                )
+                .format(self.path)
+            )
 
         # Give access to httpd
         uid, gid = users.get_system("http").uid, groups.get_system("http").gid
