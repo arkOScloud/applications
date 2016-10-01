@@ -48,8 +48,8 @@
         },
         {
             "type": "system",
-            "name": "PHP xCache",
-            "package": "php-xcache",
+            "name": "PHP APCu",
+            "package": "php-apcu",
             "binary": null
         },
         {

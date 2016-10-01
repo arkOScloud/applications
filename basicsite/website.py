@@ -9,24 +9,29 @@ from arkos.languages import php
 class Website(Site):
     addtoblock = []
 
-    def pre_install(self, vars):
-        if vars.get('php', False):
+    def pre_install(self, extra_vars):
+        if extra_vars.get('php', False):
             self.addtoblock = [
-                nginx.Location('~ ^(.+?\.php)(/.*)?$',
+                nginx.Location(
+                    '~ ^(.+?\.php)(/.*)?$',
                     nginx.Key('include', 'fastcgi_params'),
-                    nginx.Key('fastcgi_param', 'SCRIPT_FILENAME $document_root$1'),
+                    nginx.Key('fastcgi_param',
+                              'SCRIPT_FILENAME $document_root$1'),
                     nginx.Key('fastcgi_param', 'PATH_INFO $2'),
-                    nginx.Key('fastcgi_pass', 'unix:/run/php-fpm/php-fpm.sock'),
+                    nginx.Key('fastcgi_pass',
+                              'unix:/run/php-fpm/php-fpm.sock'),
                     nginx.Key('fastcgi_read_timeout', '900s'),
                 )
             ]
 
-    def post_install(self, vars, dbpasswd=""):
+    def post_install(self, extra_vars, dbpasswd=""):
         # Write a basic index file showing that we are here
-        if vars.get('php'):
+        if extra_vars.get('php'):
             php.enable_mod('xcache')
 
-        with open(os.path.join(self.path, 'index.'+('php' if vars.get('php') else 'html')), 'w') as f:
+        index_ext = 'php' if extra_vars.get('php') else 'html'
+        index_path = os.path.join(self.path, 'index.{0}'.format(index_ext))
+        with open(index_path, 'w') as f:
             f.write(
                 '<html>\n'
                 '<body>\n'

@@ -1,5 +1,3 @@
-import os
-
 from arkos.backup import BackupController
 
 

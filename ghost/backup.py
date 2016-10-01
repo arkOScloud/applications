@@ -7,23 +7,25 @@ from arkos.backup import BackupController
 
 class GhostBackup(BackupController):
     def get_config(self, site):
-        return ["/etc/supervisor.d/%s.ini" % site.id]
-    
+        return ["/etc/supervisor.d/{0}.ini".format(site.id)]
+
     def get_data(self, site):
         return []
-    
+
     def pre_backup(self, site):
         pass
-    
+
     def post_backup(self, site):
         pass
-    
+
     def pre_restore(self):
         pass
-    
+
     def post_restore(self, site, dbpasswd):
-        nodejs.install_from_package(site.path, 'production', 
-            {'sqlite': '/usr/bin/sqlite3', 'python': '/usr/bin/python2'})
+        nodejs.install_from_package(site.path,
+                                    'production',
+                                    {'sqlite': '/usr/bin/sqlite3',
+                                     'python': '/usr/bin/python2'})
         users.SystemUser("ghost").add()
         uid = users.get_system("ghost").uid
         for r, d, f in os.walk(site.path):
@@ -37,7 +39,8 @@ class GhostBackup(BackupController):
         cfg = {
                 'directory': site.path,
                 'user': 'ghost',
-                'command': 'node %s'%os.path.join(site.path, 'index.js'),
+                'command': 'node {0}'
+                .format(os.path.join(site.path, 'index.js')),
                 'autostart': 'true',
                 'autorestart': 'true',
                 'environment': 'NODE_ENV="production"',

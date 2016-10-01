@@ -25,7 +25,7 @@
             "name": "XMPP Chat Server",
             "type": "system",
             "binary": "prosody",
-            "ports": [["tcp", "5222"], ["tcp", "5269"]]
+            "ports": [["tcp", 5222], ["tcp", 5269]]
         }
     ],
     "modules": ["backend", "ssl"],

@@ -3,7 +3,7 @@ import ENV from "../config/environment";
 import {showFade, showLoader, hideLoader, hideFade} from "../utils/loading";
 
 
-export default Ember.ObjectController.extend({
+export default Ember.Controller.extend({
   setupPort: 80,
   actions: {
     setup: function() {
