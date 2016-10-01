@@ -49,9 +49,9 @@
             "binary": null
         },
         {
-            "type": "system",
+            "type": "yaourt",
             "name": "PHP xCache",
-            "package": "php-xcache",
+            "package": "php53-xcache",
             "binary": null
         }
     ],
