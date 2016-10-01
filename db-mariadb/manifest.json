@@ -38,9 +38,9 @@
             "daemon": "mysqld"
         },
         {
-            "type": "pip",
+            "type": "system",
             "name": "Python MySQL Client",
-            "package": "mysqlclient",
+            "package": "python-mysqlclient",
             "binary": null,
             "internal": true
         }
