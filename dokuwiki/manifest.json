@@ -2,7 +2,7 @@
     "id": "dokuwiki",
     "name": "DokuWiki",
     "type": "website",
-    "icon": "fa fa-book",
+    "icon": "book",
     "description": {
         "short": "Collaborative Documentation",
         "long": "DokuWiki is a simple to use and highly versatile Open Source wiki software that doesn't require a database. It is loved by users for its clean and readable syntax."

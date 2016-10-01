@@ -1,0 +1,42 @@
+{
+    "id": "fs-afp",
+    "name": "File Shares (AFP)",
+    "type": "fileshare",
+    "icon": "apple",
+    "description": {
+        "short": "Network file shares compatible with Apple devices (AFP)",
+        "long": "File shares using the AFP protocol allow you to easily share files and folders with MacOS or iOS clients on your local network. These files and folders can be accessed through Mac Finder. Folders can also be used as designated locations for Time Machine backups."
+    },
+    "categories": [
+        {
+            "primary": "File Storage",
+            "secondary": ["Documents", "Music", "Photos"]
+        }
+    ],
+    "version": "1.0",
+    "author": "arkOS",
+    "homepage": "https://arkos.io",
+    "app_author": "The Netatalk Team",
+    "app_homepage": "http://netatalk.sourceforge.net",
+    "logo": false,
+    "screenshots": [],
+    "services": [
+        {
+            "name": "Netatalk",
+            "type": "system",
+            "binary": "netatalk",
+            "ports": [["tcp", "548"]]
+        }
+    ],
+    "modules": ["fileshare"],
+    "dependencies": [
+        {
+            "type": "system",
+            "name": "Netatalk",
+            "package": "netatalk",
+            "binary": null
+        }
+    ],
+    "generation": 1,
+    "uses_ssl": false
+}

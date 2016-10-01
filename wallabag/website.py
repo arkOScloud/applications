@@ -11,34 +11,28 @@ from arkos.system import users, groups
 
 class Wallabag(Site):
     addtoblock = [
-        nginx.Location(
-            '~ /(db)',
+        nginx.Location('~ /(db)',
             nginx.Key('deny', 'all'),
             nginx.Key('return', '404')
-        ),
-        nginx.Location(
-            '= /favicon.ico',
+            ),
+        nginx.Location('= /favicon.ico',
             nginx.Key('log_not_found', 'off'),
             nginx.Key('access_log', 'off')
-        ),
-        nginx.Location(
-            '= /robots.txt',
+            ),
+        nginx.Location('= /robots.txt',
             nginx.Key('allow', 'all'),
             nginx.Key('log_not_found', 'off'),
             nginx.Key('access_log', 'off')
-        ),
-        nginx.Location(
-            '/',
+            ),
+        nginx.Location('/',
             nginx.Key('try_files', '$uri $uri/ /index.php?$args')
-        ),
-        nginx.Location(
-            '~ \.php$',
+            ),
+        nginx.Location('~ \.php$',
             nginx.Key('fastcgi_pass', 'unix:/run/php-fpm/php-fpm.sock'),
             nginx.Key('fastcgi_index', 'index.php'),
             nginx.Key('include', 'fastcgi.conf')
-        ),
-        nginx.Location(
-            '~* \.(js|css|png|jpg|jpeg|gif|ico)$',
+            ),
+        nginx.Location('~* \.(js|css|png|jpg|jpeg|gif|ico)$',
             nginx.Key('expires', 'max'),
             nginx.Key('log_not_found', 'off')
         )]

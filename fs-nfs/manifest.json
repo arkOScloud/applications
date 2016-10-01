@@ -1,0 +1,42 @@
+{
+    "id": "fs-nfs",
+    "name": "File Shares (NFS)",
+    "type": "fileshare",
+    "icon": "linux",
+    "description": {
+        "short": "Network file shares compatible with Linux systems (NFS)",
+        "long": "File shares using the NFS protocol allow you to easily share files and folders with Linux clients on your local network. These files and folders can be accessed through the command line or your chosen Linux file browser."
+    },
+    "categories": [
+        {
+            "primary": "File Storage",
+            "secondary": ["Documents", "Music", "Photos"]
+        }
+    ],
+    "version": "1.0",
+    "author": "arkOS",
+    "homepage": "https://arkos.io",
+    "app_author": "Linux-NFS",
+    "app_homepage": "http://linux-nfs.org/",
+    "logo": false,
+    "screenshots": [],
+    "services": [
+        {
+            "name": "NFS",
+            "type": "system",
+            "binary": "nfs-server",
+            "ports": [["tcp", "111"], ["udp", "111"], ["tcp", "2049"], ["udp", "2049"], ["tcp", "1110"], ["udp", "1110"], ["tcp", "4045"], ["udp", "4045"]]
+        }
+    ],
+    "modules": ["fileshare"],
+    "dependencies": [
+        {
+            "type": "system",
+            "name": "NFS",
+            "package": "nfs-utils",
+            "binary": null
+        }
+    ],
+    "generation": 1,
+    "uses_ssl": false
+}

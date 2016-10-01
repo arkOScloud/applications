@@ -3,7 +3,7 @@ import os
 from arkos.backup import BackupController
 
 
-class ownCloudBackup(BackupController):
+class NextcloudBackup(BackupController):
     def get_config(self, site):
         return []
 

@@ -2,7 +2,7 @@
     "id": "radicale",
     "name": "Calendar/Contacts",
     "type": "app",
-    "icon": "fa fa-calendar",
+    "icon": "calendar",
     "description": {
         "short": "Host your own calendar and contacts (CalDAV/CardDAV) sync server",
         "long": ""
