@@ -1,9 +1,9 @@
-import errno
 import nginx
 import os
 import re
 import shutil
 
+from arkos import logger
 from arkos.languages import php
 from arkos.websites import Site
 from arkos.utilities import shell, random_string
@@ -119,9 +119,11 @@ class Nextcloud(Site):
                    ).format(self.db.id, self.db.id, dbpasswd,
                             dbpasswd, self.data_path))
         if s["code"] != 0:
+            logger.critical("Nextcloud", s["stderr"])
             raise Exception("Nextcloud database population failed")
         s = shell("php occ app:enable user_ldap")
         if s["code"] != 0:
+            logger.critical("Nextcloud", s["stderr"])
             raise Exception("Nextcloud LDAP configuration failed")
         os.chdir(mydir)
         os.chown(os.path.join(self.path, "config/config.php"), uid, gid)
