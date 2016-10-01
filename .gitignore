@@ -3,3 +3,6 @@
 # Eclipse project files 
 .project
 .pydevproject
+/duniter/
+/cesium/
+/keeweb/
