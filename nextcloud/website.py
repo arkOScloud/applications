@@ -1,4 +1,3 @@
-import errno
 import nginx
 import os
 import re
@@ -17,30 +16,41 @@ class Nextcloud(Site):
         nginx.Key('client_max_body_size', '10G'),
         nginx.Key('fastcgi_buffers', '64 4K'),
         nginx.Key('fastcgi_buffer_size', '64K'),
-        nginx.Location('= /robots.txt',
+        nginx.Location(
+            '= /robots.txt',
             nginx.Key('allow', 'all'),
             nginx.Key('log_not_found', 'off'),
             nginx.Key('access_log', 'off')
             ),
-        nginx.Location('= /.well-known/carddav',
+        nginx.Location(
+            '= /.well-known/carddav',
             nginx.Key('return', '301 $scheme://$host/remote.php/dav')
         ),
-        nginx.Location('= /.well-known/caldav',
+        nginx.Location(
+            '= /.well-known/caldav',
             nginx.Key('return', '301 $scheme://$host/remote.php/dav')
         ),
-        nginx.Location('/',
-            nginx.Key('rewrite', '^ /index.php$uri'),
+        nginx.Location(
+            '/',
+            nginx.Key(
+                'rewrite',
+                '^ /index.php$uri'),
             ),
-        nginx.Location('~ ^/(?:build|tests|config|lib|3rdparty|templates|data)/',
+        nginx.Location(
+            '~ ^/(?:build|tests|config|lib|3rdparty|templates|data)/',
             nginx.Key('deny', 'all')
             ),
-        nginx.Location('~ ^/(?:\.|autotest|occ|issue|indie|db_|console)',
+        nginx.Location(
+            '~ ^/(?:\.|autotest|occ|issue|indie|db_|console)',
             nginx.Key('deny', 'all')
             ),
-        nginx.Location('~ ^/(?:index|remote|public|cron|core/ajax/update|status|ocs/v[12]|updater/.+|ocs-provider/.+|core/templates/40[34])\.php(?:$|/)',
+        nginx.Location(
+            '~ ^/(?:index|remote|public|cron|core/ajax/update|status|ocs/v[12]'
+            '|updater/.+|ocs-provider/.+|core/templates/40[34])\.php(?:$|/)',
             nginx.Key('include', 'fastcgi_params'),
             nginx.Key('fastcgi_split_path_info', '^(.+\.php)(/.+)$'),
-            nginx.Key('fastcgi_param', 'SCRIPT_FILENAME $document_root$fastcgi_script_name'),
+            nginx.Key('fastcgi_param', 'SCRIPT_FILENAME '
+                      '$document_root$fastcgi_script_name'),
             nginx.Key('fastcgi_param', 'PATH_INFO $fastcgi_path_info'),
             nginx.Key('fastcgi_param', 'modHeadersAvailable true'),
             nginx.Key('fastcgi_param', 'front_controller_active true'),
@@ -48,11 +58,13 @@ class Nextcloud(Site):
             nginx.Key('fastcgi_intercept_errors', 'on'),
             nginx.Key('fastcgi_read_timeout', '900s')
             ),
-        nginx.Location('~ ^/(?:updater|ocs-provider)(?:$|/)',
+        nginx.Location(
+            '~ ^/(?:updater|ocs-provider)(?:$|/)',
             nginx.Key('try_files', '$uri/ =404'),
             nginx.Key('index', 'index.php')
         ),
-        nginx.Location('~* \.(?:css|js)$',
+        nginx.Location(
+            '~* \.(?:css|js)$',
             nginx.Key('try_files', '$uri /index.php$uri$is_args$args'),
             nginx.Key('add_header', 'Cache-Control "public, max-age=7200"'),
             nginx.Key('add_header', 'X-Content-Type-Options nosniff'),
@@ -63,16 +75,17 @@ class Nextcloud(Site):
             nginx.Key('add_header', 'X-Permitted-Cross-Domain-Policies none'),
             nginx.Key('access_log', 'off')
             ),
-        nginx.Location('~* \.(?:svg|gif|png|html|ttf|woff|ico|jpg|jpeg)$',
+        nginx.Location(
+            '~* \.(?:svg|gif|png|html|ttf|woff|ico|jpg|jpeg)$',
             nginx.Key('try_files', '$uri /index.php$uri$is_args$args'),
             nginx.Key('access_log', 'off')
             )
         ]
 
-    def pre_install(self, vars):
+    def pre_install(self, vars_):
         pass
 
-    def post_install(self, vars, dbpasswd=""):
+    def post_install(self, vars_, dbpasswd=""):
         secret_key = random_string()
         php.open_basedir('add', '/dev')
 
@@ -100,7 +113,8 @@ class Nextcloud(Site):
         php.change_setting('apc.enable_cli', '1',
                            config_file="/etc/php/conf.d/apcu.ini")
 
-        # Make sure php-fpm has the correct settings, otherwise Nextcloud breaks
+        # Make sure php-fpm has the correct settings,
+        # otherwise Nextcloud breaks
         with open("/etc/php/php-fpm.conf", "r") as f:
             lines = f.readlines()
         with open("/etc/php/php-fpm.conf", "w") as f:
@@ -126,21 +140,28 @@ class Nextcloud(Site):
         os.chdir(mydir)
         os.chown(os.path.join(self.path, "config/config.php"), uid, gid)
 
-        ldap_sql = ("REPLACE INTO oc_appconfig (appid, configkey, configvalue) VALUES"
+        ldap_sql = ("REPLACE INTO oc_appconfig "
+                    "(appid, configkey, configvalue) VALUES"
                     "('core', 'backgroundjobs_mode', 'cron'),"
                     "('user_ldap', 'ldap_uuid_attribute', 'auto'),"
                     "('user_ldap', 'ldap_host', 'localhost'),"
                     "('user_ldap', 'ldap_port', '389'),"
                     "('user_ldap', 'ldap_base', 'dc=arkos-servers,dc=org'),"
-                    "('user_ldap', 'ldap_base_users', 'dc=arkos-servers,dc=org'),"
-                    "('user_ldap', 'ldap_base_groups', 'dc=arkos-servers,dc=org'),"
+                    "('user_ldap', 'ldap_base_users', "
+                    "'dc=arkos-servers,dc=org'),"
+                    "('user_ldap', 'ldap_base_groups', "
+                    "'dc=arkos-servers,dc=org'),"
                     "('user_ldap', 'ldap_tls', '0'),"
                     "('user_ldap', 'ldap_display_name', 'cn'),"
-                    "('user_ldap', 'ldap_userlist_filter', 'objectClass=mailAccount'),"
-                    "('user_ldap', 'ldap_group_filter', 'objectClass=posixGroup'),"
+                    "('user_ldap', 'ldap_userlist_filter', "
+                    "'objectClass=mailAccount'),"
+                    "('user_ldap', 'ldap_group_filter', "
+                    "'objectClass=posixGroup'),"
                     "('user_ldap', 'ldap_group_display_name', 'cn'),"
-                    "('user_ldap', 'ldap_group_member_assoc_attribute', 'uniqueMember'),"
-                    "('user_ldap', 'ldap_login_filter', '(&(|(objectclass=posixAccount))(|(uid=%uid)))'),"
+                    "('user_ldap', 'ldap_group_member_assoc_attribute', "
+                    "'uniqueMember'),"
+                    "('user_ldap', 'ldap_login_filter', "
+                    "'(&(|(objectclass=posixAccount))(|(uid=%uid)))'),"
                     "('user_ldap', 'ldap_quota_attr', 'mailQuota'),"
                     "('user_ldap', 'ldap_quota_def', ''),"
                     "('user_ldap', 'ldap_email_attr', 'mail'),"
@@ -158,20 +179,23 @@ class Nextcloud(Site):
                     "('user_ldap', 'ldap_attributes_for_group_search', ''),"
                     "('user_ldap', 'ldap_expert_username_attr', 'uid'),"
                     "('user_ldap', 'ldap_expert_uuid_attr', '');"
-        )
+                    )
         self.db.execute(ldap_sql, commit=True)
         self.db.execute("DELETE FROM oc_group_user;", commit=True)
-        self.db.execute("INSERT INTO oc_group_user VALUES ('admin','{0}');".format(vars.get("nc-admin", "admin")), commit=True)
+        self.db.execute("INSERT INTO oc_group_user VALUES ('admin','{0}');"
+                        .format(vars.get("nc-admin", "admin")), commit=True)
 
         if not os.path.exists("/etc/cron.d"):
             os.mkdir("/etc/cron.d")
-        with open("/etc/cron.d/nc-%s" % self.id, "w") as f:
-            f.write("*/15 * * * * http php -f %s > /dev/null 2>&1" % os.path.join(self.path, "cron.php"))
+        with open("/etc/cron.d/nc-{0}".format(self.id), "w") as f:
+            f.write("*/15 * * * * http php -f {0} > /dev/null 2>&1"
+                    .format(os.path.join(self.path, "cron.php")))
 
         with open(os.path.join(self.path, "config", "config.php"), "r") as f:
             data = f.read()
         while re.search("\n(\s*('|\")memcache.local.*?\n)", data, re.DOTALL):
-            data = data.replace(re.search("\n(\s*('|\")memcache.local.*?\n)", data, re.DOTALL).group(1), "")
+            data = data.replace(re.search("\n(\s*('|\")memcache.local.*?\n)",
+                                          data, re.DOTALL).group(1), "")
         data = data.split("\n")
         with open(os.path.join(self.path, "config", "config.php"), "w") as f:
             for x in data:
@@ -181,21 +205,34 @@ class Nextcloud(Site):
                     f.write("  'memcache.local' => '\OC\Memcache\APCu',\n")
                 f.write(x)
 
-        if os.path.exists(os.path.join(self.data_path, 'data/files_external/rootcerts.crt')):
-            os.chown(os.path.join(self.data_path, 'data/files_external/rootcerts.crt'), uid, gid)
+        if os.path.exists(
+            os.path.join(
+                self.data_path,
+                'data/files_external/rootcerts.crt')):
+            os.chown(
+                os.path.join(
+                    self.data_path,
+                    'data/files_external/rootcerts.crt'),
+                uid, gid)
 
         self.site_edited()
 
     def pre_remove(self):
         datadir = ''
         if os.path.exists(os.path.join(self.path, 'config', 'config.php')):
-            with open(os.path.join(self.path, 'config', 'config.php'), 'r') as f:
+            with open(
+                os.path.join(
+                    self.path, 'config', 'config.php'), 'r') as f:
                 for line in f.readlines():
                     if 'datadirectory' in line:
                         data = line.split("'")[1::2]
                         datadir = data[1]
-        elif os.path.exists(os.path.join(self.path, 'config', 'autoconfig.php')):
-            with open(os.path.join(self.path, 'config', 'autoconfig.php'), 'r') as f:
+        elif os.path.exists(
+            os.path.join(
+                self.path, 'config', 'autoconfig.php')):
+            with open(
+                os.path.join(
+                    self.path, 'config', 'autoconfig.php'), 'r') as f:
                 for line in f.readlines():
                     if 'directory' in line:
                         data = line.split('"')[1::2]
@@ -225,7 +262,7 @@ class Nextcloud(Site):
                 found = True
             else:
                 oc.append(l)
-        if found == False:
+        if found is False:
             for x in enumerate(oc):
                 if '"dbhost" =>' in x[1]:
                     oc.insert(x[0] + 1, '"forcessl" => true,\n')
@@ -248,7 +285,7 @@ class Nextcloud(Site):
                 found = True
             else:
                 oc.append(l)
-        if found == False:
+        if found is False:
             for x in enumerate(oc):
                 if '"dbhost" =>' in x[1]:
                     oc.insert(x[0] + 1, '"forcessl" => false,\n')
@@ -256,20 +293,26 @@ class Nextcloud(Site):
             f.writelines(oc)
 
     def site_edited(self):
-        # Remove the existing trusted_sites array then add a new one based on the new addr
+        # Remove the existing trusted_sites array
+        # then add a new one based on the new addr
         if os.path.exists(os.path.join(self.path, 'config', 'config.php')):
             path = os.path.join(self.path, 'config', 'config.php')
         else:
             raise Exception("Nextcloud config file not found")
         with open(path, "r") as f:
             data = f.read()
-        while re.search("\n(\s*('|\")trusted_domains.*?\).*?\n)", data, re.DOTALL):
-            data = data.replace(re.search("\n(\s*('|\")trusted_domains.*?\).*?\n)", data, re.DOTALL).group(1), "")
+        while re.search("\n(\s*('|\")trusted_domains.*?\).*?\n)",
+                        data, re.DOTALL):
+            data = data.replace(
+                re.search("\n(\s*('|\")trusted_domains.*?\).*?\n)",
+                          data, re.DOTALL).group(1), "")
         data = data.split("\n")
         with open(path, "w") as f:
             for x in data:
                 if not x.endswith("\n"):
                     x += "\n"
                 if x.startswith(");"):
-                    f.write("  'trusted_domains' => array('localhost','%s'),\n"%self.domain)
+                    f.write("  'trusted_domains' => "
+                            "array('localhost','{0}'),\n"
+                            .format(self.domain))
                 f.write(x)
