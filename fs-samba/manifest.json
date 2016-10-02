@@ -25,7 +25,7 @@
             "name": "Samba",
             "type": "system",
             "binary": "smbd",
-            "ports": [["tcp", "139"], ["tcp", "445"], ["udp", "137"], ["udp", "138"]]
+            "ports": [["tcp", 139], ["tcp", 445], ["udp", 137], ["udp", 138]]
         }
     ],
     "modules": ["fileshare"],

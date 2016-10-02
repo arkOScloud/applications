@@ -25,7 +25,7 @@
             "name": "NFS",
             "type": "system",
             "binary": "nfs-server",
-            "ports": [["tcp", "111"], ["udp", "111"], ["tcp", "2049"], ["udp", "2049"], ["tcp", "1110"], ["udp", "1110"], ["tcp", "4045"], ["udp", "4045"]]
+            "ports": [["tcp", 111], ["udp", 111], ["tcp", 2049], ["udp", 2049], ["tcp", 1110], ["udp", 1110], ["tcp", 4045], ["udp", 4045]]
         }
     ],
     "modules": ["fileshare"],
