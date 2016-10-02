@@ -48,10 +48,10 @@ class Paperword(Site):
             nginx.Key('deny', 'all')
         )]
 
-    def pre_install(self, vars_):
+    def pre_install(self, extra_vars):
         pass
 
-    def post_install(self, vars_, dbpasswd=""):
+    def post_install(self, extra_vars, dbpasswd=""):
         # Get around top-level zip restriction (FIXME 0.7.2)
         if "paperwork-master" in os.listdir(self.path):
             tmp_path = os.path.abspath(os.path.join(self.path, "../pwrk-tmp"))

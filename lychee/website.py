@@ -26,22 +26,22 @@ class Lychee(Site):
             nginx.Key('include', 'fastcgi.conf')
         )]
 
-    def pre_install(self, vars_):
+    def pre_install(self, extra_vars):
         pass
 
-    def post_install(self, vars_, dbpasswd=""):
+    def post_install(self, extra_vars, dbpasswd=""):
         # Create Lychee automatic configuration file
         with open(os.path.join(self.path, 'data', 'config.php'), 'w') as f:
             f.write(
-                '<?php\n'
-                '   if(!defined(\'LYCHEE\')) '
-                'exit(\'Error: Direct access is allowed!\');\n'
-                '   $dbHost = \'localhost\';\n'
-                '   $dbUser = \'{0}\';\n'
-                '   $dbPassword = \'{1}\';\n'
-                '   $dbName = \'{0}\';\n'
-                '   $dbTablePrefix = \'\';\n'
-                '?>\n'.format(self.db.id, dbpasswd)
+                "<?php\n"
+                "   if(!defined('LYCHEE')) "
+                "exit('Error: Direct access is allowed!');\n"
+                "   $dbHost = 'localhost';\n"
+                "   $dbUser = '{0}';\n"
+                "   $dbPassword = '{1}';\n"
+                "   $dbName = '{0}';\n"
+                "   $dbTablePrefix = '';\n"
+                "?>\n".format(self.db.id, dbpasswd)
             )
 
         # Make sure that the correct PHP settings are enabled

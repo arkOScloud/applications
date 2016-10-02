@@ -31,9 +31,9 @@ def get_ssl_assigned():
     return assigns
 
 
-def ssl_enable(cert, id_):
-    return backend.add_ssl(id_, cert.cert_path, cert.key_path)
+def ssl_enable(cert, sid):
+    return backend.add_ssl(sid, cert.cert_path, cert.key_path)
 
 
-def ssl_disable(id_):
-    backend.remove_ssl(id_)
+def ssl_disable(sid):
+    backend.remove_ssl(sid)

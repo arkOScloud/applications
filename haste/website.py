@@ -9,7 +9,7 @@ from arkos.tracked_services import get_open_port
 
 
 class Haste(Site):
-    def pre_install(self, vars_):
+    def pre_install(self, extra_vars):
         self.backend_port = str(get_open_port())
         self.addtoblock = [
             nginx.Location(
@@ -21,7 +21,7 @@ class Haste(Site):
                 nginx.Key('proxy_buffering', 'off')
             )]
 
-    def post_install(self, vars_, dbpasswd=""):
+    def post_install(self, extra_vars, dbpasswd=""):
         with open(os.path.join(self.path, 'config.js'), 'r') as f:
             d = json.loads(f.read())
         d["port"] = self.backend_port

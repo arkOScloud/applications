@@ -1,0 +1,17 @@
+{{#g-modal title="Edit Sync Device" icon="fa-hdd-o" ok="save" close="removeModal"}}
+    <div class="form-group">
+        <label for="id">Device Name</label>
+        {{input type="text" class="form-control required" value=model.id}}
+        <p class="help-block">Short identifier for the device, as shown in the interface.</p>
+    </div>
+    <div class="form-group">
+        <label for="deviceID">Device ID</label>
+        {{input type="text" class="form-control required" value=model.deviceID disabled="true"}}
+        <p class="help-block">The device ID to enter here can be found in the <code>Edit > Show ID</code> dialog on the other device. Spaces and dashes are optional (ignored). When adding a new device, keep in mind that this device must be added on the other side too.</p>
+    </div>
+    <div class="form-group">
+        <label for="addressing">Share With Devices</label>
+        {{input type="text" class="form-control required" value=model.addresses}}
+        <p class="help-block">Enter comma separated <code>ip:port</code> addresses or <code>dynamic</code> to perform automatic discovery of the device's address.</p>
+    </div>
+{{/g-modal}}

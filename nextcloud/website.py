@@ -3,9 +3,10 @@ import os
 import re
 import shutil
 
+from arkos import logger
 from arkos.languages import php
 from arkos.websites import Site
-from arkos.utilities import shell, random_string
+from arkos.utilities import errors, shell
 from arkos.system import users, groups
 
 
@@ -82,10 +83,10 @@ class Nextcloud(Site):
             )
         ]
 
-    def pre_install(self, vars_):
+    def pre_install(self, extra_vars):
         pass
 
-    def post_install(self, vars_, dbpasswd=""):
+    def post_install(self, extra_vars, dbpasswd=""):
         php.open_basedir('add', '/dev')
 
         # If there is a custom path for the data directory, add to open_basedir
@@ -132,9 +133,11 @@ class Nextcloud(Site):
                    ).format(self.db.id, self.db.id, dbpasswd,
                             dbpasswd, self.data_path))
         if s["code"] != 0:
+            logger.critical("Nextcloud", s["stderr"])
             raise Exception("Nextcloud database population failed")
         s = shell("php occ app:enable user_ldap")
         if s["code"] != 0:
+            logger.critical("Nextcloud", s["stderr"])
             raise Exception("Nextcloud LDAP configuration failed")
         os.chdir(mydir)
         os.chown(os.path.join(self.path, "config/config.php"), uid, gid)
@@ -182,7 +185,8 @@ class Nextcloud(Site):
         self.db.execute(ldap_sql, commit=True)
         self.db.execute("DELETE FROM oc_group_user;", commit=True)
         self.db.execute("INSERT INTO oc_group_user VALUES ('admin','{0}');"
-                        .format(vars.get("nc-admin", "admin")), commit=True)
+                        .format(extra_vars.get("nc-admin", "admin")),
+                        commit=True)
 
         if not os.path.exists("/etc/cron.d"):
             os.mkdir("/etc/cron.d")
@@ -204,34 +208,26 @@ class Nextcloud(Site):
                     f.write("  'memcache.local' => '\OC\Memcache\APCu',\n")
                 f.write(x)
 
-        if os.path.exists(
-            os.path.join(
-                self.data_path,
-                'data/files_external/rootcerts.crt')):
-            os.chown(
-                os.path.join(
-                    self.data_path,
-                    'data/files_external/rootcerts.crt'),
-                uid, gid)
+        rootcerts = os.path.join(
+            self.data_path, 'data/files_external/rootcerts.crt'
+        )
+        if os.path.exists(rootcerts):
+            os.chown(os.path.join(rootcerts), uid, gid)
 
         self.site_edited()
 
     def pre_remove(self):
         datadir = ''
-        if os.path.exists(os.path.join(self.path, 'config', 'config.php')):
-            with open(
-                os.path.join(
-                    self.path, 'config', 'config.php'), 'r') as f:
+        config_file = os.path.join(self.path, 'config', 'config.php')
+        autoconfig_file = os.path.join(self.path, 'config', 'autoconfig.php')
+        if os.path.exists(config_file):
+            with open(config_file, 'r') as f:
                 for line in f.readlines():
                     if 'datadirectory' in line:
                         data = line.split("'")[1::2]
                         datadir = data[1]
-        elif os.path.exists(
-            os.path.join(
-                self.path, 'config', 'autoconfig.php')):
-            with open(
-                os.path.join(
-                    self.path, 'config', 'autoconfig.php'), 'r') as f:
+        elif os.path.exists(autoconfig_file):
+            with open(autoconfig_file, 'r') as f:
                 for line in f.readlines():
                     if 'directory' in line:
                         data = line.split('"')[1::2]
@@ -241,8 +237,9 @@ class Nextcloud(Site):
             php.open_basedir('del', datadir)
 
     def post_remove(self):
-        if os.path.exists("/etc/cron.d/nc-%s" % self.id):
-            os.unlink("/etc/cron.d/nc-%s" % self.id)
+        cronfile = "/etc/cron.d/nc-{0}".format(self.id)
+        if os.path.exists(cronfile):
+            os.unlink(cronfile)
 
     def enable_ssl(self, cfile, kfile):
         # First, force SSL in Nextcloud's config file
@@ -297,7 +294,9 @@ class Nextcloud(Site):
         if os.path.exists(os.path.join(self.path, 'config', 'config.php')):
             path = os.path.join(self.path, 'config', 'config.php')
         else:
-            raise Exception("Nextcloud config file not found")
+            raise errors.OperationFailedError(
+                "Nextcloud config file not found"
+            )
         with open(path, "r") as f:
             data = f.read()
         while re.search("\n(\s*('|\")trusted_domains.*?\).*?\n)",

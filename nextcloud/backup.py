@@ -9,9 +9,9 @@ class NextcloudBackup(BackupController):
 
     def get_data(self, site):
         datadir = None
-        if os.path.exists(os.path.join(site.path, 'config', 'config.php')):
-            with open(os.path.join(site.path, 'config',
-                                   'config.php'), 'r') as f:
+        config_file = os.path.join(site.path, 'config', 'config.php')
+        if os.path.exists(config_file):
+            with open(config_file, 'r') as f:
                 for line in f.readlines():
                     if 'datadirectory' in line:
                         data = line.split("'")[1::2]
@@ -29,10 +29,11 @@ class NextcloudBackup(BackupController):
         pass
 
     def post_restore(self, site, dbpasswd):
-        with open(os.path.join(site.path, 'config', 'config.php'), 'r') as f:
+        config_file = os.path.join(site.path, 'config', 'config.php')
+        with open(config_file, 'r') as f:
             data = f.readlines()
         for x in enumerate(data):
             if "dbpass" in x[1]:
-                data[0] = '   "dbpass" => "'+dbpasswd+'",'
-        with open(os.path.join(site.path, 'config', 'config.php'), 'w') as f:
+                data[0] = '   "dbpass" => "{0}",'.format(dbpasswd)
+        with open(config_file, 'w') as f:
             f.writelines(data)

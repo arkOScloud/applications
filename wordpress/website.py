@@ -38,10 +38,10 @@ class WordPress(Site):
             nginx.Key('log_not_found', 'off')
         )]
 
-    def pre_install(self, vars_):
+    def pre_install(self, extra_vars):
         pass
 
-    def post_install(self, vars_, dbpasswd=""):
+    def post_install(self, extra_vars, dbpasswd=""):
         secret_key = random_string()
 
         # Use the WordPress key generators as first option

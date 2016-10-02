@@ -14,10 +14,10 @@ class cmsjs(Site):
         ),
     ]
 
-    def pre_install(self, vars_):
+    def pre_install(self, extra_vars):
         pass
 
-    def post_install(self, vars_, dbpasswd=""):
+    def post_install(self, extra_vars, dbpasswd=""):
         # Write a standard CMS.js config file
         with open(os.path.join(self.path, 'js/config.js'), 'r') as f:
             d = f.read()

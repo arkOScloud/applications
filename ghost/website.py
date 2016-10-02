@@ -10,7 +10,7 @@ from arkos.tracked_services import get_open_port
 
 
 class Ghost(Site):
-    def pre_install(self, vars_):
+    def pre_install(self, extra_vars):
         self.backend_port = str(get_open_port())
         self.addtoblock = [
             nginx.Location(
@@ -23,7 +23,7 @@ class Ghost(Site):
                 nginx.Key('proxy_buffering', 'off')
             )]
 
-    def post_install(self, vars_, dbpasswd=""):
+    def post_install(self, extra_vars, dbpasswd=""):
         with open(os.path.join(self.path, 'package.json'), 'r') as f:
             d = json.loads(f.read())
         del d['dependencies']['bcryptjs']
@@ -48,11 +48,11 @@ class Ghost(Site):
 
         # Get Mail settings
         mail_settings = {
-            'transport': vars.get('ghost-transport') or "",
-            'service': vars.get('ghost-service') or "",
-            'mail_user': vars.get('ghost-mail-user') or "",
-            'mail_pass': vars.get('ghost-mail-pass') or "",
-            'from_address': vars.get('ghost-from-address') or ""
+            'transport': extra_vars.get('gh-transport') or "",
+            'service': extra_vars.get('gh-service') or "",
+            'mail_user': extra_vars.get('gh-mail-user') or "",
+            'mail_pass': extra_vars.get('gh-mail-pass') or "",
+            'from_address': extra_vars.get('gh-from-address') or ""
         }
 
         # Create/Edit the Ghost config file

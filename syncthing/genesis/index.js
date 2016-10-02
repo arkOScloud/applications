@@ -1,3 +1,3 @@
 module.exports = {
-  name: 'wallabag'
+  name: 'syncthing'
 };

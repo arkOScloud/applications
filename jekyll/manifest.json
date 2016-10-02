@@ -50,6 +50,7 @@
     ],
     "generation": 1,
     "website_updates": true,
+    "website_root": "_site",
     "website_actions": [
       {
         "id": "regenerate",

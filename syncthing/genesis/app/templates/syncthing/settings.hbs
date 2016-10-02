@@ -1,0 +1,43 @@
+{{#g-modal title="Sync Settings" icon="fa-cog" ok="save" close="removeModal"}}
+    <div class="form-group">
+        <label for="spla">Sync Protocol Listen Addresses</label>
+        {{input type="text" class="form-control required" value=model.config.config.options.listenAddress}}
+    </div>
+    <div class="form-group">
+        <label for="sorl">Outgoing Rate Limits (KiB/s)</label>
+        {{input type="text" class="form-control required" value=model.config.config.options.maxSendKbps}}
+        <p class="help-block">Enter <code>0</code> for no limit.</p>
+    </div>
+    <div class="form-group">
+        <label for="sorl">Reconnect Interval (s)</label>
+        {{input type="text" class="form-control required" value=model.config.config.options.reconnectionIntervalS}}
+    </div>
+    <div class="form-group">
+        <label for="sgau">Authentication User (GUI)</label>
+        {{input type="text" class="form-control" value=model.config.config.gui.user}}
+    </div>
+    <div class="form-group">
+        <label for="sgau">Authentication Password (GUI)</label>
+        {{input type="password" class="form-control password" value=model.config.config.gui.password}}
+    </div>
+    <div class="checkbox">
+        <label>
+            {{input type="checkbox" checked=model.config.config.options.localAnnounceEnabled}} Local Discovery
+        </label>
+    </div>
+    <div class="checkbox">
+        <label>
+            {{input type="checkbox" checked=model.config.config.options.globalAnnounceEnabled}} Global Discovery
+        </label>
+    </div>
+    <div class="checkbox">
+        <label>
+            {{input type="checkbox" checked=model.config.config.options.upnpEnabled}} Enable uPnP
+        </label>
+    </div>
+    <div class="checkbox">
+        <label>
+            {{input type="checkbox" checked=model.config.config.options.urAccepted}} Enable Anonymous Usage Reporting
+        </label>
+    </div>
+{{/g-modal}}

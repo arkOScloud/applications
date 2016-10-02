@@ -26,10 +26,10 @@ class wikitten(Site):
             nginx.Key('include', 'fastcgi.conf')
         )]
 
-    def pre_install(self, vars_):
+    def pre_install(self, extra_vars):
         pass
 
-    def post_install(self, vars_, dbpasswd=""):
+    def post_install(self, extra_vars, dbpasswd=""):
         # Write a standard Wikitten config file
         shutil.copy(os.path.join(
                         self.path,
