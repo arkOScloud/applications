@@ -4,7 +4,7 @@ import ctypes.util
 import os
 import shutil
 
-from arkos import secrets
+from arkos import secrets, signals
 from arkos.system import services
 from arkos.sharers import Share, Mount, Sharer
 from arkos.utilities import b, errors, shell
@@ -183,3 +183,22 @@ class SambaMount(Mount):
                                           os.strerror(ctypes.get_errno())))
         else:
             self.is_mounted = False
+
+
+def change_samba_user_passwd(data):
+    """
+    Change a user's Samba password in LDAP.
+
+    Called when a new user is added, or a user's password is updated.
+
+    :param dict data: `{"user": User (obj), "passwd": new password (str)}`
+    """
+    if data["passwd"]:
+        shell(
+            "smbpasswd -a {0}".format(data["user"].name),
+            stdin="{0}\n{0}\n".format(data["passwd"])
+        )
+
+
+signals.add("fs-samba", "users", "post_add", change_samba_user_passwd)
+signals.add("fs-samba", "users", "post_update", change_samba_user_passwd)
