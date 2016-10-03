@@ -1,7 +1,6 @@
 import nginx
 import os
 
-from arkos.languages import ruby
 from arkos.websites import Site
 from arkos.utilities import errors, shell
 from arkos.system import users, groups
@@ -11,7 +10,7 @@ class Jekyll(Site):
     addtoblock = []
 
     def pre_install(self, extra_vars):
-        ruby.install_gem('jekyll', 'rdiscount')
+        pass
 
     def post_install(self, extra_vars, dbpasswd=""):
 
@@ -42,7 +41,7 @@ class Jekyll(Site):
         return 'Jekyll has been setup, with a sample site at {0}. '\
             'Modify these files as you like. To learn how to use Jekyll, '\
             'visit http://jekyllrb.com/docs/usage. After making changes, '\
-            'click the Edit button for the site, then "Regenerate Site" '\
+            'click the site icon to edit, then "Regenerate Site" '\
             'to bring your changes live.'.format(self.path)
 
     def pre_remove(self):
@@ -58,7 +57,7 @@ class Jekyll(Site):
         pass
 
     def update(self, pkg, ver):
-        ruby.update_gem('jekyll', 'rdiscount')
+        pass
 
     def regenerate(self):
         path = self.path
