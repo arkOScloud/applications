@@ -142,8 +142,8 @@ default_config = (
 
 
 class Calendar:
-    def __init__(self, id, user):
-        self.id = id
+    def __init__(self, id_, user):
+        self.id = id_
         self.user = user
 
     def add(self):
@@ -163,8 +163,8 @@ class Calendar:
 
 
 class AddressBook:
-    def __init__(self, id, user):
-        self.id = id
+    def __init__(self, id_, user):
+        self.id = id_
         self.user = user
 
     def add(self):
@@ -183,7 +183,7 @@ class AddressBook:
         }
 
 
-def add(id, user, file_type):
+def add(id_, user, file_type):
     uid, gid = users.get_system("radicale").uid,\
         groups.get_system("radicale").gid
     try:
@@ -193,25 +193,25 @@ def add(id, user, file_type):
     except os.error:
         pass
     with open(os.path.join('/home/radicale/.config/radicale/collections',
-                           user, id+file_type), 'w') as f:
+                           user, id_+file_type), 'w') as f:
         f.write("")
     os.chown(os.path.join('/home/radicale/.config/radicale/collections',
-                          user, id+file_type), uid, gid)
+                          user, id_+file_type), uid, gid)
 
 
-def get_cal(id=None, name=None, user=None):
+def get_cal(id_=None, name=None, user=None):
     cals = []
     for x in glob.glob('/home/radicale/.config/radicale/collections/*/*.ics'):
         n = os.path.basename(x).split(".ics")[0]
         u = x.split("/")[-2]
         cal = Calendar(id=n, user=u)
-        if id and id == (cal.user+"_"+cal.id):
+        if id_ and id_ == (cal.user+"_"+cal.id):
             return cal
         elif name and name == cal.id:
             return cal
         elif (user and user == cal.user) or not user:
             cals.append(cal)
-    return cals if not any([id, name, user]) else None
+    return cals if not any([id_, name, user]) else None
 
 
 def get_book(id=None, name=None, user=None):
