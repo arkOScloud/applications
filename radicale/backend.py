@@ -153,12 +153,15 @@ class Calendar:
         os.unlink(os.path.join('/home/radicale/.config/radicale/collections',
                                self.user, self.id+'.ics'))
 
-    def as_dict(self):
+    @property
+    def serialized(self):
         return {
           "id": self.user+"_"+self.id,
           "name": self.id,
           "user": self.user,
-          "filename": self.id+".ics"
+          "filename": self.id+".ics",
+          "url": "{0}/{1}/{2}/".format(my_url(), self.user, self.id+".ics"),
+          "is_ready": True
         }
 
 
@@ -174,12 +177,15 @@ class AddressBook:
         os.unlink(os.path.join('/home/radicale/.config/radicale/collections',
                                self.user, self.id+'.vcf'))
 
-    def as_dict(self):
+    @property
+    def serialized(self):
         return {
           "id": self.user+"_"+self.id,
           "name": self.id,
           "user": self.user,
-          "filename": self.id+".vcf"
+          "filename": self.id+".vcf",
+          "url": "{0}/{1}/{2}/".format(my_url(), self.user, self.id+".vcf"),
+          "is_ready": True
         }
 
 
@@ -219,7 +225,7 @@ def get_book(id=None, name=None, user=None):
     for x in glob.glob('/home/radicale/.config/radicale/collections/*/*.vcf'):
         n = os.path.basename(x).split(".vcf")[0]
         u = x.split("/")[-2]
-        bk = Calendar(name=n, user=u)
+        bk = AddressBook(id=n, user=u)
         if id and id == (bk.user+"_"+bk.id):
             return bk
         elif name and name == bk.name:
@@ -235,7 +241,7 @@ def my_url():
     if not w:
         return ""
     url += "s://" if w.cert else "://"
-    url += w.addr
+    url += w.domain
     url += (":"+str(w.port)) if w.port not in [80, 443] else ""
     return url
 
@@ -311,6 +317,6 @@ def setup(addr, port):
         s.remove()
     s = websites.ReverseProxy(
             id="radicale", name="Calendar/Contacts",
-            addr=addr, port=port,
+            domain=addr, port=port,
             base_path="/usr/lib/radicale", block=block)
     s.install()
