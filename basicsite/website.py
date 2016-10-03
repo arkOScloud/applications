@@ -31,16 +31,20 @@ class Website(Site):
 
         index_ext = 'php' if extra_vars.get('php') else 'html'
         index_path = os.path.join(self.path, 'index.{0}'.format(index_ext))
+        addr = self.domain + (":" + self.port if self.port != 80 else "")
         with open(index_path, 'w') as f:
             f.write(
                 '<html>\n'
                 '<body>\n'
-                '<h1>Genesis - Custom Site</h1>\n'
-                '<p>Your site is online and available at {0}</p>\n'
-                '<p>Feel free to paste your site files here</p>\n'
+                '<div style="text-align:center;margin-top:20%;font-family:sans-serif;">\n'
+                '<img style="width: 300px;" src="https://cdn.citizenweb.io/static/img/arkos-2-01.png" />\n'
+                '<h1>Custom Website</h1>\n'
+                '<p>Your site is online at http://{0}, and stored at {0}</p>\n'
+                '<p>Feel free to paste your site files there!</p>\n'
+                '</div>\n'
                 '</body>\n'
                 '</html>\n'
-                .format(self.path)
+                .format(addr, self.path)
             )
 
         # Give access to httpd
