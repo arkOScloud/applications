@@ -17,25 +17,21 @@ def on_load(app):
     u = users.get_system('syncthing')
     if not os.path.exists("/home/syncthing"):
         os.makedirs("/home/syncthing")
-        os.chown("/home/syncthing", u.uid, 100)
+        os.chown("/home/syncthing", u.uid, 0o100)
+    config_path = "/home/syncthing/.config/syncthing/config.xml"
     s = services.get("syncthing@syncthing")
-    if not s.state == "running":
-        s.start()
+    if not os.path.exists(config_path):
+        s.restart()
         count = 0
         while count < 5:
-            if not os.path.exists("/home/syncthing/.config/"
-                                  "syncthing/config.xml"):
+            if not os.path.exists(config_path):
                 time.sleep(5)
                 count += 1
             else:
                 break
-    if not os.path.exists("/home/syncthing/.config/syncthing/config.xml"):
-        raise Exception("Syncthing taking too long to generate config,"
-                        " try again later")
-    global api_key
-    api_key = get_api_key()
-    global my_id
-    my_id = get_myid()
+        if not os.path.exists(config_path):
+            raise Exception("Syncthing taking too long to generate config,"
+                            " try again later")
 
 
 def get_api_key():
@@ -96,6 +92,7 @@ def add_repo(name, dirname, ro, perms, vers, rsc, nids=[]):
         for x in f:
             os.chown(os.path.join(r, x), uid, -1)
     save_config(config)
+    folder["is_ready"] = True
     return folder
 
 
@@ -118,6 +115,7 @@ def edit_repo(name, dirname, ro, perms, vers, rsc, nids=[]):
         folder["versioning"]["params"] = {"key": "keep", "val": vers}
     config["folders"].append(folder)
     save_config(config)
+    folder["is_ready"] = True
     return folder
 
 
@@ -133,6 +131,8 @@ def del_repo(name, rmfol=False):
 
 def get_repos(id=None):
     config = pull_config()
+    for x in config["folders"]:
+        x["is_ready"] = True
     if id:
         return next((fdr for fdr in config["folders"]
                      if fdr["id"] == id), None)
@@ -147,6 +147,7 @@ def add_node(name, id, addr):
     config["devices"].append(device)
     save_config(config)
     device["id"] = device["name"]
+    device["is_ready"] = True
     return device
 
 
@@ -160,6 +161,7 @@ def edit_node(name, newname, addr):
     config["devices"].append(device)
     save_config(config)
     device["id"] = device["name"]
+    device["is_ready"] = True
     return device
 
 
@@ -174,11 +176,12 @@ def del_node(name):
 def get_nodes(id=None):
     config = pull_config()
     for x in config["devices"]:
-        x["id"] = x["name"]
-        x["is_main_device"] = x["deviceID"] == my_id
+        x["id"] = x["deviceID"]
+        x["is_main_device"] = x["deviceID"] == get_myid()
+        x["is_ready"] = True
     if id:
         return next((dev for dev in config["devices"]
-                     if dev["id"] == id), None)
+                     if dev["deviceID"] == id), None)
     return config["devices"]
 
 

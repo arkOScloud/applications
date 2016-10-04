@@ -38,8 +38,8 @@
         },
         {
             "type": "system",
-            "name": "python2-lxml",
-            "package": "python2-lxml",
+            "name": "python-lxml",
+            "package": "python-lxml",
             "binary": null,
             "internal": true
         }
