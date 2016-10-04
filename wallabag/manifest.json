@@ -13,7 +13,7 @@
             "secondary": ["News Readers (RSS)", "Bookmarking"]
         }
     ],
-    "version": "2.0.8-1",
+    "version": "2.1.1-1",
     "author": "arkOS",
     "homepage": "https://arkos.io",
     "app_author": "Nicholas Loeuillet",
@@ -72,7 +72,7 @@
         }
       ]
     },
-    "download_url": "https://github.com/wallabag/wallabag/archive/2.0.8.tar.gz",
+    "download_url": "http://framabag.org/wallabag-release-2.1.1.tar.gz",
     "database_engines": ["db-sqlite3", "db-mariadb"],
     "uses_php": true
 }

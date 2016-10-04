@@ -1,5 +1,6 @@
 import nginx
 import os
+import semantic_version as semver
 import shutil
 
 from arkos import logger
@@ -59,17 +60,10 @@ class Wallabag(Site):
                 f.write(l)
 
         # Make sure that the correct PHP settings are enabled
-        php.enable_mod('sqlite3',
+        php.enable_mod('sqlite3', 'bcmath',
                        'pdo_mysql' if dbengine == 'mysql' else 'pdo_sqlite',
                        'zip', 'tidy')
         php.open_basedir('add', '/usr/bin/php')
-
-        # Set up Composer and install the proper modules
-        php.composer_install(
-            self.path,
-            flags={"no-dev": "", "o": "", "prefer-dist": ""},
-            env={"SYMFONY_ENV": "prod"}
-        )
 
         uid, gid = users.get_system("http").uid, groups.get_system("http").gid
 
@@ -81,7 +75,7 @@ class Wallabag(Site):
         os.chdir(self.path)
         s = shell("php bin/console wallabag:install --env=prod -n")
         if s["code"] != 0:
-            logger.error(s["stderr"].decode())
+            logger.error("Websites", s["stderr"].decode())
             raise errors.OperationFailedError(
                 "Failed to populate database. See logs for more info"
             )
@@ -113,17 +107,30 @@ class Wallabag(Site):
 
     def update(self, pkg, ver):
         # General update procedure
+        if semver.Version.coerce(ver) > semver.Version('2.0.0'):
+            raise Exception(
+                "Cannot automatically update from 1.x to 2.x. Please see "
+                "Wallabag documentation for more information."
+            )
+        os.rename(
+            os.path.join(self.path, 'app/config/parameters.yml'),
+            '/tmp/_wb_parameters.yml'
+        )
         shell('tar xzf {0} -C {1} --strip 1'.format(pkg, self.path))
-        cachepath = os.path.join(self.path, 'cache')
+        os.rename(
+            '/tmp/_wb_parameters.yml',
+            os.path.join(self.path, 'app/config/parameters.yml')
+        )
+        cachepath = os.path.join(self.path, 'var/cache')
         for x in os.listdir(cachepath):
             fpath = os.path.join(cachepath, x)
             if os.path.isdir(fpath):
                 shutil.rmtree(fpath)
             else:
                 os.unlink(fpath)
-        shutil.rmtree(os.path.join(self.path, 'install'))
-        shell('chmod -R 755 {0} {1} {2}'
-              .format(os.path.join(self.path, 'assets/'),
-                      os.path.join(self.path, 'cache/'),
-                      os.path.join(self.path, 'db/')))
-        shell('chown -R http:http '+self.path)
+        uid, gid = users.get_system("http").uid, groups.get_system("http").gid
+        for r, d, f in os.walk(self.path):
+            for x in d:
+                os.chown(os.path.join(r, x), uid, gid)
+            for x in f:
+                os.chown(os.path.join(r, x), uid, gid)
