@@ -187,13 +187,13 @@ class MariaDBMgr(DatabaseManager):
         c.commit()
         return new_passwd
 
-    def validate(self, id_='', user='', passwd=''):
-        if id_ and re.search('\.|-|`|\\\\|\/|^test$|[ ]', id_):
+    def validate(self, id='', user='', passwd=''):
+        if id and re.search('\.|-|`|\\\\|\/|^test$|[ ]', id):
             raise errors.InvalidConfigError(
                 'Database name must not contain spaces, dots, dashes or other '
                 'special characters'
             )
-        elif id_ and len(id_) > 16:
+        elif id and len(id) > 16:
             raise errors.InvalidConfigError(
                 'Database name must be shorter than 16 characters'
             )
@@ -210,12 +210,12 @@ class MariaDBMgr(DatabaseManager):
             raise errors.InvalidConfigError(
                 'Database password must be longer than 8 characters'
             )
-        if id_:
+        if id:
             for x in self.get_dbs():
-                if x.id == id_:
+                if x.id == id:
                     raise errors.InvalidConfigError(
                         'You already have a database named {0} - please '
-                        'remove that one or choose a new name!'.format(id_)
+                        'remove that one or choose a new name!'.format(id)
                     )
         if user:
             for x in self.get_users():
@@ -239,8 +239,8 @@ class MariaDBMgr(DatabaseManager):
                 dblist.append(MariaDB(id=db[0], manager=self))
         return dblist
 
-    def add_db(self, id_):
-        db = MariaDB(id_=id_, manager=self)
+    def add_db(self, id):
+        db = MariaDB(id=id, manager=self)
         db.add()
         return db
 
@@ -256,7 +256,7 @@ class MariaDBMgr(DatabaseManager):
                 userlist.append(MariaDBUser(id=usr[0], manager=self))
         return userlist
 
-    def add_user(self, id_, passwd):
-        user = MariaDBUser(id_=id_, manager=self)
+    def add_user(self, id, passwd):
+        user = MariaDBUser(id=id, manager=self)
         user.add(passwd)
         return user

@@ -3,50 +3,58 @@ import json
 from flask import Response, abort, jsonify, request
 from flask.views import MethodView
 
+from kraken import auth
+
 
 class CalendarsAPI(MethodView):
-    def get(self, id_=None):
-        calendars = radicale.get_cal(id_)
-        if id_ and not calendars:
+    @auth.required()
+    def get(self, id=None):
+        calendars = radicale.get_cal(id)
+        if id and not calendars:
             abort(404)
         if type(calendars) == list:
             return jsonify(calendars=[x.as_dict() for x in calendars])
         else:
             return jsonify(calendar=calendars.as_dict())
 
+    @auth.required()
     def post(self):
         data = json.loads(request.data)["calendar"]
         addrbk = radicale.Calendar(id=data["name"], user=data["user"])
         addrbk.add()
         return jsonify(address_book=addrbk.as_dict())
 
-    def delete(self, id_):
-        calendar = radicale.get_cal(id_)
-        if not id_ or not calendar:
+    @auth.required()
+    def delete(self, id):
+        calendar = radicale.get_cal(id)
+        if not id or not calendar:
             abort(404)
         calendar.remove()
         return Response(status=204)
 
 
 class AddressBooksAPI(MethodView):
-    def get(self, id_=None):
-        addrbks = radicale.get_book(id_)
-        if id_ and not addrbks:
+    @auth.required()
+    def get(self, id=None):
+        addrbks = radicale.get_book(id)
+        if id and not addrbks:
             abort(404)
         if type(addrbks) == list:
             return jsonify(address_books=[x.as_dict() for x in addrbks])
         else:
             return jsonify(address_book=addrbks.as_dict())
 
+    @auth.required()
     def post(self):
         data = json.loads(request.data)["address_book"]
         addrbk = radicale.AddressBook(id=data["name"], user=data["user"])
         addrbk.add()
         return jsonify(address_book=addrbk.as_dict())
 
-    def delete(self, id_):
-        addrbk = radicale.get_book(id_)
-        if not id_ or not addrbk:
+    @auth.required()
+    def delete(self, id):
+        addrbk = radicale.get_book(id)
+        if not id or not addrbk:
             abort(404)
         addrbk.remove()
         return Response(status=204)

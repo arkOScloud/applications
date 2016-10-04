@@ -131,17 +131,17 @@ def del_repo(name, rmfol=False):
         shutil.rmtree(folder["path"])
 
 
-def get_repos(id_=None):
+def get_repos(id=None):
     config = pull_config()
-    if id_:
+    if id:
         return next((fdr for fdr in config["folders"]
-                     if fdr["id"] == id_), None)
+                     if fdr["id"] == id), None)
     return config["folders"]
 
 
-def add_node(name, id_, addr):
+def add_node(name, id, addr):
     config = pull_config()
-    device = {"deviceID": id_, "name": name,
+    device = {"deviceID": id, "name": name,
               "addresses": addr, "introducer": False,
               "certName": "", "compression": "metadata"}
     config["devices"].append(device)
@@ -171,14 +171,14 @@ def del_node(name):
     save_config(config)
 
 
-def get_nodes(id_=None):
+def get_nodes(id=None):
     config = pull_config()
     for x in config["devices"]:
         x["id"] = x["name"]
         x["is_main_device"] = x["deviceID"] == my_id
-    if id_:
+    if id:
         return next((dev for dev in config["devices"]
-                     if dev["id"] == id_), None)
+                     if dev["id"] == id), None)
     return config["devices"]
 
 

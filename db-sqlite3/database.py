@@ -65,7 +65,7 @@ class SQLite3Mgr(DatabaseManager):
     def connect(self):
         pass
 
-    def validate(self, id_='', user='', passwd=''):
+    def validate(self, id='', user='', passwd=''):
         pass
 
     def get_dbs(self):
@@ -80,8 +80,8 @@ class SQLite3Mgr(DatabaseManager):
                 )
         return dblist
 
-    def add_db(self, id_):
-        db = SQLite3(id_=id_, manager=self)
+    def add_db(self, id):
+        db = SQLite3(id=id, manager=self)
         db.add()
         return db
 
