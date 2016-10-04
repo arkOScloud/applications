@@ -1,7 +1,7 @@
 import os
 import re
 
-from xmpp import backend
+from . import backend
 
 
 def get_ssl_able():

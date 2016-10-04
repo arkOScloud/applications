@@ -1,3 +1,4 @@
+import glob
 import os
 
 from arkos import signals
@@ -6,20 +7,20 @@ from arkos.system import domains, services
 
 DEFAULT_CONFIG = (
     '\tauthentication = "ldap2"\n'
-    '\tldap = {\n'
+    '\tldap = {{\n'
     '\t\thostname = "localhost",\n'
-    '\t\tuser = {\n'
+    '\t\tuser = {{\n'
     '\t\t\tbasedn = "ou=users,dc=arkos-servers,dc=org",\n'
     '\t\t\tfilter = "(&(objectClass=posixAccount)(mail=*@{0}))",\n'
     '\t\t\tusernamefield = "mail",\n'
     '\t\t\tnamefield = "cn",\n'
-    '\t\t},\n'
-    '\t\tgroups = {\n'
+    '\t\t}},\n'
+    '\t\tgroups = {{\n'
     '\t\t\tbasedn = "ou=groups,dc=arkos-servers,dc=org",\n'
     '\t\t\tmemberfield = "memberUid",\n'
     '\t\t\tnamefield = "cn",\n'
-    '\t\t}\n'
-    '\t}\n'
+    '\t\t}}\n'
+    '\t}}\n'
 )
 
 
@@ -34,9 +35,10 @@ def on_load(app):
                               .format(x.name)):
             add_domain(x, False)
             reload = True
-    for x in os.listdir("/etc/prosody/conf.d"):
-        if x.rstrip(".cfg.lua") not in [y.name for y in doms]:
-            os.unlink(os.path.join("/etc/prosody/conf.d", x))
+    for x in glob.glob("/etc/prosody/conf.d/*.cfg.lua"):
+        basename = os.path.basename(x)
+        if basename.split(".cfg.lua")[0] not in [y.name for y in doms]:
+            os.unlink(x)
             reload = True
     if reload:
         services.get("prosody").restart()
@@ -66,10 +68,10 @@ def add_ssl(name, cert, key):
     with open("/etc/prosody/conf.d/{0}.cfg.lua".format(name), "w") as f:
         data = [
             'VirtualHost "{0}"\n'.format(name),
-            '\tssl = {\n',
+            '\tssl = {{\n',
             '\t\tkey = "{0}";\n'.format(cert),
             '\t\tcertificate = "{0}";\n'.format(key),
-            '\t}\n'
+            '\t}}\n'
         ]
         data.append(DEFAULT_CONFIG.format(domain.name))
         f.writelines(data)
