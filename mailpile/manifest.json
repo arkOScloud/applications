@@ -24,28 +24,32 @@
     "modules": ["website", "backup"],
     "dependencies": [
         {
-            "type": "system",
+            "type": "python",
             "name": "Python PGPDump",
-            "package": "python2-pgpdump",
-            "binary": null
+            "package": "pgpdump",
+            "binary": null,
+            "py2": true
         },
         {
-            "type": "system",
+            "type": "python",
             "name": "Python LXML",
-            "package": "python2-lxml",
-            "binary": null
+            "package": "lxml",
+            "binary": null,
+            "py2": true
         },
         {
-            "type": "system",
+            "type": "python",
             "name": "Python PIL",
-            "package": "python2-pillow",
-            "binary": null
+            "package": "Pillow",
+            "binary": null,
+            "py2": true
         },
         {
-            "type": "system",
+            "type": "python",
             "name": "Spambayes",
             "package": "spambayes",
-            "binary": null
+            "binary": null,
+            "py2": true
         }
     ],
     "generation": 1,
