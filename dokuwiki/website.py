@@ -1,40 +1,50 @@
 import nginx
 import os
 
-from arkos.languages import php
 from arkos.websites import Site
 
 
 class DokuWiki(Site):
     addtoblock = [
-        nginx.Location('/',
+        nginx.Location(
+            '/',
             nginx.Key('try_files', '$uri $uri/ @dokuwiki'),
         ),
-        nginx.Location('~ /(data|conf|bin|inc)/',
+        nginx.Location(
+            '~ /(data|conf|bin|inc)/',
             nginx.Key('deny', 'all')
         ),
-        nginx.Location(r'~ /\.ht',
+        nginx.Location(
+            r'~ /\.ht',
             nginx.Key('deny', 'all')
         ),
-        nginx.Location('@dokuwiki',
-            nginx.Key('rewrite', '^/_media/(.*) /lib/exe/fetch.php?media=$1 last'),
-            nginx.Key('rewrite', '^/_detail/(.*) /lib/exe/detail.php?media=$1 last'),
-            nginx.Key('rewrite', '^/_export/([^/]+)/(.*) /doku.php?do=export_$1&id=$2 last'),
-            nginx.Key('rewrite', '^/(.*) /doku.php?id=$1 last'),
+        nginx.Location(
+            '@dokuwiki',
+            nginx.Key('rewrite', '^/_media/(.*) '
+                      '/lib/exe/fetch.php?media=$1 last'),
+            nginx.Key('rewrite', '^/_detail/(.*) '
+                      '/lib/exe/detail.php?media=$1 last'),
+            nginx.Key('rewrite', '^/_export/([^/]+)/(.*) '
+                      '/doku.php?do=export_$1&id=$2 last'),
+            nginx.Key('rewrite', '^/(.*) '
+                      '/doku.php?id=$1 last'),
         ),
-        nginx.Location(r'~ \.php$',
+        nginx.Location(
+            r'~ \.php$',
             nginx.Key('include', 'fastcgi_params'),
-            nginx.Key('fastcgi_param', 'SCRIPT_FILENAME $document_root$fastcgi_script_name'),
-            nginx.Key('fastcgi_pass', 'unix:/run/php-fpm/php-fpm.sock'),
-        ),
+            nginx.Key('fastcgi_param', 'SCRIPT_FILENAME '
+                      '$document_root$fastcgi_script_name'),
+            nginx.Key('fastcgi_pass',
+                      'unix:/run/php-fpm/php-fpm.sock'),
+        )
     ]
 
-    def pre_install(self, vars):
+    def pre_install(self, extra_vars):
         pass
 
-    def post_install(self, vars, dbpasswd=""):
+    def post_install(self, extra_vars, dbpasswd=""):
         # UPDATE: Config DB info and enable modules
-        index_php = os.path.join(path, 'index.php')
+        index_php = os.path.join(self.path, 'index.php')
         os.unlink(index_php)
         with open(index_php, "w") as f:
             f.write(switching_index)  # see below
@@ -46,7 +56,7 @@ class DokuWiki(Site):
         pass
 
     def ssl_enable(self, cfile, kfile):
-        n = nginx.loadf('/etc/nginx/sites-available/%s' % self.name)
+        n = nginx.loadf('/etc/nginx/sites-available/{0}'.format(self.id))
         for x in n.servers:
             if x.filter('Location', '/'):
                 x.remove(x.filter('Location', '/')[0])
@@ -57,15 +67,17 @@ class DokuWiki(Site):
                               'X-Forwarded-Proto $scheme'),
                 )
                 x.add(self.addtoblock[0])
-                nginx.dumpf(n, '/etc/nginx/sites-available/%s' % self.name)
+                nginx.dumpf(n, '/etc/nginx/sites-available/{0}'
+                            .format(self.id))
 
     def ssl_disable(self):
-        n = nginx.loadf('/etc/nginx/sites-available/%s' % self.name)
+        n = nginx.loadf('/etc/nginx/sites-available/{0}'.format(self.id))
         for x in n.servers:
             if x.filter('Location', '/'):
                 x.remove(x.filter('Location', '/')[0])
                 x.add(self.addtoblock[0])
-                nginx.dumpf(n, '/etc/nginx/sites-available/%s' % self.name)
+                nginx.dumpf(n, '/etc/nginx/sites-available/{0}'
+                            .format(self.id))
 
     def update(self, pkg, ver):
         pass

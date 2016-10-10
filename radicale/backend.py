@@ -1,4 +1,3 @@
-import ConfigParser
 import glob
 import nginx
 import os
@@ -6,7 +5,6 @@ import stat
 
 from arkos import websites
 from arkos.languages import python
-from arkos.utilities import shell, hashpw
 from arkos.system import users, groups, services
 
 
@@ -66,10 +64,12 @@ default_config = (
     'ldap_attribute = uid\n'
     '# LDAP filter string\n'
     '# placed as X in a query of the form (&(...)X)\n'
-    '# example: (objectCategory=Person)(objectClass=User)(memberOf=cn=calenderusers,ou=users,dc=example,dc=org)\n'
+    '# example: (objectCategory=Person)(objectClass=User)'
+    '(memberOf=cn=calenderusers,ou=users,dc=example,dc=org)\n'
     '# leave empty if no additional filter is needed\n'
     'ldap_filter =\n'
-    '# LDAP dn for initial login, used if LDAP server does not allow anonymous searches\n'
+    '# LDAP dn for initial login, '
+    'used if LDAP server does not allow anonymous searches\n'
     '# Leave empty if searches are anonymous\n'
     'ldap_binddn =\n'
     '# LDAP password for initial login, used with ldap_binddn\n'
@@ -115,14 +115,17 @@ default_config = (
     '\n'
     '# Database URL for SQLAlchemy\n'
     '# dialect+driver://user:password@host/dbname[?key=value..]\n'
-    '# For example: sqlite:///var/db/radicale.db, postgresql://user:password@localhost/radicale\n'
-    '# See http://docs.sqlalchemy.org/en/rel_0_8/core/engines.html#sqlalchemy.create_engine\n'
+    '# For example: sqlite:///var/db/radicale.db, '
+    'postgresql://user:password@localhost/radicale\n'
+    '# See http://docs.sqlalchemy.org/en/rel_0_8/core/'
+    'engines.html#sqlalchemy.create_engine\n'
     'database_url =\n'
     '\n'
     '\n'
     '[logging]\n'
     '# Logging configuration file\n'
-    '# If no config is given, simple information is printed on the standard output\n'
+    '# If no config is given, '
+    'simple information is printed on the standard output\n'
     '# For more information about the syntax of the configuration file, see:\n'
     '# http://docs.python.org/library/logging.config.html\n'
     'config = /etc/radicale/logging\n'
@@ -142,19 +145,23 @@ class Calendar:
     def __init__(self, id, user):
         self.id = id
         self.user = user
-    
+
     def add(self):
         add(self.id, self.user, ".ics")
-    
+
     def remove(self):
-        os.unlink(os.path.join('/home/radicale/.config/radicale/collections', self.user, self.id+'.ics'))
-    
-    def as_dict(self):
+        os.unlink(os.path.join('/home/radicale/.config/radicale/collections',
+                               self.user, self.id+'.ics'))
+
+    @property
+    def serialized(self):
         return {
           "id": self.user+"_"+self.id,
           "name": self.id,
           "user": self.user,
-          "filename": self.id+".ics"
+          "filename": self.id+".ics",
+          "url": "{0}/{1}/{2}/".format(my_url(), self.user, self.id+".ics"),
+          "is_ready": True
         }
 
 
@@ -162,32 +169,41 @@ class AddressBook:
     def __init__(self, id, user):
         self.id = id
         self.user = user
-    
+
     def add(self):
         add(self.id, self.user, ".vcf")
-    
+
     def remove(self):
-        os.unlink(os.path.join('/home/radicale/.config/radicale/collections', self.user, self.id+'.vcf'))
-    
-    def as_dict(self):
+        os.unlink(os.path.join('/home/radicale/.config/radicale/collections',
+                               self.user, self.id+'.vcf'))
+
+    @property
+    def serialized(self):
         return {
           "id": self.user+"_"+self.id,
           "name": self.id,
           "user": self.user,
-          "filename": self.id+".vcf"
+          "filename": self.id+".vcf",
+          "url": "{0}/{1}/{2}/".format(my_url(), self.user, self.id+".vcf"),
+          "is_ready": True
         }
 
 
-def add(id, user, type):
-    uid, gid = users.get_system("radicale").uid, groups.get_system("radicale").gid
+def add(id, user, file_type):
+    uid, gid = users.get_system("radicale").uid,\
+        groups.get_system("radicale").gid
     try:
-        os.makedirs('/home/radicale/.config/radicale/collections/%s' % user)
+        os.makedirs('/home/radicale/.config/radicale/collections/{0}'
+                    .format(user))
         os.chown('/home/radicale/.config/radicale/collections', uid, gid)
     except os.error:
         pass
-    with open(os.path.join('/home/radicale/.config/radicale/collections', user, id+type), 'w') as f:
+    with open(os.path.join('/home/radicale/.config/radicale/collections',
+                           user, id+file_type), 'w') as f:
         f.write("")
-    os.chown(os.path.join('/home/radicale/.config/radicale/collections', user, id+type), uid, gid)
+    os.chown(os.path.join('/home/radicale/.config/radicale/collections',
+                          user, id+file_type), uid, gid)
+
 
 def get_cal(id=None, name=None, user=None):
     cals = []
@@ -197,48 +213,56 @@ def get_cal(id=None, name=None, user=None):
         cal = Calendar(id=n, user=u)
         if id and id == (cal.user+"_"+cal.id):
             return cal
-        elif name and name == cal.name:
+        elif name and name == cal.id:
             return cal
         elif (user and user == cal.user) or not user:
             cals.append(cal)
     return cals if not any([id, name, user]) else None
+
 
 def get_book(id=None, name=None, user=None):
     bks = []
     for x in glob.glob('/home/radicale/.config/radicale/collections/*/*.vcf'):
         n = os.path.basename(x).split(".vcf")[0]
         u = x.split("/")[-2]
-        bk = Calendar(id=n, user=u)
+        bk = AddressBook(id=n, user=u)
         if id and id == (bk.user+"_"+bk.id):
             return bk
-        elif name and name == cal.name:
+        elif name and name == bk.name:
             return bk
         elif (user and user == bk.user) or not user:
             bks.append(bk)
     return bks if not any([id, name, user]) else None
 
+
 def my_url():
     url = "http"
     w = websites.get('radicale')
-    if not w: return ""
+    if not w:
+        return ""
     url += "s://" if w.cert else "://"
-    url += w.addr
+    url += w.domain
     url += (":"+str(w.port)) if w.port not in [80, 443] else ""
     return url
 
+
 def is_installed():
-    # Verify the different components of the server setup
-    if not os.path.exists('/etc/radicale/config') or not os.path.isdir('/usr/lib/radicale') \
+    """ Verify the different components of the server setup """
+    if not os.path.exists('/etc/radicale/config') \
+            or not os.path.isdir('/usr/lib/radicale') \
             or not os.path.exists('/etc/radicale/radicale.wsgi') \
             or not websites.get('radicale'):
         return False
     else:
         return True
 
+
 def is_running():
     s = services.get("radicale")
-    if s: return s.state=="running"
+    if s:
+        return s.state == "running"
     return False
+
 
 def setup(addr, port):
     # Make sure Radicale is installed and ready
@@ -248,9 +272,11 @@ def setup(addr, port):
     st = os.stat('/usr/lib/python2.7/site-packages/radicale')
     for r, d, f in os.walk('/usr/lib/python2.7/site-packages/radicale'):
         for x in d:
-            os.chmod(os.path.join(r, x), st.st_mode | stat.S_IROTH | stat.S_IRGRP)
+            os.chmod(os.path.join(r, x),
+                     st.st_mode | stat.S_IROTH | stat.S_IRGRP)
         for x in f:
-            os.chmod(os.path.join(r, x), st.st_mode | stat.S_IROTH | stat.S_IRGRP)
+            os.chmod(os.path.join(r, x),
+                     st.st_mode | stat.S_IROTH | stat.S_IRGRP)
     if not os.path.exists('/etc/radicale/config'):
         if not os.path.isdir('/etc/radicale'):
             os.mkdir('/etc/radicale')
@@ -268,24 +294,29 @@ def setup(addr, port):
     wsgi_file += 'application = radicale.Application()\n'
     with open('/etc/radicale/radicale.wsgi', 'w') as f:
         f.write(wsgi_file)
-    os.chmod('/etc/radicale/radicale.wsgi', 0766)
+    os.chmod('/etc/radicale/radicale.wsgi', 0o766)
     cfg = {
         'directory': '/etc/radicale',
         'user': 'radicale',
-        'command': 'uwsgi -s /tmp/radicale.sock -C --plugin python2 --wsgi-file radicale.wsgi',
+        'command': 'uwsgi -s /tmp/radicale.sock -C '
+                   '--plugin python2 --wsgi-file radicale.wsgi',
         'stdout_logfile': '/var/log/radicale.log',
         'stderr_logfile': '/var/log/radicale.log'
     }
     s = services.Service("radicale", "supervisor", cfg=cfg)
     s.add()
     block = [
-        nginx.Location('/',
+        nginx.Location(
+            '/',
             nginx.Key('include', 'uwsgi_params'),
             nginx.Key('uwsgi_pass', 'unix:///tmp/radicale.sock'),
         )
     ]
     s = websites.get("radicale")
-    if s: s.remove()
-    s = websites.ReverseProxy(id="radicale", name="Calendar/Contacts", 
-        addr=addr, port=port, base_path="/usr/lib/radicale", block=block)
+    if s:
+        s.remove()
+    s = websites.ReverseProxy(
+            id="radicale", name="Calendar/Contacts",
+            domain=addr, port=port,
+            base_path="/usr/lib/radicale", block=block)
     s.install()

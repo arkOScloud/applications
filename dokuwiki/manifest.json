@@ -2,7 +2,7 @@
     "id": "dokuwiki",
     "name": "DokuWiki",
     "type": "website",
-    "icon": "fa fa-book",
+    "icon": "book",
     "description": {
         "short": "Collaborative Documentation",
         "long": "DokuWiki is a simple to use and highly versatile Open Source wiki software that doesn't require a database. It is loved by users for its clean and readable syntax."
@@ -13,12 +13,12 @@
             "secondary": ["Collaboration", "Writing"]
         }
     ],
-    "version": "0.2",
+    "version": "20160626-1",
     "author": "Heiner",
     "homepage": "https://github.com/heinzK1X",
     "app_author": "AOE – the open web company",
     "app_homepage": "https://www.dokuwiki.org/",
-    "logo": true,
+    "logo": false,
     "screenshots": [],
     "services": [
         {
@@ -50,14 +50,14 @@
         },
         {
             "type": "system",
-            "name": "PHP xCache",
-            "package": "php-xcache",
+            "name": "PHP APCu",
+            "package": "php-apcu",
             "binary": null
         }
     ],
     "generation": 1,
     "website_updates": true,
-    "download_url": "http://download.dokuwiki.org/src/dokuwiki/dokuwiki-stable.tgz",
+    "download_url": "https://download.dokuwiki.org/src/dokuwiki/dokuwiki-2016-06-26.tgz",
     "database_engines": [],
     "uses_php": true,
     "uses_ssl": true

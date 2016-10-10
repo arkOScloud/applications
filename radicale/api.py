@@ -1,7 +1,7 @@
-import json
-
 from flask import Response, abort, jsonify, request
 from flask.views import MethodView
+
+from . import backend as radicale
 
 
 class CalendarsAPI(MethodView):
@@ -10,16 +10,16 @@ class CalendarsAPI(MethodView):
         if id and not calendars:
             abort(404)
         if type(calendars) == list:
-            return jsonify(calendars=[x.as_dict() for x in calendars])
+            return jsonify(calendars=[x.serialized for x in calendars])
         else:
-            return jsonify(calendar=calendars.as_dict())
-    
+            return jsonify(calendar=calendars.serialized)
+
     def post(self):
-        data = json.loads(request.data)["calendar"]
-        addrbk = radicale.Calendar(id=data["name"], user=data["user"])
-        addrbk.add()
-        return jsonify(message="Calendar created successfully", address_book=addrbk.as_dict())
-    
+        data = request.get_json()["calendar"]
+        cal = radicale.Calendar(id=data["name"], user=data["user"])
+        cal.add()
+        return jsonify(calendar=cal.serialized)
+
     def delete(self, id):
         calendar = radicale.get_cal(id)
         if not id or not calendar:
@@ -34,16 +34,16 @@ class AddressBooksAPI(MethodView):
         if id and not addrbks:
             abort(404)
         if type(addrbks) == list:
-            return jsonify(address_books=[x.as_dict() for x in addrbks])
+            return jsonify(address_books=[x.serialized for x in addrbks])
         else:
-            return jsonify(address_book=addrbks.as_dict())
-    
+            return jsonify(address_book=addrbks.serialized)
+
     def post(self):
-        data = json.loads(request.data)["address_book"]
+        data = request.get_json()["address_book"]
         addrbk = radicale.AddressBook(id=data["name"], user=data["user"])
         addrbk.add()
-        return jsonify(message="Address book created successfully", address_book=addrbk.as_dict())
-    
+        return jsonify(address_book=addrbk.serialized)
+
     def delete(self, id):
         addrbk = radicale.get_book(id)
         if not id or not addrbk:
@@ -54,15 +54,15 @@ class AddressBooksAPI(MethodView):
 
 def setup():
     if request.method == "GET":
-        return jsonify(running=radicale.is_running(), 
-            installed=radicale.is_installed(),
-            url=radicale.my_url())
+        return jsonify(running=radicale.is_running(),
+                       installed=radicale.is_installed(),
+                       url=radicale.my_url())
     else:
-        data = json.loads(request.data)["config"]
+        data = request.get_json()["config"]
         radicale.setup(data["addr"], data["port"])
-        return jsonify(running=radicale.is_running(), 
-            installed=radicale.is_installed(),
-            url=radicale.my_url())
+        return jsonify(running=radicale.is_running(),
+                       installed=radicale.is_installed(),
+                       url=radicale.my_url())
 
 
 calendars = CalendarsAPI.as_view('calendars_api')

@@ -2,7 +2,7 @@
     "id": "db-sqlite3",
     "name": "SQLite3",
     "type": "database",
-    "icon": "fa fa-database",
+    "icon": "database",
     "description": {
         "short": "Manage SQLite3 databases",
         "long": ""
@@ -13,7 +13,7 @@
             "secondary": []
         }
     ],
-    "version": "2",
+    "version": "2.1",
     "author": "arkOS",
     "homepage": "https://arkos.io",
     "app_author": "SQLite Consortium",

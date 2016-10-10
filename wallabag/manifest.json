@@ -2,10 +2,10 @@
     "id": "wallabag",
     "name": "Wallabag",
     "type": "website",
-    "icon": "fa fa-rss",
+    "icon": "rss",
     "description": {
         "short": "Self-hosted app for saving web pages and RSS feeds",
-        "long": "Wallabag (formerly poche) is a self-hostable application for saving web pages. Unlike other services, wallabag is free (as in freedom) and open-source."
+        "long": "Wallabag is a self-hostable application for saving web pages. Unlike other services, wallabag is free (as in freedom) and open-source."
     },
     "categories": [
         {
@@ -13,7 +13,7 @@
             "secondary": ["News Readers (RSS)", "Bookmarking"]
         }
     ],
-    "version": "1.9.1b-2",
+    "version": "2.1.1-1",
     "author": "arkOS",
     "homepage": "https://arkos.io",
     "app_author": "Nicholas Loeuillet",
@@ -61,21 +61,18 @@
     ],
     "generation": 1,
     "website_updates": true,
-    "website_options": [
-      {
-        "id": "wb-username",
-        "name": "Wallabag Username",
-        "help": "This will be the username of the first user for Wallabag.",
-        "type": "text"
-      },
-      {
-        "id": "wb-password",
-        "name": "Wallabag Password",
-        "help": "",
-        "type": "password"
-      }
-    ],
-    "download_url": "https://github.com/wallabag/wallabag/archive/1.9.1-b.tar.gz",
-    "database_engines": ["db-sqlite3"],
+    "website_root": "web",
+    "website_options": {
+      "messages": [
+        {
+          "id": "wb-username",
+          "level": "info",
+          "icon": "exclamation circle",
+          "message": "Your first Wallabag user will be: username 'wallabag', password 'wallabag'."
+        }
+      ]
+    },
+    "download_url": "http://framabag.org/wallabag-release-2.1.1.tar.gz",
+    "database_engines": ["db-sqlite3", "db-mariadb"],
     "uses_php": true
 }

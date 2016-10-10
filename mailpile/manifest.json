@@ -2,7 +2,7 @@
     "id": "mailpile",
     "name": "Mailpile BETA 3",
     "type": "website",
-    "icon": "fa fa-envelope",
+    "icon": "envelope",
     "description": {
         "short": "A secure way to read, write, and organize piles and piles of email.",
         "long": "Mailpile is a modern, fast web-mail client with user-friendly encryption and privacy features. It places great emphasis on providing a clean, elegant user interface and pleasant user experience. In particular, Mailpile aims to make it easy and convenient to receive and send PGP encrypted or signed e-mail."
@@ -13,7 +13,7 @@
             "secondary": ["Email"]
         }
     ],
-    "version": "0.5.1-2",
+    "version": "0.5.1-3",
     "author": "arkOS",
     "homepage": "https://arkos.io",
     "app_author": "Mailpile",
@@ -24,28 +24,32 @@
     "modules": ["website", "backup"],
     "dependencies": [
         {
-            "type": "system",
+            "type": "python",
             "name": "Python PGPDump",
-            "package": "python2-pgpdump",
-            "binary": null
+            "package": "pgpdump",
+            "binary": null,
+            "py2": true
         },
         {
-            "type": "system",
+            "type": "python",
             "name": "Python LXML",
-            "package": "python2-lxml",
-            "binary": null
+            "package": "lxml",
+            "binary": null,
+            "py2": true
         },
         {
-            "type": "system",
+            "type": "python",
             "name": "Python PIL",
-            "package": "python2-pillow",
-            "binary": null
+            "package": "Pillow",
+            "binary": null,
+            "py2": true
         },
         {
-            "type": "system",
+            "type": "python",
             "name": "Spambayes",
             "package": "spambayes",
-            "binary": null
+            "binary": null,
+            "py2": true
         }
     ],
     "generation": 1,

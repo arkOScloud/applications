@@ -2,7 +2,7 @@
     "id": "syncthing",
     "name": "File Sync",
     "type": "app",
-    "icon": "fa fa-refresh",
+    "icon": "refresh",
     "description": {
         "short": "Sync shared folders across devices with Syncthing",
         "long": "Syncthing replaces Dropbox and BitTorrent Sync with something open, trustworthy and decentralized. Your data is your data alone and you deserve to choose where it is stored, if it is shared with some third party and how it's transmitted over the Internet."
@@ -13,7 +13,7 @@
             "secondary": ["Documents", "Music", "Photos"]
         }
     ],
-    "version": "0.8",
+    "version": "1.0",
     "author": "arkOS",
     "homepage": "https://arkos.io",
     "app_author": "Jakob Borg",
@@ -37,9 +37,9 @@
             "binary": "syncthing"
         },
         {
-            "type": "system",
-            "name": "python2-lxml",
-            "package": "python2-lxml",
+            "type": "python",
+            "name": "Python LXML",
+            "package": "lxml",
             "binary": null,
             "internal": true
         }

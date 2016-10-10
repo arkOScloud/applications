@@ -2,7 +2,7 @@
     "id": "grav",
     "name": "Grav",
     "type": "website",
-    "icon": "fa fa-space-shuttle",
+    "icon": "space shuttle",
     "description": {
         "short": "Build faster websites with a modern open source flat-file CMS",
         "long": "Grav is a flat-file CMS with extensive features, like an admin interface for managing your site, or a package system for installing add-ons and enhancements. It includes powerful content editing tools and intelligently caches content to deliver great performance, regardless of hosting."
@@ -13,7 +13,7 @@
             "secondary": ["Blogs", "Websites", "CMS"]
         }
     ],
-    "version": "1.0.10-1",
+    "version": "1.0.10-2",
     "author": "arkOS",
     "homepage": "http://arkos.io",
     "app_author": "Grav",
@@ -64,7 +64,6 @@
     "website_updates": true,
     "download_url": "https://github.com/getgrav/grav/releases/download/1.0.10/grav-admin-v1.0.10.zip",
     "website_datapaths": false,
-    "website_options": [],
     "database_engines": [],
     "uses_php": true
 }

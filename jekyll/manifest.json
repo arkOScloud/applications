@@ -2,7 +2,7 @@
     "id": "jekyll",
     "name": "Jekyll",
     "type": "website",
-    "icon": "fa fa-globe",
+    "icon": "write square",
     "description": {
         "short": "Run a statically-generated website or blog",
         "long": "Jekyll is a simple, blog-aware, static site generator. It takes a template directory containing raw text files in various formats, runs it through Markdown (or Textile) and Liquid converters, and spits out a complete, ready-to-publish static website suitable for serving with your favorite web server."
@@ -13,7 +13,7 @@
             "secondary": ["Blogs", "Websites", "Static Sites"]
         }
     ],
-    "version": "2.5.3-1",
+    "version": "3.2.1-1",
     "author": "arkOS",
     "homepage": "http://arkos.io",
     "app_author": "Tom Preson-Werner, Nick Quaranto et al",
@@ -24,33 +24,30 @@
     "modules": ["website"],
     "dependencies": [
         {
-            "type": "system",
-            "name": "ruby",
-            "package": "ruby",
-            "binary": "ruby"
+            "type": "ruby",
+            "name": "Jekyll",
+            "package": "jekyll",
+            "binary": "jekyll",
+            "version": "3.2.1"
         },
         {
-            "type": "system",
-            "name": "make",
-            "package": "make",
-            "binary": "make"
-        },
-        {
-            "type": "system",
-            "name": "gcc",
-            "package": "gcc",
-            "binary": "gcc"
-        },
-        {
-            "type": "system",
-            "name": "nodejs",
-            "package": "nodejs",
-            "binary": "npm"
+            "type": "ruby",
+            "name": "rdiscount",
+            "package": "rdiscount",
+            "binary": null,
+            "version": "2.2.0.1"
         }
     ],
     "generation": 1,
-    "website_updates": true,
-    "website_extra_actions": true,
+    "website_updates": false,
+    "website_root": "_site",
+    "website_actions": [
+      {
+        "id": "regenerate",
+        "icon": "refresh",
+        "name": "Regenerate Site"
+      }
+    ],
     "download_url": "https://pkg.arkos.io/resources/jekyll-sample.tar.gz",
     "database_engines": [],
     "uses_php": false,

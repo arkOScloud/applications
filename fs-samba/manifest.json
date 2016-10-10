@@ -1,0 +1,42 @@
+{
+    "id": "fs-samba",
+    "name": "File Shares (SMB)",
+    "type": "fileshare",
+    "icon": "windows",
+    "description": {
+        "short": "Network file shares compatible with Windows (Samba/SMB/CIFS)",
+        "long": "File shares using the Samba protocol allow you to easily share files and folders with Windows clients on your local network. These files and folders can be accessed through the Windows File Manager."
+    },
+    "categories": [
+        {
+            "primary": "File Storage",
+            "secondary": ["Documents", "Music", "Photos"]
+        }
+    ],
+    "version": "1.0",
+    "author": "arkOS",
+    "homepage": "https://arkos.io",
+    "app_author": "The Samba Team",
+    "app_homepage": "https://www.samba.org",
+    "logo": false,
+    "screenshots": [],
+    "services": [
+        {
+            "name": "Samba",
+            "type": "system",
+            "binary": "smbd",
+            "ports": [["tcp", 139], ["tcp", 445], ["udp", 137], ["udp", 138]]
+        }
+    ],
+    "modules": ["fileshare"],
+    "dependencies": [
+        {
+            "type": "system",
+            "name": "Samba",
+            "package": "samba",
+            "binary": "smbd"
+        }
+    ],
+    "generation": 1,
+    "uses_ssl": false
+}

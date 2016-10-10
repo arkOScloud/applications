@@ -2,7 +2,7 @@
     "id": "db-mariadb",
     "name": "MariaDB",
     "type": "database",
-    "icon": "fa fa-database",
+    "icon": "database",
     "description": {
         "short": "Manage MariaDB/MySQL databases",
         "long": ""
@@ -13,7 +13,7 @@
             "secondary": []
         }
     ],
-    "version": "2.9.1",
+    "version": "3.0",
     "author": "arkOS",
     "homepage": "https://arkos.io",
     "app_author": "MariaDB Foundation",
@@ -38,9 +38,9 @@
             "daemon": "mysqld"
         },
         {
-            "type": "system",
-            "name": "MySQL-Python",
-            "package": "mysql-python",
+            "type": "python",
+            "name": "Python MySQL Client",
+            "package": "mysqlclient",
             "binary": null,
             "internal": true
         }

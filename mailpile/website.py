@@ -7,26 +7,30 @@ from arkos.tracked_services import get_open_port
 
 
 class Mailpile(Site):
-    def pre_install(self, vars):
+    def pre_install(self, extra_vars):
         self.backend_port = str(get_open_port())
         self.addtoblock = [
-            nginx.Location('/',
-                nginx.Key('proxy_pass', 'http://127.0.0.1:%s' % self.backend_port),
+            nginx.Location(
+                '/',
+                nginx.Key('proxy_pass', 'http://127.0.0.1:{0}'
+                          .format(self.backend_port)),
                 nginx.Key('proxy_set_header', 'X-Real-IP $remote_addr'),
                 nginx.Key('proxy_set_header', 'Host $host'),
                 nginx.Key('proxy_buffering', 'off')
-                )
-            ]
+            )]
 
-    def post_install(self, vars, dbpasswd=""):
+    def post_install(self, extra_vars, dbpasswd=""):
         users.SystemUser("mailpile").add()
 
         st = os.stat(os.path.join(self.path, 'scripts/mailpile'))
-        os.chmod(os.path.join(self.path, 'scripts/mailpile'), st.st_mode | 0111)
+        os.chmod(
+            os.path.join(self.path, 'scripts/mailpile'), st.st_mode | 0o111
+        )
         cfg = {
             'directory': self.path,
             'user': 'mailpile',
-            'command': '%s --www=0.0.0.0:%s --wait' % (os.path.join(self.path, 'mp'), self.backend_port),
+            'command': '{0} --www=0.0.0.0:{1} --wait'
+            .format(os.path.join(self.path, 'mp'), self.backend_port),
             'autostart': 'true',
             'autorestart': 'false',
             'stdout_logfile': '/var/log/mailpile.log',

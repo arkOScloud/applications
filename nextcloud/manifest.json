@@ -2,7 +2,7 @@
     "id": "nextcloud",
     "name": "Nextcloud",
     "type": "website",
-    "icon": "fa fa-cloud",
+    "icon": "cloud",
     "description": {
         "short": "Access & share your files, calendars, contacts, mail & more from any device, on your terms",
         "long": "Nextcloud gives you a private, secure way to share, work with others and access your own data using an easy to use interface. Be it music, calendar appointments, bookmarks, email or your documents, Nextcloud keeps your data safe."
@@ -17,7 +17,7 @@
             "secondary": ["Documents", "Music", "Photos", "Calendar", "Contacts"]
         }
     ],
-    "version": "10.0.0-1",
+    "version": "10.0.0-2",
     "author": "arkOS",
     "homepage": "http://arkos.io",
     "app_author": "Nextcloud",
@@ -84,15 +84,16 @@
     "website_updates": false,
     "download_url": "https://download.nextcloud.com/server/releases/nextcloud-10.0.0.zip",
     "website_datapaths": true,
-    "website_options": [
-      {
-        "id": "nc-admin",
-        "name": "Nextcloud Admin User",
-        "help": "This user will be given administrative privileges for Nextcloud.",
-        "type": "select",
-        "choices": "users"
-      }
-    ],
+    "website_options": {
+      "users": [
+        {
+          "id": "nc-admin",
+          "label": "Nextcloud Admin User",
+          "required": true,
+          "help": "This user will be given administrative privileges for Nextcloud."
+        }
+      ]
+    },
     "website_default_data_subdir": "data",
     "database_engines": ["db-mariadb"],
     "uses_php": true

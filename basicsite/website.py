@@ -9,33 +9,43 @@ from arkos.languages import php
 class Website(Site):
     addtoblock = []
 
-    def pre_install(self, vars):
-        if vars.get('php', False):
+    def pre_install(self, extra_vars):
+        if extra_vars.get('php', False):
             self.addtoblock = [
-                nginx.Location('~ ^(.+?\.php)(/.*)?$',
+                nginx.Location(
+                    '~ ^(.+?\.php)(/.*)?$',
                     nginx.Key('include', 'fastcgi_params'),
-                    nginx.Key('fastcgi_param', 'SCRIPT_FILENAME $document_root$1'),
+                    nginx.Key('fastcgi_param',
+                              'SCRIPT_FILENAME $document_root$1'),
                     nginx.Key('fastcgi_param', 'PATH_INFO $2'),
-                    nginx.Key('fastcgi_pass', 'unix:/run/php-fpm/php-fpm.sock'),
+                    nginx.Key('fastcgi_pass',
+                              'unix:/run/php-fpm/php-fpm.sock'),
                     nginx.Key('fastcgi_read_timeout', '900s'),
                 )
             ]
 
-    def post_install(self, vars, dbpasswd=""):
+    def post_install(self, extra_vars, dbpasswd=""):
         # Write a basic index file showing that we are here
-        if vars.get('php'):
-            php.enable_mod('xcache')
+        if extra_vars.get('php'):
+            php.enable_mod('apcu', config_file="/etc/php/conf.d/apcu.ini")
 
-        with open(os.path.join(self.path, 'index.'+('php' if vars.get('php') else 'html')), 'w') as f:
+        index_ext = 'php' if extra_vars.get('php') else 'html'
+        index_path = os.path.join(self.path, 'index.{0}'.format(index_ext))
+        addr = self.domain + (":" + self.port if self.port != 80 else "")
+        with open(index_path, 'w') as f:
             f.write(
                 '<html>\n'
                 '<body>\n'
-                '<h1>Genesis - Custom Site</h1>\n'
-                '<p>Your site is online and available at '+self.path+'</p>\n'
-                '<p>Feel free to paste your site files here</p>\n'
+                '<div style="text-align:center;margin-top:20%;font-family:sans-serif;">\n'
+                '<img style="width: 300px;" src="https://cdn.citizenweb.io/static/img/arkos-2-01.png" />\n'
+                '<h1>Custom Website</h1>\n'
+                '<p>Your site is online at http://{0}, and stored at {0}</p>\n'
+                '<p>Feel free to paste your site files there!</p>\n'
+                '</div>\n'
                 '</body>\n'
                 '</html>\n'
-                )
+                .format(addr, self.path)
+            )
 
         # Give access to httpd
         uid, gid = users.get_system("http").uid, groups.get_system("http").gid
