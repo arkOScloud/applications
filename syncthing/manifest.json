@@ -13,7 +13,7 @@
             "secondary": ["Documents", "Music", "Photos"]
         }
     ],
-    "version": "0.8",
+    "version": "1.0",
     "author": "arkOS",
     "homepage": "https://arkos.io",
     "app_author": "Jakob Borg",
@@ -37,9 +37,9 @@
             "binary": "syncthing"
         },
         {
-            "type": "system",
-            "name": "python-lxml",
-            "package": "python-lxml",
+            "type": "python",
+            "name": "Python LXML",
+            "package": "lxml",
             "binary": null,
             "internal": true
         }

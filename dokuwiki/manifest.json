@@ -13,12 +13,12 @@
             "secondary": ["Collaboration", "Writing"]
         }
     ],
-    "version": "0.2",
+    "version": "20160626-1",
     "author": "Heiner",
     "homepage": "https://github.com/heinzK1X",
     "app_author": "AOE – the open web company",
     "app_homepage": "https://www.dokuwiki.org/",
-    "logo": true,
+    "logo": false,
     "screenshots": [],
     "services": [
         {
@@ -57,7 +57,7 @@
     ],
     "generation": 1,
     "website_updates": true,
-    "download_url": "http://download.dokuwiki.org/src/dokuwiki/dokuwiki-stable.tgz",
+    "download_url": "https://download.dokuwiki.org/src/dokuwiki/dokuwiki-2016-06-26.tgz",
     "database_engines": [],
     "uses_php": true,
     "uses_ssl": true

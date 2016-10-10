@@ -2,7 +2,7 @@
     "id": "cmsjs",
     "name": "CMS.js",
     "type": "website",
-    "icon": "fa fa-globe",
+    "icon": "globe",
     "description": {
         "short": "CMS.js - The Javascript Site Generator",
         "long": "CMS.js is fully client-side, Javascript site generator in the spirit of Jekyll that uses plain ol' HTML, CSS and Javascript to generate your website. CMS.js is like a file-based CMS. It takes your content, renders Markdown and delivers a complete website in Single-Page App fashion...without the aid of server-side scripting (no Node.js, PHP, Ruby, etc.)."
@@ -13,7 +13,7 @@
             "secondary": ["Websites", "CMS"]
         }
     ],
-    "version": "1.0.0-1",
+    "version": "1.0.0-2",
     "author": "mrbn",
     "homepage": "https://git.coderouge.co/u/mrbn",
     "app_author": "Chris Diana",
@@ -26,6 +26,7 @@
     "generation": 1,
     "website_updates": false,
     "download_url": "https://github.com/cdmedia/cms.js.git",
+    "download_at_tag": "v1.0.0",
     "database_engines": [],
     "uses_php": false
 }
