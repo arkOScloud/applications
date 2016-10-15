@@ -1,7 +1,7 @@
 import nginx
 import os
-import shutil
 
+from arkos import logger
 from arkos.languages import php
 from arkos.websites import Site
 from arkos.utilities import shell
@@ -61,15 +61,6 @@ class Grav(Site):
         pass
 
     def post_install(self, extra_vars, dbpasswd=""):
-        # Get around top-level zip restriction (FIXME 0.7.2)
-        if "grav-admin" in os.listdir(self.path):
-            tmp_path = os.path.abspath(os.path.join(self.path, "../grav-tmp"))
-            os.rename(os.path.join(self.path, "grav-admin"), tmp_path)
-            os.rename(os.path.join(self.path, ".arkos"),
-                      os.path.join(tmp_path, ".arkos"))
-            shutil.rmtree(self.path)
-            os.rename(tmp_path, self.path)
-
         # Add execution flag to binaries
         st = os.stat(os.path.join(self.path, "bin/gpm"))
         os.chmod(os.path.join(self.path, "bin/gpm"), st.st_mode | 0o111)
@@ -97,8 +88,17 @@ class Grav(Site):
     def site_edited(self):
         pass
 
-    def update(self, pkg, ver):
+    def update_site(self, pkg, ver):
         cwd = os.getcwd()
         os.chdir(self.path)
-        shell("bin/gpm selfupgrade")
+        s = shell("bin/gpm selfupgrade -f")
+        if s["code"] != 0:
+            logger.error(
+                "Webs", "Grav failed to run selfupgrade. Error: {0}"
+                .format(s["stderr"].decode()))
+        s = shell("bin/gpm update -f")
+        if s["code"] != 0:
+            logger.error(
+                "Webs", "Grav failed to run plugin update. Error: {0}"
+                .format(s["stderr"].decode()))
         os.chdir(cwd)

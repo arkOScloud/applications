@@ -13,7 +13,7 @@
             "secondary": ["Blogs", "Websites", "CMS"]
         }
     ],
-    "version": "1.0.10-2",
+    "version": "1.1.5-1",
     "author": "arkOS",
     "homepage": "http://arkos.io",
     "app_author": "Grav",
@@ -62,7 +62,7 @@
     ],
     "generation": 1,
     "website_updates": true,
-    "download_url": "https://github.com/getgrav/grav/releases/download/1.0.10/grav-admin-v1.0.10.zip",
+    "download_url": "https://github.com/getgrav/grav/releases/download/1.1.5/grav-admin-v1.1.5.zip",
     "website_datapaths": false,
     "database_engines": [],
     "uses_php": true
