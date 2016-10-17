@@ -20,7 +20,7 @@ def on_load(app):
         os.chown("/home/syncthing", u.uid, 0o100)
     config_path = "/home/syncthing/.config/syncthing/config.xml"
     s = services.get("syncthing@syncthing")
-    if not os.path.exists(config_path):
+    if not os.path.exists(config_path) and s.state != "running":
         s.restart()
         count = 0
         while count < 5:

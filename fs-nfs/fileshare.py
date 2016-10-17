@@ -23,7 +23,9 @@ class NFS(Sharer):
         s.add()
         return s
 
-    def add_mount(self, path, network_path, read_only=False):
+    def add_mount(
+            self, path, network_path, username="", password="",
+            read_only=False):
         s = NFSMount(
             path=path, network_path=network_path, readonly=read_only,
             manager=self

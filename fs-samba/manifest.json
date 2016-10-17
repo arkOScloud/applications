@@ -13,7 +13,7 @@
             "secondary": ["Documents", "Music", "Photos"]
         }
     ],
-    "version": "1.0",
+    "version": "1.1.1",
     "author": "arkOS",
     "homepage": "https://arkos.io",
     "app_author": "The Samba Team",
@@ -25,7 +25,13 @@
             "name": "Samba",
             "type": "system",
             "binary": "smbd",
-            "ports": [["tcp", 139], ["tcp", 445], ["udp", 137], ["udp", 138]]
+            "ports": [["tcp", 135], ["tcp", 139], ["tcp", 445]]
+        },
+        {
+            "name": "NetBIOS Name Server",
+            "type": "system",
+            "binary": "nmbd",
+            "ports": [["udp", 137], ["udp", 138]]
         }
     ],
     "modules": ["fileshare"],

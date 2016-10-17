@@ -120,7 +120,7 @@ class SambaShare(Share):
         with open("/etc/samba/smb.conf", "w") as f:
             config.write(f)
         svc = services.get("smbd")
-        if svc and svc.state:
+        if svc:
             svc.restart()
 
     def remove_share(self):
@@ -133,7 +133,7 @@ class SambaShare(Share):
         with open("/etc/samba/smb.conf", "w") as f:
             config.write(f)
         svc = services.get("smbd")
-        if svc and svc.state:
+        if svc:
             svc.restart()
 
 
@@ -157,7 +157,7 @@ class SambaMount(Mount):
         opts = ",".join(
             ["{0}={1}".format(x, extra_opts[x]) for x in extra_opts]
         )
-        if self.read_only:
+        if self.readonly:
             opts = "ro" + ((","+opts) if opts else "")
         if not os.path.exists(self.path):
             os.makedirs(self.path)
