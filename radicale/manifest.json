@@ -13,7 +13,7 @@
             "secondary": ["Calendar", "Contacts"]
         }
     ],
-    "version": "1.1.1-1",
+    "version": "1.1.1-2",
     "author": "arkOS",
     "homepage": "https://arkos.io",
     "app_author": "Radicale",
@@ -38,8 +38,8 @@
         },
         {
             "type": "system",
-            "name": "uWSGI Python2 Plugin",
-            "package": "uwsgi-plugin-python2",
+            "name": "uWSGI Python Plugin",
+            "package": "uwsgi-plugin-python",
             "binary": null
         },
         {

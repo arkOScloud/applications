@@ -2,8 +2,9 @@ import glob
 import nginx
 import os
 import stat
+import sys
 
-from arkos import websites
+from arkos import applications, websites
 from arkos.languages import python
 from arkos.system import users, groups, services
 
@@ -269,8 +270,10 @@ def setup(addr, port):
     if not python.is_installed('Radicale'):
         python.install('radicale')
     # due to packaging bugs, make extra sure perms are readable
-    st = os.stat('/usr/lib/python2.7/site-packages/radicale')
-    for r, d, f in os.walk('/usr/lib/python2.7/site-packages/radicale'):
+    pver = "{0}.{1}".format(sys.version_info.major, sys.version_info.minor)
+    raddir = '/usr/lib/python{0}/site-packages/radicale'.format(pver)
+    st = os.stat(raddir)
+    for r, d, f in os.walk(raddir):
         for x in d:
             os.chmod(os.path.join(r, x),
                      st.st_mode | stat.S_IROTH | stat.S_IRGRP)
@@ -315,8 +318,8 @@ def setup(addr, port):
     s = websites.get("radicale")
     if s:
         s.remove()
+    a = applications.get('radicale')
     s = websites.ReverseProxy(
-            id="radicale", name="Calendar/Contacts",
-            domain=addr, port=port,
+            app=a, id="radicale", domain=addr, port=port,
             base_path="/usr/lib/radicale", block=block)
     s.install()
