@@ -4,7 +4,7 @@ import ctypes.util
 import os
 import shutil
 
-from arkos import secrets, signals
+from arkos import secrets
 from arkos.system import services
 from arkos.sharers import Share, Mount, Sharer
 from arkos.utilities import b, errors, shell
@@ -60,7 +60,8 @@ class Samba(Sharer):
                 id=x, path=config.get(x, "path"),
                 comment=config.get(x, "comment", fallback=""),
                 public=config.get(x, "public", fallback="yes") == "yes",
-                valid_users=config.get(x, "valid users", fallback="").split(" "),
+                valid_users=config.get(x, "valid users", fallback="")
+                .split(" "),
                 readonly=config.get(x, "read only", fallback="no") == "yes",
                 manager=self)
             shares.append(share)
@@ -75,9 +76,9 @@ class Samba(Sharer):
         for x in mtab:
             if x[2] != "cifs":
                 continue
-            mount = SambaMount(id=os.path.basename(x[1]), path=x[1],
-                               network_path=x[0], readonly=x[3].startswith("ro"),
-                               is_mounted=True, manager=self)
+            mount = SambaMount(
+                id=os.path.basename(x[1]), path=x[1], network_path=x[0],
+                readonly=x[3].startswith("ro"), is_mounted=True, manager=self)
             mounts.append(mount)
         return mounts
 
@@ -183,22 +184,3 @@ class SambaMount(Mount):
                                           os.strerror(ctypes.get_errno())))
         else:
             self.is_mounted = False
-
-
-def change_samba_user_passwd(data):
-    """
-    Change a user's Samba password in LDAP.
-
-    Called when a new user is added, or a user's password is updated.
-
-    :param dict data: `{"user": User (obj), "passwd": new password (str)}`
-    """
-    if data["passwd"]:
-        shell(
-            "smbpasswd -a {0}".format(data["user"].name),
-            stdin="{0}\n{0}\n".format(data["passwd"])
-        )
-
-
-signals.add("fs-samba", "users", "post_add", change_samba_user_passwd)
-signals.add("fs-samba", "users", "post_update", change_samba_user_passwd)
