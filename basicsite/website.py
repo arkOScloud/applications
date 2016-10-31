@@ -31,7 +31,7 @@ class Website(Site):
 
         index_ext = 'php' if extra_vars.get('php') else 'html'
         index_path = os.path.join(self.path, 'index.{0}'.format(index_ext))
-        addr = self.domain + (":" + self.port if self.port != 80 else "")
+        addr = self.domain + (":" + str(self.port) if self.port != 80 else "")
         with open(index_path, 'w') as f:
             f.write(
                 '<html>\n'
