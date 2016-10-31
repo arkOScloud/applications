@@ -320,6 +320,6 @@ def setup(addr, port):
         s.remove()
     a = applications.get('radicale')
     s = websites.ReverseProxy(
-            app=a, id="radicale", domain=addr, port=port,
+            app=a, id="radicale", domain=addr, port=int(port),
             base_path="/usr/lib/radicale", block=block)
     s.install()
