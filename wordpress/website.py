@@ -1,6 +1,6 @@
 import nginx
 import os
-import urllib
+import requests
 
 from arkos.languages import php
 from arkos.websites import Site
@@ -47,8 +47,8 @@ class WordPress(Site):
         # Use the WordPress key generators as first option
         # If connection fails, use the secret_key as fallback
         try:
-            keysection = urllib.request.urlopen('https://api.wordpress.org/'
-                                                'secret-key/1.1/salt/').read()
+            keysection = requests.get(
+                'https://api.wordpress.org/secret-key/1.1/salt/').text
         except:
             keysection = ''
         if 'define(\'AUTH_KEY' not in keysection:
@@ -67,7 +67,7 @@ class WordPress(Site):
                     'define(\'DB_PASSWORD\', \'{1}\');\n'
                     'define(\'DB_HOST\', \'localhost\');\n'
                     'define(\'DB_CHARSET\', \'utf8\');\n'
-                    'define(\'SECRET_KEY\', \{2}\');\n'
+                    'define(\'SECRET_KEY\', \'{2}\');\n'
                     '\n'
                     'define(\'WP_CACHE\', true);\n'
                     'define(\'FORCE_SSL_ADMIN\', false);\n'
