@@ -302,7 +302,7 @@ def setup(addr, port):
         'directory': '/etc/radicale',
         'user': 'radicale',
         'command': 'uwsgi -s /tmp/radicale.sock -C '
-                   '--plugin python2 --wsgi-file radicale.wsgi',
+                   '--plugin python --wsgi-file radicale.wsgi',
         'stdout_logfile': '/var/log/radicale.log',
         'stderr_logfile': '/var/log/radicale.log'
     }
