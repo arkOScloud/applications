@@ -88,6 +88,7 @@ class Samba(Sharer):
         shell("smbpasswd -w {0}".format(secrets.get("ldap")))
         config = configparser.ConfigParser()
         config.read(["/etc/samba/smb.conf"])
+        config.set("global", "passdb backend", 'ldapsam:"ldap://localhost/"')
         config.set("global", "ldap ssl", "off")
         config.set("global", "ldap passwd sync", "no")
         config.set("global", "ldap suffix", "dc=arkos-servers,dc=org")
@@ -115,7 +116,8 @@ class SambaShare(Share):
             )
         if not os.path.exists(self.path):
             os.makedirs(self.path)
-        config.set("global", "map to guest", "Bad User")
+        config.set("global", "security", "user")
+        config.set("global", "map to guest", "bad user")
         config.add_section(self.id)
         config.set(self.id, "comment", self.comment)
         config.set(self.id, "path", self.path)
