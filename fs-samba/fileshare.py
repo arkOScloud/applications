@@ -20,10 +20,12 @@ class Samba(Sharer):
             self, name, path, comment="", valid_users=[],
             read_only=False):
         if os.path.exists("/var/lib/samba/private/secrets.tdb"):
-            data = shell("tdbtool /var/lib/samba/private/secrets.tdb")
+            data = shell("tdbdump /var/lib/samba/private/secrets.tdb")
             if "SECRETS/LDAP_BIND_PW/cn=admin,dc=arkos-servers,dc=org"\
                     not in data["stdout"].decode():
                 self._init_samba_for_ldap()
+        else:
+            self._init_samba_for_ldap()
         s = SambaShare(
             id=name, path=path, comment=comment, public=not valid_users,
             valid_users=valid_users, readonly=read_only, manager=self
@@ -94,6 +96,8 @@ class Samba(Sharer):
         config.set(
             "global", "ldap admin dn", "cn=admin,dc=arkos-servers,dc=org"
         )
+        if config.has_section("homes"):
+            config.remove_section("homes")
         with open("/etc/samba/smb.conf", "w") as f:
             config.write(f)
 
@@ -111,11 +115,17 @@ class SambaShare(Share):
             )
         if not os.path.exists(self.path):
             os.makedirs(self.path)
+        config.set("global", "map to guest", "Bad User")
         config.add_section(self.id)
         config.set(self.id, "comment", self.comment)
         config.set(self.id, "path", self.path)
+        config.set(self.id, "browseable", "yes")
         config.set(self.id, "public", "yes" if not self.valid_users else "no")
+        config.set(
+            self.id, "guest ok", "yes" if not self.valid_users else "no"
+        )
         config.set(self.id, "read only", "yes" if self.readonly else "no")
+        config.set(self.id, "writable", "no" if self.readonly else "yes")
         if self.valid_users:
             config.set(self.id, "valid users", " ".join(self.valid_users))
         with open("/etc/samba/smb.conf", "w") as f:

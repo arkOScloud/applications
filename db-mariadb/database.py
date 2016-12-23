@@ -166,7 +166,7 @@ class MariaDBMgr(DatabaseManager):
             self.connection = conns.MariaDB
         except:
             self.state = False
-            raise errors.ConnectionServiceError("MariaDB")
+            raise errors.ConnectionError("MariaDB")
 
     def change_admin_passwd(self):
         try:
