@@ -17,7 +17,7 @@
             "secondary": ["Documents", "Music", "Photos", "Calendar", "Contacts"]
         }
     ],
-    "version": "10.0.0-2",
+    "version": "11.0.1-1",
     "author": "arkOS",
     "homepage": "http://arkos.io",
     "app_author": "Nextcloud",
@@ -82,7 +82,7 @@
     ],
     "generation": 1,
     "website_updates": false,
-    "download_url": "https://download.nextcloud.com/server/releases/nextcloud-10.0.0.zip",
+    "download_url": "https://download.nextcloud.com/server/releases/nextcloud-11.0.1.zip",
     "website_datapaths": true,
     "website_options": {
       "users": [
